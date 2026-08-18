@@ -1,0 +1,1375 @@
+{
+  "version": 5,
+  "enemyNames": {
+    "common": [
+      "山匪",
+      "游侠",
+      "镖师",
+      "门客",
+      "刀客",
+      "剑客",
+      "拳师",
+      "刺客"
+    ],
+    "elite": [
+      "寨中头目",
+      "江湖高手",
+      "门派执事",
+      "成名刀客",
+      "冷面剑客",
+      "护法"
+    ],
+    "multiEnemySuffixes": [
+      "甲",
+      "乙",
+      "丙"
+    ]
+  },
+  "elite": {
+    "totalHealthMultiplier": 1.55,
+    "attackShare": {
+      "one": 1.32,
+      "two": 0.72,
+      "three": 0.5
+    },
+    "defenseMultiplier": 1.08,
+    "speedBonus": 6
+  },
+  "secondaryStats": {
+    "baseHitRate": 89,
+    "hitRatePerChapter": 0.06,
+    "maxHitRate": 96,
+    "dodgeRatePerChapter": 0.08,
+    "maxDodgeRate": 8,
+    "baseCritRate": 3,
+    "critRatePerChapter": 0.12,
+    "maxCritRate": 16,
+    "eliteDodgeBonus": 2,
+    "eliteCritBonus": 2,
+    "eliteComboBase": 3,
+    "eliteComboPerChapter": 0.08,
+    "maxEliteComboRate": 14
+  },
+  "rewards": {
+    "baseSilver": 45,
+    "stageSilverStep": 1.4,
+    "chapterSilverStep": 6,
+    "eliteMultiplier": 2,
+    "normalForge": 1,
+    "eliteForge": 3,
+    "forgeChapterStep": 20,
+    "normalInsight": 1,
+    "eliteInsight": 3,
+    "insightChapterStep": 25,
+    "normalFame": 1,
+    "eliteFame": 2,
+    "fameChapterStep": 30,
+    "normalLangyu": 160,
+    "eliteLangyu": 240,
+    "chapterClearLangyu": 80,
+    "replayRate": 0.3,
+    "eliteReplayBonusChance": 0.15
+  },
+  "chapters": [
+    {
+      "chapter": 1,
+      "stages": 16,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 620,
+        "attack": 60,
+        "defense": 38,
+        "speed": 82
+      }
+    },
+    {
+      "chapter": 2,
+      "stages": 16,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 831,
+        "attack": 79,
+        "defense": 50,
+        "speed": 87
+      }
+    },
+    {
+      "chapter": 3,
+      "stages": 16,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 1077,
+        "attack": 101,
+        "defense": 64,
+        "speed": 90
+      }
+    },
+    {
+      "chapter": 4,
+      "stages": 16,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 1367,
+        "attack": 128,
+        "defense": 81,
+        "speed": 95
+      }
+    },
+    {
+      "chapter": 5,
+      "stages": 16,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 1705,
+        "attack": 158,
+        "defense": 98,
+        "speed": 99
+      }
+    },
+    {
+      "chapter": 6,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 2098,
+        "attack": 191,
+        "defense": 118,
+        "speed": 104
+      }
+    },
+    {
+      "chapter": 7,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 2553,
+        "attack": 229,
+        "defense": 142,
+        "speed": 109
+      }
+    },
+    {
+      "chapter": 8,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 3083,
+        "attack": 273,
+        "defense": 170,
+        "speed": 114
+      }
+    },
+    {
+      "chapter": 9,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 3691,
+        "attack": 323,
+        "defense": 201,
+        "speed": 118
+      }
+    },
+    {
+      "chapter": 10,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 4393,
+        "attack": 381,
+        "defense": 234,
+        "speed": 124
+      }
+    },
+    {
+      "chapter": 11,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 5261,
+        "attack": 453,
+        "defense": 273,
+        "speed": 130
+      }
+    },
+    {
+      "chapter": 12,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 6275,
+        "attack": 530,
+        "defense": 316,
+        "speed": 134
+      }
+    },
+    {
+      "chapter": 13,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 7450,
+        "attack": 625,
+        "defense": 364,
+        "speed": 140
+      }
+    },
+    {
+      "chapter": 14,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 8813,
+        "attack": 731,
+        "defense": 420,
+        "speed": 145
+      }
+    },
+    {
+      "chapter": 15,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 10392,
+        "attack": 852,
+        "defense": 480,
+        "speed": 151
+      }
+    },
+    {
+      "chapter": 16,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 11890,
+        "attack": 968,
+        "defense": 533,
+        "speed": 155
+      }
+    },
+    {
+      "chapter": 17,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 13595,
+        "attack": 1092,
+        "defense": 592,
+        "speed": 158
+      }
+    },
+    {
+      "chapter": 18,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 15532,
+        "attack": 1234,
+        "defense": 658,
+        "speed": 163
+      }
+    },
+    {
+      "chapter": 19,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 17741,
+        "attack": 1395,
+        "defense": 730,
+        "speed": 166
+      }
+    },
+    {
+      "chapter": 20,
+      "stages": 32,
+      "eliteEvery": 16,
+      "eliteEnemyCount": 1,
+      "stageGrowth": 0.03,
+      "enemy": {
+        "maxHealth": 20250,
+        "attack": 1575,
+        "defense": 810,
+        "speed": 171
+      }
+    },
+    {
+      "chapter": 21,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 22491,
+        "attack": 1752,
+        "defense": 883,
+        "speed": 175
+      }
+    },
+    {
+      "chapter": 22,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 24973,
+        "attack": 1946,
+        "defense": 961,
+        "speed": 177
+      }
+    },
+    {
+      "chapter": 23,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 27728,
+        "attack": 2162,
+        "defense": 1046,
+        "speed": 181
+      }
+    },
+    {
+      "chapter": 24,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 30780,
+        "attack": 2402,
+        "defense": 1142,
+        "speed": 183
+      }
+    },
+    {
+      "chapter": 25,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 34172,
+        "attack": 2665,
+        "defense": 1245,
+        "speed": 188
+      }
+    },
+    {
+      "chapter": 26,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 37925,
+        "attack": 2962,
+        "defense": 1354,
+        "speed": 192
+      }
+    },
+    {
+      "chapter": 27,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 42093,
+        "attack": 3288,
+        "defense": 1474,
+        "speed": 194
+      }
+    },
+    {
+      "chapter": 28,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 46707,
+        "attack": 3651,
+        "defense": 1602,
+        "speed": 198
+      }
+    },
+    {
+      "chapter": 29,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 51827,
+        "attack": 4054,
+        "defense": 1747,
+        "speed": 201
+      }
+    },
+    {
+      "chapter": 30,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 57500,
+        "attack": 4500,
+        "defense": 1900,
+        "speed": 205
+      }
+    },
+    {
+      "chapter": 31,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 62850,
+        "attack": 4985,
+        "defense": 2045,
+        "speed": 208
+      }
+    },
+    {
+      "chapter": 32,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 68700,
+        "attack": 5520,
+        "defense": 2205,
+        "speed": 210
+      }
+    },
+    {
+      "chapter": 33,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 75095,
+        "attack": 6115,
+        "defense": 2375,
+        "speed": 213
+      }
+    },
+    {
+      "chapter": 34,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 82085,
+        "attack": 6770,
+        "defense": 2560,
+        "speed": 214
+      }
+    },
+    {
+      "chapter": 35,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 89720,
+        "attack": 7500,
+        "defense": 2755,
+        "speed": 218
+      }
+    },
+    {
+      "chapter": 36,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 98070,
+        "attack": 8305,
+        "defense": 2970,
+        "speed": 221
+      }
+    },
+    {
+      "chapter": 37,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 107200,
+        "attack": 9200,
+        "defense": 3200,
+        "speed": 222
+      }
+    },
+    {
+      "chapter": 38,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 117175,
+        "attack": 10190,
+        "defense": 3445,
+        "speed": 226
+      }
+    },
+    {
+      "chapter": 39,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 128080,
+        "attack": 11285,
+        "defense": 3715,
+        "speed": 227
+      }
+    },
+    {
+      "chapter": 40,
+      "stages": 48,
+      "eliteEvery": 8,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.04,
+      "enemy": {
+        "maxHealth": 140000,
+        "attack": 12500,
+        "defense": 4000,
+        "speed": 230
+      }
+    },
+    {
+      "chapter": 41,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 155495,
+        "attack": 13645,
+        "defense": 4260,
+        "speed": 234
+      }
+    },
+    {
+      "chapter": 42,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 172710,
+        "attack": 14890,
+        "defense": 4535,
+        "speed": 235
+      }
+    },
+    {
+      "chapter": 43,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 191825,
+        "attack": 16255,
+        "defense": 4830,
+        "speed": 238
+      }
+    },
+    {
+      "chapter": 44,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 213060,
+        "attack": 17740,
+        "defense": 5145,
+        "speed": 240
+      }
+    },
+    {
+      "chapter": 45,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 236645,
+        "attack": 19365,
+        "defense": 5475,
+        "speed": 243
+      }
+    },
+    {
+      "chapter": 46,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 262835,
+        "attack": 21135,
+        "defense": 5835,
+        "speed": 246
+      }
+    },
+    {
+      "chapter": 47,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 291930,
+        "attack": 23070,
+        "defense": 6210,
+        "speed": 248
+      }
+    },
+    {
+      "chapter": 48,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 324245,
+        "attack": 25180,
+        "defense": 6615,
+        "speed": 251
+      }
+    },
+    {
+      "chapter": 49,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 2,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 360135,
+        "attack": 27485,
+        "defense": 7045,
+        "speed": 253
+      }
+    },
+    {
+      "chapter": 50,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 400000,
+        "attack": 30000,
+        "defense": 7500,
+        "speed": 256
+      }
+    },
+    {
+      "chapter": 51,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 446450,
+        "attack": 33090,
+        "defense": 7955,
+        "speed": 259
+      }
+    },
+    {
+      "chapter": 52,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 498290,
+        "attack": 36500,
+        "defense": 8435,
+        "speed": 261
+      }
+    },
+    {
+      "chapter": 53,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 556155,
+        "attack": 40265,
+        "defense": 8945,
+        "speed": 264
+      }
+    },
+    {
+      "chapter": 54,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 620740,
+        "attack": 44415,
+        "defense": 9490,
+        "speed": 266
+      }
+    },
+    {
+      "chapter": 55,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 692820,
+        "attack": 48990,
+        "defense": 10060,
+        "speed": 269
+      }
+    },
+    {
+      "chapter": 56,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 773275,
+        "attack": 54040,
+        "defense": 10670,
+        "speed": 272
+      }
+    },
+    {
+      "chapter": 57,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 863070,
+        "attack": 59605,
+        "defense": 11320,
+        "speed": 274
+      }
+    },
+    {
+      "chapter": 58,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 963290,
+        "attack": 65750,
+        "defense": 12005,
+        "speed": 277
+      }
+    },
+    {
+      "chapter": 59,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1075150,
+        "attack": 72525,
+        "defense": 12730,
+        "speed": 278
+      }
+    },
+    {
+      "chapter": 60,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1200000,
+        "attack": 80000,
+        "defense": 13500,
+        "speed": 282
+      }
+    },
+    {
+      "chapter": 61,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1335580,
+        "attack": 88105,
+        "defense": 14210,
+        "speed": 285
+      }
+    },
+    {
+      "chapter": 62,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1486480,
+        "attack": 97030,
+        "defense": 14950,
+        "speed": 286
+      }
+    },
+    {
+      "chapter": 63,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1654425,
+        "attack": 106865,
+        "defense": 15735,
+        "speed": 290
+      }
+    },
+    {
+      "chapter": 64,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 1841350,
+        "attack": 117690,
+        "defense": 16560,
+        "speed": 291
+      }
+    },
+    {
+      "chapter": 65,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 2049390,
+        "attack": 129615,
+        "defense": 17430,
+        "speed": 294
+      }
+    },
+    {
+      "chapter": 66,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 2280935,
+        "attack": 142745,
+        "defense": 18340,
+        "speed": 298
+      }
+    },
+    {
+      "chapter": 67,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 2538645,
+        "attack": 157210,
+        "defense": 19305,
+        "speed": 299
+      }
+    },
+    {
+      "chapter": 68,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 2825470,
+        "attack": 173140,
+        "defense": 20315,
+        "speed": 302
+      }
+    },
+    {
+      "chapter": 69,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 3144700,
+        "attack": 190680,
+        "defense": 21380,
+        "speed": 304
+      }
+    },
+    {
+      "chapter": 70,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.05,
+      "enemy": {
+        "maxHealth": 3500000,
+        "attack": 210000,
+        "defense": 22500,
+        "speed": 307
+      }
+    },
+    {
+      "chapter": 71,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 3906430,
+        "attack": 231225,
+        "defense": 23585,
+        "speed": 310
+      }
+    },
+    {
+      "chapter": 72,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 4360060,
+        "attack": 254595,
+        "defense": 24720,
+        "speed": 312
+      }
+    },
+    {
+      "chapter": 73,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 4866360,
+        "attack": 280325,
+        "defense": 25905,
+        "speed": 315
+      }
+    },
+    {
+      "chapter": 74,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 5431460,
+        "attack": 308655,
+        "defense": 27155,
+        "speed": 317
+      }
+    },
+    {
+      "chapter": 75,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 6062180,
+        "attack": 339855,
+        "defense": 28460,
+        "speed": 320
+      }
+    },
+    {
+      "chapter": 76,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 6766135,
+        "attack": 374200,
+        "defense": 29830,
+        "speed": 323
+      }
+    },
+    {
+      "chapter": 77,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 7551840,
+        "attack": 412020,
+        "defense": 31265,
+        "speed": 325
+      }
+    },
+    {
+      "chapter": 78,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 8428785,
+        "attack": 453665,
+        "defense": 32770,
+        "speed": 328
+      }
+    },
+    {
+      "chapter": 79,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 9407565,
+        "attack": 499515,
+        "defense": 34345,
+        "speed": 330
+      }
+    },
+    {
+      "chapter": 80,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 10500000,
+        "attack": 550000,
+        "defense": 36000,
+        "speed": 333
+      }
+    },
+    {
+      "chapter": 81,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 11737765,
+        "attack": 608045,
+        "defense": 37560,
+        "speed": 336
+      }
+    },
+    {
+      "chapter": 82,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 13121440,
+        "attack": 672215,
+        "defense": 39185,
+        "speed": 338
+      }
+    },
+    {
+      "chapter": 83,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 14668225,
+        "attack": 743160,
+        "defense": 40880,
+        "speed": 341
+      }
+    },
+    {
+      "chapter": 84,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 16397345,
+        "attack": 821590,
+        "defense": 42650,
+        "speed": 342
+      }
+    },
+    {
+      "chapter": 85,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 18330305,
+        "attack": 908295,
+        "defense": 44495,
+        "speed": 346
+      }
+    },
+    {
+      "chapter": 86,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 20491120,
+        "attack": 1004155,
+        "defense": 46425,
+        "speed": 349
+      }
+    },
+    {
+      "chapter": 87,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 22906660,
+        "attack": 1110125,
+        "defense": 48435,
+        "speed": 350
+      }
+    },
+    {
+      "chapter": 88,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 25606950,
+        "attack": 1227285,
+        "defense": 50530,
+        "speed": 354
+      }
+    },
+    {
+      "chapter": 89,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 28625555,
+        "attack": 1356810,
+        "defense": 52720,
+        "speed": 355
+      }
+    },
+    {
+      "chapter": 90,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 32000000,
+        "attack": 1500000,
+        "defense": 55000,
+        "speed": 358
+      }
+    },
+    {
+      "chapter": 91,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 35862040,
+        "attack": 1658670,
+        "defense": 57275,
+        "speed": 362
+      }
+    },
+    {
+      "chapter": 92,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 40190185,
+        "attack": 1834130,
+        "defense": 59645,
+        "speed": 363
+      }
+    },
+    {
+      "chapter": 93,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 45040685,
+        "attack": 2028145,
+        "defense": 62115,
+        "speed": 366
+      }
+    },
+    {
+      "chapter": 94,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 50476590,
+        "attack": 2242685,
+        "defense": 64685,
+        "speed": 368
+      }
+    },
+    {
+      "chapter": 95,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 56568540,
+        "attack": 2479920,
+        "defense": 67360,
+        "speed": 371
+      }
+    },
+    {
+      "chapter": 96,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 63395730,
+        "attack": 2742250,
+        "defense": 70150,
+        "speed": 374
+      }
+    },
+    {
+      "chapter": 97,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 71046875,
+        "attack": 3032325,
+        "defense": 73050,
+        "speed": 376
+      }
+    },
+    {
+      "chapter": 98,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 79621435,
+        "attack": 3353090,
+        "defense": 76075,
+        "speed": 379
+      }
+    },
+    {
+      "chapter": 99,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 89230845,
+        "attack": 3707785,
+        "defense": 79220,
+        "speed": 381
+      }
+    },
+    {
+      "chapter": 100,
+      "stages": 64,
+      "eliteEvery": 4,
+      "eliteEnemyCount": 3,
+      "stageGrowth": 0.06,
+      "enemy": {
+        "maxHealth": 100000000,
+        "attack": 4100000,
+        "defense": 82500,
+        "speed": 384
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+export const DAILY_CHECK_IN_REWARD = 1600
