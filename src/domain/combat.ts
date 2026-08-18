@@ -260,7 +260,7 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
     ? {
       id: activeSkill.id,
       name: activeSkill.name,
-      rageSpent: 100,
+      rageSpent: rageBeforeSkill,
       multiplier: Math.round(rageMultiplier * 100) / 100,
       weaponAffinityActive,
       weaponAffinityDamageMultiplier,
@@ -268,7 +268,7 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
     }
     : undefined
   if (skillAction) {
-    encounter.playerRage -= skillAction.rageSpent
+    encounter.playerRage = 0
     encounter.logs.push(`${attackerName}施展${skillAction.name}，怒气倍率 x${skillAction.multiplier.toFixed(2)}。`)
     if (skillAction.weaponAffinityActive) encounter.logs.push('所持兵器与外功相契，招式威力更盛。')
   }
@@ -368,9 +368,9 @@ function selectPlayerSkill(encounter: Encounter, attacker: CombatantRef, isCount
   return encounter.playerOuterSkills[index]
 }
 
-function grantRageAfterAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef, outcome: CombatAction['outcome']): void {
-  if (outcome === 'stunned') return
-  if (attacker.side === 'player') encounter.playerRage += 50
+function grantRageAfterAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef, action: CombatAction): void {
+  if (action.outcome === 'stunned') return
+  if (attacker.side === 'player' && !action.skill) encounter.playerRage += 50
   if (defender.side === 'player') encounter.playerRage += 25
 }
 
@@ -402,7 +402,7 @@ export function advanceEncounterAction(encounter: Encounter, playerStats?: Comba
     }
 
     const resolution = performAttack(next, attackerRef, defenderRef, turnAction.isCounter, random, selectPlayerSkill(next, attackerRef, turnAction.isCounter))
-    grantRageAfterAction(next, attackerRef, defenderRef, resolution.action.outcome)
+    grantRageAfterAction(next, attackerRef, defenderRef, resolution.action)
     const finished = finishIfDefeated(next)
     if (!finished && resolution.counterRequested) next.actionQueue.unshift(counterTurnAction(next, defenderRef, attackerRef))
     if (!finished && !next.actionQueue.length && next.round >= next.maxRounds) {

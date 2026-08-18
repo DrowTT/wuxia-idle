@@ -578,7 +578,7 @@ describe('combat', () => {
     expect(step.action?.outcome).toBe('dodge')
   })
 
-  it('uses overflow rage as the active skill multiplier and retains the remainder after casting', () => {
+  it('uses all overflow rage as the active skill multiplier and clears it after casting', () => {
     const playerStats = createCombatStats({ maxHealth: 1_000, attack: 10, speed: 100, hitRate: 100 })
     const enemyStats = createCombatStats({ maxHealth: 10_000, attack: 10, speed: 200, hitRate: 100 })
     let encounter = createEncounter({
@@ -593,8 +593,42 @@ describe('combat', () => {
     encounter = advanceEncounterAction(encounter).encounter
     expect(encounter.playerRage).toBe(125)
     const skillStep = advanceEncounterAction(encounter)
-    expect(skillStep.action?.skill).toMatchObject({ id: 'test-skill', rageSpent: 100, multiplier: 1.25 })
-    expect(skillStep.encounter.playerRage).toBe(75)
+    expect(skillStep.action?.skill).toMatchObject({ id: 'test-skill', rageSpent: 125, multiplier: 1.25 })
+    expect(skillStep.encounter.playerRage).toBe(0)
+  })
+
+  it('alternates outer skills only after rage is rebuilt by a normal attack', () => {
+    const playerStats = createCombatStats({ maxHealth: 1_000, attack: 1, speed: 200, hitRate: 100 })
+    const enemyStats = createCombatStats({ maxHealth: 10_000, attack: 1, speed: 100, hitRate: 100 })
+    let encounter = createEncounter({
+      playerStats,
+      enemyStats,
+      playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
+      playerOuterSkills: [
+        { id: 'first', name: '第一式', description: '', damageMultiplier: 1.5 },
+        { id: 'second', name: '第二式', description: '', damageMultiplier: 1.5 },
+      ],
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+
+    const firstSkill = advanceEncounterAction(encounter)
+    expect(firstSkill.action?.skill?.id).toBe('first')
+    expect(firstSkill.encounter.playerRage).toBe(0)
+
+    const enemyAfterFirstSkill = advanceEncounterAction(firstSkill.encounter)
+    expect(enemyAfterFirstSkill.encounter.playerRage).toBe(25)
+
+    const normalAttack = advanceEncounterAction(enemyAfterFirstSkill.encounter)
+    expect(normalAttack.action?.skill).toBeUndefined()
+    expect(normalAttack.encounter.playerRage).toBe(75)
+
+    const enemyAfterNormalAttack = advanceEncounterAction(normalAttack.encounter)
+    expect(enemyAfterNormalAttack.encounter.playerRage).toBe(100)
+
+    const secondSkill = advanceEncounterAction(enemyAfterNormalAttack.encounter)
+    expect(secondSkill.action?.skill?.id).toBe('second')
+    expect(secondSkill.encounter.playerRage).toBe(0)
   })
 
   it('applies weapon affinity only to active skill damage', () => {
