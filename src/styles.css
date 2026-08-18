@@ -356,9 +356,8 @@ h2 { font-size: 17px; }
 .fighter-avatar.player { background: linear-gradient(135deg,#3a9872,#3383a5); }
 .fighter-avatar.enemy { border-radius: 0; background: linear-gradient(135deg,#d34d40,#e32f51); clip-path: polygon(50% 0,90% 27%,90% 82%,50% 100%,10% 82%,10% 27%); }
 .combat-skill-bubble { position: absolute; z-index: 3; top: -30px; left: calc(100% + 8px); display: inline-flex; align-items: center; gap: 4px; width: max-content; max-width: min(116px, calc(100vw - 64px)); padding: 5px 8px; border: 1px solid #e8bb73; border-radius: 5px; background: #fffdf8; box-shadow: 0 3px 10px rgb(128 87 25 / 15%); color: #a9681d; font-size: 11px; line-height: 1.2; pointer-events: none; animation: combat-skill-bubble-in .24s ease-out; }
-.combat-skill-bubble::before, .combat-skill-bubble::after { position: absolute; z-index: 0; width: 0; height: 0; border-style: solid; content: ''; }
-.combat-skill-bubble::before { bottom: -9px; left: -9px; border-width: 9px 13px 0 0; border-color: #e8bb73 transparent transparent transparent; }
-.combat-skill-bubble::after { bottom: -7px; left: -8px; border-width: 7px 10px 0 0; border-color: #fffdf8 transparent transparent transparent; }
+/* Matches Element Plus's popper-arrow construction: one bordered, rotated square. */
+.combat-skill-bubble::before { position: absolute; z-index: -1; bottom: -6px; left: -6px; box-sizing: border-box; width: 10px; height: 10px; border: 1px solid #e8bb73; border-top-color: transparent; border-left-color: transparent; border-bottom-right-radius: 2px; background: #fffdf8; content: ''; transform: rotate(45deg); }
 .combat-skill-bubble svg, .combat-skill-bubble b { position: relative; z-index: 1; }
 .combat-skill-bubble b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hp { width: min(135px,100%); height: 8px; overflow: hidden; border-radius: 8px; background: #ded9cf; }
