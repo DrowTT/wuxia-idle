@@ -355,8 +355,8 @@ h2 { font-size: 17px; }
 .fighter-avatar { width: 65px; height: 65px; display: grid; place-items: center; border-radius: 13px; color: white; font-family: var(--newsprint-serif); font-size: 25px; font-weight: 700; }
 .fighter-avatar.player { background: linear-gradient(135deg,#3a9872,#3383a5); }
 .fighter-avatar.enemy { border-radius: 0; background: linear-gradient(135deg,#d34d40,#e32f51); clip-path: polygon(50% 0,90% 27%,90% 82%,50% 100%,10% 82%,10% 27%); }
-.combat-skill-bubble { position: absolute; z-index: 3; bottom: calc(100% + 5px); left: 50%; display: inline-flex; align-items: center; gap: 4px; width: max-content; max-width: min(140px, calc(100vw - 64px)); padding: 5px 8px; border: 1px solid #e8bb73; border-radius: 5px; background: #fffdf8; box-shadow: 0 3px 10px rgb(128 87 25 / 15%); color: #a9681d; font-size: 11px; line-height: 1.2; pointer-events: none; transform: translateX(-50%); animation: combat-skill-bubble-in .24s ease-out; }
-.combat-skill-bubble::after { position: absolute; bottom: -5px; left: 50%; width: 8px; height: 8px; border-right: 1px solid #e8bb73; border-bottom: 1px solid #e8bb73; background: #fffdf8; content: ''; transform: translateX(-50%) rotate(45deg); }
+.combat-skill-bubble { position: absolute; z-index: 3; top: -12px; left: calc(100% + 8px); display: inline-flex; align-items: center; gap: 4px; width: max-content; max-width: min(116px, calc(100vw - 64px)); padding: 5px 8px; border: 1px solid #e8bb73; border-radius: 5px; background: #fffdf8; box-shadow: 0 3px 10px rgb(128 87 25 / 15%); color: #a9681d; font-size: 11px; line-height: 1.2; pointer-events: none; animation: combat-skill-bubble-in .24s ease-out; }
+.combat-skill-bubble::after { position: absolute; top: 50%; left: -5px; width: 8px; height: 8px; border-bottom: 1px solid #e8bb73; border-left: 1px solid #e8bb73; background: #fffdf8; content: ''; transform: translateY(-50%) rotate(45deg); }
 .combat-skill-bubble svg, .combat-skill-bubble b { position: relative; z-index: 1; }
 .combat-skill-bubble b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hp { width: min(135px,100%); height: 8px; overflow: hidden; border-radius: 8px; background: #ded9cf; }
@@ -890,8 +890,8 @@ h1, h2 { font-family: var(--newsprint-serif); font-weight: 600; }
   100% { opacity: 0; transform: translate(-50%, -30px) scale(1.02); }
 }
 @keyframes combat-skill-bubble-in {
-  from { opacity: 0; transform: translate(-50%, 7px) scale(.9); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  from { opacity: 0; transform: translate(-6px, 5px) scale(.9); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
