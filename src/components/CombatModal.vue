@@ -23,6 +23,11 @@ const activeEnemies = computed(() => {
 })
 const playerHp = computed(() => props.encounter?.playerHp ?? activePlayerStats.value.maxHealth)
 const enemyCountLabel = computed(() => activeEnemies.value.length > 1 ? `敌方 ${activeEnemies.value.length} 人` : '敌方 1 人')
+const playerSkillAction = computed(() => {
+  const action = props.action
+  if (!action?.skill || action.attacker.side !== 'player') return null
+  return { sequence: action.sequence, name: action.skill.name }
+})
 
 function updateVisibility(visible: boolean): void {
   if (!visible) emit('close')
@@ -112,11 +117,13 @@ function feedbackText(target: 'player' | string): string {
         <span>第 {{ encounter.round || 1 }} / {{ encounter.maxRounds }} 回合</span>
         <el-tag size="small" :type="encounter.status === 'won' ? 'success' : encounter.status === 'lost' ? 'danger' : 'primary'">{{ combatStatusLabel(encounter) }}</el-tag>
       </div>
-      <div v-if="action?.skill" class="combat-skill-callout"><Swords :size="14" /><b>{{ action.skill.name }}</b><span v-if="action.skill.weaponAffinityActive" class="combat-skill-affinity">兵器契合 x{{ action.skill.weaponAffinityDamageMultiplier.toFixed(2) }}</span><span class="combat-skill-rage">怒气倍率 x{{ action.skill.multiplier.toFixed(2) }}</span></div>
       <div class="combat-board" :class="{ 'multi-enemy': activeEnemies.length > 1 }">
         <div class="fighter player-fighter">
           <strong>{{ player.name }}</strong>
-          <span :key="animationKey('player')" class="fighter-avatar player" :class="animationClass('player')">沈</span>
+          <span class="fighter-avatar-wrap">
+            <span :key="animationKey('player')" class="fighter-avatar player" :class="animationClass('player')">沈</span>
+            <span v-if="playerSkillAction" :key="`skill-${playerSkillAction.sequence}`" class="combat-skill-bubble"><Swords :size="12" /><b>{{ playerSkillAction.name }}</b></span>
+          </span>
           <span v-if="feedbackText('player')" :key="`feedback-${animationKey('player')}`" class="combat-feedback" :class="{ critical: action?.isCritical }">{{ feedbackText('player') }}</span>
           <div class="fighter-health progress-meter" :aria-label="`生命 ${playerHp} / ${encounter.playerMaxHealth}`"><el-progress :percentage="healthPercentage(playerHp, encounter.playerMaxHealth)" :show-text="false" :stroke-width="8" /><span class="progress-meter-value">{{ playerHp.toLocaleString() }} / {{ encounter.playerMaxHealth.toLocaleString() }}</span></div>
           <div class="fighter-rage" :aria-label="`怒气 ${encounter.playerRage} / 100`"><div class="progress-meter"><el-progress :percentage="Math.min(100, encounter.playerRage)" :show-text="false" :stroke-width="6" color="#e49a35" /><span class="progress-meter-value">{{ encounter.playerRage }} / 100</span></div></div>
