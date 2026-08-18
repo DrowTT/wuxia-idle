@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { UserRound } from '@lucide/vue'
 import { advanceEncounterAction, createEncounter } from './domain/combat'
-import { AUTO_PRACTICE_INTERVAL_MS, accrueInnerForce, advanceMainJourney, breakThroughRealm, canBreakThrough, claimDailyCheckIn, composeLotteryEquipment, createInitialGame, drawLottery, enhanceMartialArt, equipPlayerEquipment, equipPlayerMartialArt, getCombatPower, getCurrentMainStage, getInnerForceRate, getMainStageByOrdinal, getMainStageReplayReward, getMartialEnhancementCost, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getRealm, hasClearedMainStage, isPracticeComplete, loadGame, practiceOnce, prependGameLog, saveGame, unequipPlayerEquipment, unequipPlayerMartialArt } from './domain/game'
+import { AUTO_PRACTICE_INTERVAL_MS, accrueInnerForce, advanceMainJourney, breakThroughRealm, canBreakThrough, claimDailyCheckIn, createInitialGame, drawLottery, enhanceEquipment, enhanceMartialArt, equipPlayerEquipment, equipPlayerMartialArt, getCombatPower, getCurrentMainStage, getEquipmentEnhancementCost, getInnerForceRate, getMainStageByOrdinal, getMainStageReplayReward, getMartialEnhancementCost, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getRealm, hasClearedMainStage, isPracticeComplete, loadGame, practiceOnce, prependGameLog, saveGame, unequipPlayerEquipment, unequipPlayerMartialArt } from './domain/game'
 import type { BattleReward, CombatAction, CombatTarget, Encounter, Equipment, EquipmentSlot, GameState, LotteryDrawCount, LotteryDrawResult, LotteryPoolId, MainStage, MainStageReward, MartialArt, MartialArtSlot, ViewId } from './domain/types'
 import GameHeader from './components/GameHeader.vue'
 import GameNav from './components/GameNav.vue'
@@ -371,6 +371,19 @@ function enhanceMartial(art: MartialArt): void {
   notify(`${art.name}强化成功，吐纳效率已提高。`)
 }
 
+function enhanceEquipmentItem(equipment: Equipment): void {
+  const cost = getEquipmentEnhancementCost(game.value.player, equipment)
+  const result = enhanceEquipment(game.value.player, equipment)
+  if (!result) {
+    notify(game.value.player.forge < cost ? '铸材不足，先去闯荡积累。' : '这件装备已强化至满级。')
+    return
+  }
+  game.value.player = result
+  addPracticeLog(`你淬炼${equipment.name}，装备锋芒更盛。`, `-${cost} 铸材`)
+  persist()
+  notify(`${equipment.name}强化成功。`)
+}
+
 function startLotteryDraw(pool: LotteryPoolId, count: LotteryDrawCount): void {
   const outcome = drawLottery(game.value.player, game.value.lottery, pool, count)
   if (!outcome) {
@@ -381,25 +394,6 @@ function startLotteryDraw(pool: LotteryPoolId, count: LotteryDrawCount): void {
   game.value.lottery = outcome.lottery
   lotteryDrawResult.value = outcome.result
   persist()
-}
-
-function composeLotteryFragment(equipmentId: string): void {
-  const outcome = composeLotteryEquipment(game.value.player, game.value.lottery, equipmentId)
-  if (!outcome) {
-    notify('碎片尚未集齐。')
-    return
-  }
-  game.value.player = outcome.player
-  game.value.lottery = outcome.lottery
-  game.value.logs = prependGameLog(game.value.logs, {
-    id: `compose-${Date.now()}`,
-    category: '收获',
-    time: '刚才',
-    text: `你以碎片合成了${outcome.equipment.name}。`,
-    reward: `+${outcome.equipment.name}`,
-  })
-  persist()
-  notify(`${outcome.equipment.name}已收入背包。`)
 }
 
 function resetLocalSave(): void {
@@ -441,7 +435,7 @@ onBeforeUnmount(() => {
         <header class="view-heading"><div><span class="kicker">{{ viewMeta[activeView].hint }}</span><h1>{{ viewMeta[activeView].label }}</h1></div><span class="save-state">● 本地习武记录已保存</span></header>
         <PracticeView v-if="activeView === 'practice'" :game="game" @practice="practiceCultivation" @breakthrough="breakThroughCultivation" @toggle-auto="toggleAutoCultivation" @claim-daily-check-in="claimDailyCheckInReward" @navigate="setView" />
         <JourneyView v-else-if="activeView === 'journey'" :game="game" :player-power="playerPower" :player-stats="playerCombatStats" :auto-battle-active="autoBattleActive" @battle-main="openMainBattle" @start-battle-main="startMainBattle" @toggle-auto-battle="toggleAutoBattle" />
-        <BagView v-else-if="activeView === 'bag'" :game="game" @equip-equipment="equipEquipment" @unequip-equipment="unequipEquipment" @compose-fragment="composeLotteryFragment" @equip-martial="equipMartialArt" @unequip-martial="unequipMartialArt" @enhance-art="enhanceMartial" />
+        <BagView v-else-if="activeView === 'bag'" :game="game" @equip-equipment="equipEquipment" @unequip-equipment="unequipEquipment" @enhance-equipment="enhanceEquipmentItem" @equip-martial="equipMartialArt" @unequip-martial="unequipMartialArt" @enhance-art="enhanceMartial" />
         <LotteryView v-else :game="game" :draw-result="lotteryDrawResult" @draw="startLotteryDraw" />
       </main>
     </div>

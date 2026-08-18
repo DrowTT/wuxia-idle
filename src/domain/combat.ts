@@ -7,6 +7,7 @@ type CombatantRef = { side: 'player' } | { side: 'enemy'; enemyIndex: number }
 interface AttackResolution {
   action: CombatAction
   counterRequested: boolean
+  comboRequested: boolean
 }
 
 export interface EncounterStep {
@@ -29,6 +30,38 @@ function randomFactor(random: () => number): number {
 
 function createEffects(): CombatEffectState {
   return { guaranteedHit: 0, guaranteedDodge: 0, stunnedFor: 0 }
+}
+
+function isSupportedPlayerPassive(effect: CombatPassiveEffect | undefined): effect is CombatPassiveEffect {
+  if (!effect) return false
+  return effect.kind === 'survive-lethal'
+    || effect.kind === 'battle-start-rage'
+    || effect.kind === 'battle-start-dodge'
+    || effect.kind === 'damage-bonus-for-rounds'
+    || effect.kind === 'damage-reduction-for-rounds'
+    || effect.kind === 'damage-immunity-for-rounds'
+    || effect.kind === 'combo-bonus-for-rounds'
+    || effect.kind === 'block-enemy-actions-for-rounds'
+}
+
+function passiveRounds(effect: CombatPassiveEffect): number {
+  return Number.isFinite(effect.duration) ? Math.max(0, Math.floor(effect.duration!)) : 0
+}
+
+function passiveValue(effect: CombatPassiveEffect): number {
+  return Number.isFinite(effect.value) ? Math.max(0, effect.value) : 0
+}
+
+function activeRoundPassiveValue(encounter: Encounter, kind: CombatPassiveEffect['kind']): number {
+  if (encounter.round <= 0) return 0
+  return encounter.playerPassives.reduce((total, effect) => {
+    if (effect.kind !== kind || encounter.round > passiveRounds(effect)) return total
+    return total + passiveValue(effect)
+  }, 0)
+}
+
+function hasActiveRoundPassive(encounter: Encounter, kind: CombatPassiveEffect['kind']): boolean {
+  return encounter.round > 0 && encounter.playerPassives.some((effect) => effect.kind === kind && encounter.round <= passiveRounds(effect))
 }
 
 function legacyStatsFromPower(power: number): CombatStats {
@@ -91,17 +124,21 @@ export function createEncounter({ enemyName, enemyPower = 0, playerStats, player
     seenEnemyIds.add(id)
     return { ...normalized, id }
   })
-  const passiveEffects = playerPassives.filter((effect): effect is CombatPassiveEffect => effect && (effect.kind === 'survive-lethal' || effect.kind === 'battle-start-rage'))
-  const startingRage = passiveEffects.reduce((total, effect) => total + (effect.kind === 'battle-start-rage' ? Math.max(0, effect.value) : 0), 0)
+  const passiveEffects = playerPassives.filter(isSupportedPlayerPassive).map((effect) => ({ ...effect }))
+  const startingRage = passiveEffects.reduce((total, effect) => total + (effect.kind === 'battle-start-rage' ? passiveValue(effect) : 0), 0)
+  const startingDodge = passiveEffects.reduce((total, effect) => total + (effect.kind === 'battle-start-dodge' ? Math.floor(passiveValue(effect)) : 0), 0)
+  const enemyActionBlockedUntilRound = passiveEffects.reduce((latest, effect) => effect.kind === 'block-enemy-actions-for-rounds' ? Math.max(latest, passiveRounds(effect)) : latest, 0)
   return {
     kind,
     enemyName: enemyName ?? resolvedEnemies.map((enemy) => enemy.name).join('、'),
     enemyPower: resolvedEnemies.reduce((total, enemy) => total + getCombatPower(enemy.stats), 0),
     playerStats: resolvedPlayerStats,
-    playerEffects: createEffects(),
+    playerPassives: passiveEffects,
+    playerEffects: { ...createEffects(), guaranteedDodge: startingDodge },
     playerMaxHealth: resolvedPlayerStats.maxHealth,
     playerRage: startingRage,
-    playerLethalGuardCharges: passiveEffects.filter((effect) => effect.kind === 'survive-lethal').reduce((total, effect) => total + Math.max(0, Math.floor(effect.value)), 0),
+    playerLethalGuardCharges: passiveEffects.filter((effect) => effect.kind === 'survive-lethal').reduce((total, effect) => total + Math.floor(passiveValue(effect)), 0),
+    enemyActionBlockedUntilRound,
     playerOuterSkills: playerOuterSkills.map((skill) => ({ ...skill })),
     nextOuterSkillIndex: 0,
     round: 0,
@@ -160,10 +197,10 @@ function isAlive(encounter: Encounter, combatant: CombatantRef): boolean {
   return hpFor(encounter, combatant) > 0
 }
 
-function toTurnAction(encounter: Encounter, combatant: CombatantRef, isCounter = false): EncounterTurnAction {
+function toTurnAction(encounter: Encounter, combatant: CombatantRef, isCounter = false, isCombo = false): EncounterTurnAction {
   return combatant.side === 'player'
-    ? { side: 'player', isCounter }
-    : { side: 'enemy', enemyId: encounter.enemies[combatant.enemyIndex]!.id, isCounter }
+    ? { side: 'player', isCounter, ...(isCombo ? { isCombo: true } : {}) }
+    : { side: 'enemy', enemyId: encounter.enemies[combatant.enemyIndex]!.id, isCounter, ...(isCombo ? { isCombo: true } : {}) }
 }
 
 function toCombatantRef(encounter: Encounter, action: EncounterTurnAction): CombatantRef | null {
@@ -176,6 +213,14 @@ function counterTurnAction(encounter: Encounter, counterAttacker: CombatantRef, 
   const action = toTurnAction(encounter, counterAttacker, true)
   if (counterAttacker.side === 'player' && originalAttacker.side === 'enemy') {
     action.targetEnemyId = encounter.enemies[originalAttacker.enemyIndex]!.id
+  }
+  return action
+}
+
+function comboTurnAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef): EncounterTurnAction {
+  const action = toTurnAction(encounter, attacker, false, true)
+  if (attacker.side === 'player' && defender.side === 'enemy') {
+    action.targetEnemyId = encounter.enemies[defender.enemyIndex]!.id
   }
   return action
 }
@@ -223,7 +268,7 @@ function finishIfDefeated(encounter: Encounter): boolean {
   return false
 }
 
-function createCombatAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef, outcome: CombatAction['outcome'], damage: number, isCritical: boolean, isCounter: boolean, skill?: CombatAction['skill']): CombatAction {
+function createCombatAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef, outcome: CombatAction['outcome'], damage: number, isCritical: boolean, isCounter: boolean, skill?: CombatAction['skill'], isCombo = false): CombatAction {
   encounter.actionSequence += 1
   return {
     sequence: encounter.actionSequence,
@@ -232,11 +277,12 @@ function createCombatAction(encounter: Encounter, attacker: CombatantRef, defend
     outcome,
     damage,
     isCritical,
+    ...(isCombo ? { isCombo: true } : {}),
     ...(skill ? { skill } : {}),
   }
 }
 
-function performAttack(encounter: Encounter, attackerRef: CombatantRef, defenderRef: CombatantRef, isCounter: boolean, random: () => number, skill?: MartialActiveSkill): AttackResolution {
+function performAttack(encounter: Encounter, attackerRef: CombatantRef, defenderRef: CombatantRef, isCounter: boolean, random: () => number, skill?: MartialActiveSkill, isCombo = false): AttackResolution {
   const attacker = statsFor(encounter, attackerRef)
   const defender = statsFor(encounter, defenderRef)
   const attackerEffects = effectsFor(encounter, attackerRef)
@@ -249,7 +295,12 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
   if (attackerEffects.stunnedFor > 0) {
     attackerEffects.stunnedFor -= 1
     encounter.logs.push(`${attackerName}陷入眩晕，无法出手。`)
-    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'stunned', 0, false, isCounter), counterRequested: false }
+    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'stunned', 0, false, isCounter, undefined, isCombo), counterRequested: false, comboRequested: false }
+  }
+
+  if (attackerRef.side === 'enemy' && encounter.round <= encounter.enemyActionBlockedUntilRound) {
+    encounter.logs.push(`${attackerName}被压制，无法行动。`)
+    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'stunned', 0, false, isCounter, undefined, isCombo), counterRequested: false, comboRequested: false }
   }
 
   const activeSkill = skill && rageBeforeSkill >= 100 ? skill : undefined
@@ -276,7 +327,12 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
   const hit = resolveHit(attacker, defender, attackerEffects, defenderEffects, random, Boolean(activeSkill?.guaranteedHit))
   if (!hit.hit) {
     encounter.logs.push(hit.guaranteed ? `${defenderName}身形一晃，避开了${attackerName}的必中一击。` : `${attackerName}一招落空，被${defenderName}闪开。`)
-    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'dodge', 0, false, isCounter, skillAction), counterRequested: false }
+    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'dodge', 0, false, isCounter, skillAction, isCombo), counterRequested: false, comboRequested: false }
+  }
+
+  if (defenderRef.side === 'player' && hasActiveRoundPassive(encounter, 'damage-immunity-for-rounds')) {
+    encounter.logs.push(`${defenderName}护体无伤，化解了${attackerName}的攻势。`)
+    return { action: createCombatAction(encounter, attackerRef, defenderRef, 'immune', 0, false, isCounter, skillAction, isCombo), counterRequested: false, comboRequested: false }
   }
 
   const effectiveCritRate = clamp(attacker.critRate + (skillAction ? (skill?.bonusCritRate ?? 0) * weaponAffinityEffectMultiplier : 0) - defender.critResist, 0, 100)
@@ -287,19 +343,22 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
   const criticalMultiplier = critical
     ? 1 + ((attacker.critDamage - 100) / 100) * (1 - defender.critDamageReduction / 100)
     : 1
-  const damageMultiplier = (1 + attacker.damageBonus / 100) * (1 - defender.damageReduction / 100) * (skillAction ? (skill?.damageMultiplier ?? 1) * rageMultiplier * weaponAffinityDamageMultiplier : 1)
+  const roundDamageBonus = attackerRef.side === 'player' ? activeRoundPassiveValue(encounter, 'damage-bonus-for-rounds') : 0
+  const roundDamageReduction = defenderRef.side === 'player' ? activeRoundPassiveValue(encounter, 'damage-reduction-for-rounds') : 0
+  const effectiveDamageBonus = attacker.damageBonus + roundDamageBonus
+  const effectiveDamageReduction = clamp(defender.damageReduction + roundDamageReduction, 0, 100)
+  const damageMultiplier = (1 + effectiveDamageBonus / 100) * (1 - effectiveDamageReduction / 100)
+    * (skillAction ? (skill?.damageMultiplier ?? 1) * rageMultiplier * weaponAffinityDamageMultiplier : 1)
+    * (isCombo ? COMBAT_BALANCE.comboDamageMultiplier : 1)
   const baseDamage = Math.max(1, Math.round(attacker.attack * COMBAT_BALANCE.baseDamageMultiplier * defenseMultiplier * criticalMultiplier * damageMultiplier * randomFactor(random)))
   let totalDamage = baseDamage
   applyDamage(encounter, defenderRef, baseDamage)
   encounter.logs.push(`${isCounter ? '反击：' : ''}${attackerName}${skillAction ? `以${skillAction.name}` : ''}命中，造成 ${baseDamage} 点伤害${critical ? '（暴击）' : ''}。`)
 
-  const comboRate = clamp(attacker.comboRate - defender.comboResist, 0, 100)
-  if (isAlive(encounter, defenderRef) && canTrigger(comboRate, random)) {
-    const comboDamage = Math.max(1, Math.round(baseDamage * COMBAT_BALANCE.comboDamageMultiplier))
-    totalDamage += comboDamage
-    applyDamage(encounter, defenderRef, comboDamage)
-    encounter.logs.push(`${attackerName}连招得手，追加 ${comboDamage} 点伤害。`)
-  }
+  const roundComboBonus = attackerRef.side === 'player' ? activeRoundPassiveValue(encounter, 'combo-bonus-for-rounds') : 0
+  const comboRate = clamp(attacker.comboRate + roundComboBonus - defender.comboResist, 0, 100)
+  const comboRequested = !isCombo && isAlive(encounter, defenderRef) && canTrigger(comboRate, random)
+  if (comboRequested) encounter.logs.push(`${attackerName}连击得手，准备再次攻击。`)
 
   const lifestealRate = clamp(attacker.lifestealRate - defender.lifestealResist, 0, 100)
   if (lifestealRate > 0) {
@@ -318,10 +377,10 @@ function performAttack(encounter: Encounter, attackerRef: CombatantRef, defender
   }
 
   const counterRate = clamp(defender.counterRate - attacker.counterResist, 0, 100)
-  const counterRequested = !isCounter && isAlive(encounter, defenderRef) && canTrigger(counterRate, random)
+  const counterRequested = !isCounter && !isCombo && isAlive(encounter, defenderRef) && canTrigger(counterRate, random)
   if (counterRequested) encounter.logs.push(`${defenderName}抓住空隙，发动反击。`)
   if (activeSkill?.grantDodge) attackerEffects.guaranteedDodge += Math.max(0, Math.floor(activeSkill.grantDodge))
-  return { action: createCombatAction(encounter, attackerRef, defenderRef, 'hit', totalDamage, critical, isCounter, skillAction), counterRequested }
+  return { action: createCombatAction(encounter, attackerRef, defenderRef, 'hit', totalDamage, critical, isCounter, skillAction, isCombo), counterRequested, comboRequested }
 }
 
 function getTurnOrder(encounter: Encounter): EncounterTurnAction[] {
@@ -344,6 +403,7 @@ function cloneForStep(encounter: Encounter, playerStats?: CombatStats | number, 
   const next: Encounter = {
     ...encounter,
     playerStats: resolvedPlayerStats,
+    playerPassives: encounter.playerPassives.map((effect) => ({ ...effect })),
     playerEffects: { ...encounter.playerEffects },
     playerOuterSkills: encounter.playerOuterSkills.map((skill) => ({ ...skill })),
     enemies: encounter.enemies.map(cloneEncounterEnemy),
@@ -361,8 +421,8 @@ function cloneForStep(encounter: Encounter, playerStats?: CombatStats | number, 
   return next
 }
 
-function selectPlayerSkill(encounter: Encounter, attacker: CombatantRef, isCounter: boolean): MartialActiveSkill | undefined {
-  if (attacker.side !== 'player' || isCounter || encounter.playerEffects.stunnedFor > 0 || encounter.playerRage < 100 || !encounter.playerOuterSkills.length) return undefined
+function selectPlayerSkill(encounter: Encounter, attacker: CombatantRef, isCounter: boolean, isCombo: boolean): MartialActiveSkill | undefined {
+  if (attacker.side !== 'player' || isCounter || isCombo || encounter.playerEffects.stunnedFor > 0 || encounter.playerRage < 100 || !encounter.playerOuterSkills.length) return undefined
   const index = encounter.nextOuterSkillIndex % encounter.playerOuterSkills.length
   encounter.nextOuterSkillIndex = (index + 1) % encounter.playerOuterSkills.length
   return encounter.playerOuterSkills[index]
@@ -370,6 +430,7 @@ function selectPlayerSkill(encounter: Encounter, attacker: CombatantRef, isCount
 
 function grantRageAfterAction(encounter: Encounter, attacker: CombatantRef, defender: CombatantRef, action: CombatAction): void {
   if (action.outcome === 'stunned') return
+  if (action.isCombo) return
   if (attacker.side === 'player' && !action.skill) encounter.playerRage += 50
   if (defender.side === 'player') encounter.playerRage += 25
 }
@@ -401,10 +462,11 @@ export function advanceEncounterAction(encounter: Encounter, playerStats?: Comba
       break
     }
 
-    const resolution = performAttack(next, attackerRef, defenderRef, turnAction.isCounter, random, selectPlayerSkill(next, attackerRef, turnAction.isCounter))
+    const resolution = performAttack(next, attackerRef, defenderRef, turnAction.isCounter, random, selectPlayerSkill(next, attackerRef, turnAction.isCounter, Boolean(turnAction.isCombo)), Boolean(turnAction.isCombo))
     grantRageAfterAction(next, attackerRef, defenderRef, resolution.action)
     const finished = finishIfDefeated(next)
     if (!finished && resolution.counterRequested) next.actionQueue.unshift(counterTurnAction(next, defenderRef, attackerRef))
+    if (!finished && resolution.comboRequested) next.actionQueue.unshift(comboTurnAction(next, attackerRef, defenderRef))
     if (!finished && !next.actionQueue.length && next.round >= next.maxRounds) {
       next.status = 'draw'
       next.logs.push(`${next.maxRounds} 回合已过，双方暂且罢手。`)

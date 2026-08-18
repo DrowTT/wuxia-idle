@@ -37,7 +37,7 @@ src/
     realms.ts       境界、修炼成长参数
     equipment.ts    装备槽位与装备定义
     martial-arts.ts 功法定义
-    lottery.ts      奖池、概率、碎片与初始拥有内容
+    lottery.ts      奖池、概率与初始拥有内容
     main-story.json 逐章敌人基础属性、关卡规则与奖励参数
     main-story.ts   JSON 配置的校验、查询与派生适配层
     dungeons.ts     秘境内容

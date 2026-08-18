@@ -17,6 +17,8 @@ export type RealmId =
   | 'martial-saint'
   | 'martial-pinnacle'
 export type GradeTone = 'white' | 'green' | 'blue' | 'purple' | 'orange' | 'red'
+export type CoreCombatStat = 'maxHealth' | 'attack' | 'defense' | 'speed'
+export type CombatRateBonuses = Partial<Record<CoreCombatStat, number>>
 export type LotteryPoolId = 'equipment' | 'martial'
 export type LotteryDrawCount = 1 | 10
 export type DungeonTone = 'vermilion' | 'jade' | 'gold'
@@ -43,9 +45,12 @@ export interface Equipment {
   power: number
   gemSlots: number
   weaponStyle?: WeaponStyle
+  /** Percentage multipliers applied to the realm base panel. */
+  combatRates?: CombatRateBonuses
   combatBonuses?: Partial<CombatStats>
   keyword: string
-  description: string
+  /** Narrative background only. Gameplay effects come from structured fields. */
+  lore: string
   setId?: string
 }
 
@@ -53,13 +58,24 @@ export interface CombatPassiveEffect {
   id: string
   label: string
   description: string
-  kind: 'survive-lethal' | 'battle-start-rage'
+  kind:
+    | 'survive-lethal'
+    | 'battle-start-rage'
+    | 'battle-start-dodge'
+    | 'damage-bonus-for-rounds'
+    | 'damage-reduction-for-rounds'
+    | 'damage-immunity-for-rounds'
+    | 'combo-bonus-for-rounds'
+    | 'block-enemy-actions-for-rounds'
   value: number
+  /** Only used by round-limited effects. */
+  duration?: number
 }
 
 export interface EquipmentSetBonus {
   pieces: 3 | 4 | 5 | 6
   description: string
+  combatRates?: CombatRateBonuses
   combatBonuses?: Partial<CombatStats>
   passiveEffects?: readonly CombatPassiveEffect[]
 }
@@ -83,7 +99,6 @@ export type MartialArtLoadout = Record<MartialArtSlot, string | null>
 export interface MartialActiveSkill {
   id: string
   name: string
-  description: string
   damageMultiplier: number
   bonusCritRate?: number
   defensePierceRate?: number
@@ -105,7 +120,8 @@ export interface MartialArt {
   kind: MartialArtKind
   affinityWeaponStyles?: readonly WeaponStyle[]
   keyword: string
-  description: string
+  /** Narrative background only. Gameplay effects come from structured fields. */
+  lore: string
   innerForceRateBase?: number
   innerForceRatePerMastery?: number
   innerForceRateMultiplierBase?: number
@@ -202,6 +218,7 @@ export interface PlayerState {
   forge: number
   insight: number
   fame: number
+  equipmentEnhancements: Record<string, number>
   mastery: Record<string, number>
   equippedEquipment: EquipmentLoadout
   martialLoadout: MartialArtLoadout
@@ -233,7 +250,6 @@ export interface LotteryPity {
 
 export interface LotteryState {
   pity: Record<LotteryPoolId, LotteryPity>
-  fragments: Record<string, number>
   ownedEquipmentIds: string[]
   ownedMartialArtIds: string[]
   history: LotteryReward[]
@@ -242,7 +258,7 @@ export interface LotteryState {
 export interface LotteryReward {
   id: string
   pool: LotteryPoolId
-  kind: 'equipment' | 'martial' | 'fragment' | 'forge' | 'insight'
+  kind: 'equipment' | 'martial' | 'forge' | 'insight'
   itemId?: string
   name: string
   grade: string
@@ -295,15 +311,17 @@ export interface EncounterTurnAction {
   enemyId?: string
   targetEnemyId?: string
   isCounter: boolean
+  isCombo?: boolean
 }
 
 export interface CombatAction {
   sequence: number
   attacker: EncounterTurnAction
   defender: EncounterTurnAction
-  outcome: 'hit' | 'dodge' | 'stunned'
+  outcome: 'hit' | 'dodge' | 'immune' | 'stunned'
   damage: number
   isCritical: boolean
+  isCombo?: boolean
   skill?: {
     id: string
     name: string
@@ -320,10 +338,14 @@ export interface Encounter {
   enemyName: string
   enemyPower: number
   playerStats: CombatStats
+  /** Snapshot of the player's structured passives for this battle. */
+  playerPassives: CombatPassiveEffect[]
   playerEffects: CombatEffectState
   playerMaxHealth: number
   playerRage: number
   playerLethalGuardCharges: number
+  /** Enemy actions are resolved as stunned until this round (inclusive). */
+  enemyActionBlockedUntilRound: number
   playerOuterSkills: MartialActiveSkill[]
   nextOuterSkillIndex: number
   round: number

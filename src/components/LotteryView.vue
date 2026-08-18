@@ -13,7 +13,6 @@ import type { GameState, LotteryDrawCount, LotteryDrawResult, LotteryPoolId, Lot
 const props = defineProps<{ game: GameState; drawResult: LotteryDrawResult | null }>()
 const emit = defineEmits<{
   draw: [pool: LotteryPoolId, count: LotteryDrawCount]
-  compose: [equipmentId: string]
 }>()
 
 const activePool = ref<LotteryPoolId>('equipment')
@@ -26,13 +25,11 @@ watch(() => props.drawResult?.id, (id, previous) => {
 })
 
 function rewardLabel(reward: LotteryReward): string {
-  if (reward.kind === 'fragment') return `${reward.name} x${reward.quantity}`
   if (reward.kind === 'forge' || reward.kind === 'insight') return `${reward.name} +${reward.quantity}`
   return reward.name
 }
 
 function rewardTypeLabel(reward: LotteryReward): string {
-  if (reward.kind === 'fragment') return '装备碎片'
   if (reward.kind === 'forge') return '重复转化'
   if (reward.kind === 'insight') return '重复转化'
   return reward.pool === 'equipment' ? '装备' : '功法'
@@ -76,7 +73,7 @@ function selectPool(pool: string): void {
         </div>
 
         <div class="lottery-probability-trigger">
-          <div><small>奖池说明</small><span>品质概率与碎片说明</span></div>
+          <div><small>奖池说明</small><span>品质概率与奖池规则</span></div>
           <el-button text type="primary" @click="probabilityVisible = true"><Info :size="15" />概率详情</el-button>
         </div>
       </section>
@@ -119,7 +116,6 @@ function selectPool(pool: string): void {
         <div class="lottery-probability-grid"><span v-for="(rate, tone) in LOTTERY_GRADE_RATES" :key="tone" class="lottery-rate" :class="tone"><i>{{ LOTTERY_GRADE_NAMES[tone] }}</i><b>{{ rate }}%</b></span></div>
         <div class="lottery-detail-list">
           <div><b>保底机制</b><span>本奖池设有保底机制。</span></div>
-          <div v-if="activePool === 'equipment'"><b>碎片规则</b><span>传说装备需 5 枚碎片，神话装备需 10 枚碎片合成。</span></div>
         </div>
       </div>
       <template #footer><el-button type="primary" @click="probabilityVisible = false">知道了</el-button></template>

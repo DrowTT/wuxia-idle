@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { CombatPassiveEffect } from '../src/domain/types'
 import { advanceEncounter, advanceEncounterAction, createEncounter, getHitChance, grantNextAttackGuaranteedDodge, grantNextAttackGuaranteedHit } from '../src/domain/combat'
-import { EQUIPMENT, EQUIPMENT_SLOTS, LOTTERY_GRADE_NAMES, LOTTERY_GRADE_RATES, MAX_CULTIVATION_OFFLINE_MS, MAX_DODGE_RATE, PRACTICE_PROGRESS_PER_ACTION, REALMS, accrueInnerForce, advanceMainJourney, breakThroughRealm, canBreakThrough, canClaimDailyCheckIn, canComposeLotteryEquipment, claimDailyCheckIn, composeLotteryEquipment, createCombatStats, createEquipmentLoadout, createInitialGame, drawLottery, enhanceMartialArt, equipPlayerEquipment, equipPlayerMartialArt, formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber, getCombatPower, getCurrentMainStage, getEliteEnemyCount, getEquipmentSetActivations, getEquippedEquipment, getEquippedMartialArts, getInnerForceRate, getInnerForceRateBonus, getLotteryFragmentCount, getMainStage, getMainStageReplayReward, getMartialEnhancementCost, getOwnedLotteryFragmentTargets, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getPracticeCost, getRealm, getRealmBaseCombatStats, getRealmInnerForceRate, getRealmInnerForceRateBonus, getStagesPerChapter, getVisibleMainChapters, hasMartialWeaponAffinity, isEliteMainStage, loadGame, normalizeCombatStats, normalizeRealmId, practiceOnce, prependGameLog, unequipPlayerEquipment } from '../src/domain/game'
+import { EQUIPMENT, EQUIPMENT_SLOTS, LOTTERY_GRADE_NAMES, LOTTERY_GRADE_RATES, MAX_CULTIVATION_OFFLINE_MS, MAX_DODGE_RATE, PRACTICE_PROGRESS_PER_ACTION, REALMS, accrueInnerForce, advanceMainJourney, breakThroughRealm, canBreakThrough, canClaimDailyCheckIn, canEnhanceEquipment, claimDailyCheckIn, createCombatStats, createEquipmentLoadout, createInitialGame, drawLottery, enhanceEquipment, enhanceMartialArt, equipPlayerEquipment, equipPlayerMartialArt, formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber, getCombatPower, getCurrentMainStage, getEliteEnemyCount, getEquipmentCombatRates, getEquipmentEnhancementCost, getEquipmentEnhancementLevel, getEquipmentSetActivations, getEquippedEquipment, getEquippedMartialArts, getInnerForceRate, getInnerForceRateBonus, getMainStage, getMainStageReplayReward, getMartialEnhancementCost, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getPracticeCost, getRealm, getRealmBaseCombatStats, getRealmInnerForceRate, getRealmInnerForceRateBonus, getStagesPerChapter, getVisibleMainChapters, hasMartialWeaponAffinity, isEliteMainStage, loadGame, normalizeCombatStats, normalizeRealmId, practiceOnce, prependGameLog, unequipPlayerEquipment } from '../src/domain/game'
 import {
   DUNGEONS,
   COMBAT_BALANCE,
@@ -19,6 +20,8 @@ import {
   STARTER_EQUIPMENT_IDS,
   STARTER_MARTIAL_ART_IDS,
   getMainStoryStageMultiplier,
+  compareEquipmentInventory,
+  compareMartialArtInventory,
 } from '../src/data'
 
 afterEach(() => {
@@ -39,6 +42,17 @@ describe('content data integrity', () => {
     expect(EQUIPMENT_SLOTS).toContain('ring2')
     expect(EQUIPMENT).toHaveLength(105)
     expect(MARTIAL_ARTS).toHaveLength(41)
+    for (const equipment of EQUIPMENT) {
+      expect(Object.values(equipment.combatRates ?? {}).some((value) => value > 0)).toBe(true)
+      for (const stat of ['maxHealth', 'attack', 'defense', 'speed'] as const) {
+        expect(equipment.combatBonuses?.[stat] ?? 0).toBeLessThanOrEqual(70)
+      }
+    }
+    for (const belt of EQUIPMENT.filter((equipment) => equipment.categoryId === 'belt')) {
+      for (const stat of ['maxHealth', 'attack', 'defense', 'speed'] as const) {
+        expect(belt.combatRates?.[stat] ?? 0).toBeGreaterThan(0)
+      }
+    }
     expect(DUNGEONS.map((dungeon) => dungeon.id)).toHaveLength(new Set(DUNGEONS.map((dungeon) => dungeon.id)).size)
 
     const weaponStyles = new Set(EQUIPMENT.filter((equipment) => equipment.categoryId === 'weapon').map((equipment) => equipment.weaponStyle).filter((style): style is NonNullable<typeof style> => style !== undefined))
@@ -46,6 +60,38 @@ describe('content data integrity', () => {
     for (const art of MARTIAL_ARTS.filter((art) => art.affinityWeaponStyles?.length)) {
       expect(art.kind).toBe('outer')
       for (const style of art.affinityWeaponStyles ?? []) expect(weaponStyles.has(style)).toBe(true)
+    }
+  })
+
+  it('orders inventory by quality before equipment position or martial art type', () => {
+    const equipment = [...EQUIPMENT].sort(compareEquipmentInventory)
+    expect(equipment[0]?.gradeTone).toBe('red')
+    expect(equipment.at(-1)?.gradeTone).toBe('white')
+    for (let index = 1; index < equipment.length; index += 1) {
+      const previous = equipment[index - 1]!
+      const current = equipment[index]!
+      if (previous.gradeTone !== current.gradeTone) continue
+      expect(EQUIPMENT_CATEGORIES.indexOf(previous.categoryId)).toBeLessThanOrEqual(EQUIPMENT_CATEGORIES.indexOf(current.categoryId))
+    }
+
+    const martialArts = [...MARTIAL_ARTS].sort(compareMartialArtInventory)
+    expect(martialArts[0]?.gradeTone).toBe('red')
+    expect(martialArts.at(-1)?.gradeTone).toBe('white')
+    for (let index = 1; index < martialArts.length; index += 1) {
+      const previous = martialArts[index - 1]!
+      const current = martialArts[index]!
+      if (previous.gradeTone !== current.gradeTone) continue
+      expect(previous.kind === 'inner' || current.kind === 'outer').toBe(true)
+    }
+  })
+
+  it('gives every inner art a complete cultivation rate bonus', () => {
+    const innerArts = MARTIAL_ARTS.filter((art) => art.kind === 'inner')
+    expect(innerArts.length).toBeGreaterThan(0)
+    for (const art of innerArts) {
+      const hasFlatRate = art.innerForceRateBase !== undefined && art.innerForceRatePerMastery !== undefined
+      const hasRateMultiplier = art.innerForceRateMultiplierBase !== undefined && art.innerForceRateMultiplierPerMastery !== undefined
+      expect(hasFlatRate || hasRateMultiplier).toBe(true)
     }
   })
 
@@ -165,18 +211,43 @@ describe('lottery', () => {
     expect(result?.player.langyu).toBe(game.player.langyu - LOTTERY_DRAW_COST * 10)
   })
 
-  it('collects ten red equipment fragments before allowing synthesis', () => {
+  it('uses a weighted legendary or mythic result for high-grade pity', () => {
     const game = createInitialGame()
-    const result = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST * 10 }, game.lottery, 'equipment', 10, () => .9999, 200)
+    const lotteryAtHighGradePity = {
+      ...game.lottery,
+      pity: {
+        equipment: { noPurpleDraws: 9, noOrangeDraws: 49 },
+        martial: { noPurpleDraws: 0, noOrangeDraws: 0 },
+      },
+    }
+
+    const mythic = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST }, lotteryAtHighGradePity, 'equipment', 1, () => .05, 101)
+    const legendary = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST }, lotteryAtHighGradePity, 'equipment', 1, () => .5, 102)
+
+    expect(mythic?.result.rewards[0]?.gradeTone).toBe('red')
+    expect(legendary?.result.rewards[0]?.gradeTone).toBe('orange')
+    expect(mythic?.lottery.pity.equipment).toEqual({ noPurpleDraws: 0, noOrangeDraws: 0 })
+    expect(legendary?.lottery.pity.equipment).toEqual({ noPurpleDraws: 0, noOrangeDraws: 0 })
+  })
+
+  it('grants red equipment directly from the equipment pool', () => {
+    const game = createInitialGame()
+    const result = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST }, game.lottery, 'equipment', 1, () => .9999, 200)
     const redPrizeId = LOTTERY_EQUIPMENT_PRIZE_IDS.red.at(-1)!
 
-    expect(result?.lottery.fragments[redPrizeId]).toBe(10)
-    expect(canComposeLotteryEquipment(result!.lottery, redPrizeId)).toBe(true)
-    const composed = composeLotteryEquipment(result!.player, result!.lottery, redPrizeId)
-    expect(composed?.lottery.ownedEquipmentIds).toContain(redPrizeId)
-    expect(getLotteryFragmentCount(composed!.lottery, redPrizeId)).toBe(0)
-    expect(composed?.lottery.fragments).not.toHaveProperty(redPrizeId)
-    expect(getOwnedLotteryFragmentTargets(composed!.lottery)).toEqual([])
+    expect(result?.lottery.ownedEquipmentIds).toContain(redPrizeId)
+    expect(result?.result.rewards).toEqual([expect.objectContaining({ kind: 'equipment', itemId: redPrizeId, name: EQUIPMENT.find((equipment) => equipment.id === redPrizeId)?.name })])
+  })
+
+  it('keeps duplicate equipment as additional inventory copies', () => {
+    const game = createInitialGame()
+    const first = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST * 2 }, game.lottery, 'equipment', 1, () => .9999, 200)!
+    const second = drawLottery(first.player, first.lottery, 'equipment', 1, () => .9999, 201)!
+    const redPrizeId = LOTTERY_EQUIPMENT_PRIZE_IDS.red.at(-1)!
+
+    expect(second.lottery.ownedEquipmentIds.filter((id) => id === redPrizeId)).toHaveLength(2)
+    expect(second.result.rewards).toEqual([expect.objectContaining({ kind: 'equipment', itemId: redPrizeId })])
+    expect(second.player.forge).toBe(game.player.forge)
   })
 })
 
@@ -273,7 +344,7 @@ describe('compact number formatting', () => {
     const game = createInitialGame()
     const baseRate = getInnerForceRate({ ...game.player, martialLoadout: { inner1: null, inner2: null, outer1: null, outer2: null } })
     const startingRate = getInnerForceRate(game.player)
-    const heartMethod = { id: 'inner-breath', name: '抱元守一', category: '内功心法', grade: '史诗', gradeTone: 'purple' as const, level: 2, mastery: 36, kind: 'inner' as const, keyword: '吐纳', description: '', innerForceRateBase: 0.7, innerForceRatePerMastery: 0.05 }
+    const heartMethod = { id: 'inner-breath', name: '抱元守一', category: '内功心法', grade: '史诗', gradeTone: 'purple' as const, level: 2, mastery: 36, kind: 'inner' as const, keyword: '吐纳', lore: '', innerForceRateBase: 0.7, innerForceRatePerMastery: 0.05 }
     const studied = enhanceMartialArt({ ...game.player, insight: 100 }, heartMethod)
 
     expect(startingRate).toBeGreaterThan(baseRate)
@@ -389,7 +460,8 @@ describe('wuxia terminology migration', () => {
     expect(loaded.cultivation).toMatchObject({ amount: 0, practiceProgress: 100, autoPractice: true })
     expect(loaded.cultivation.lastAccruedAt).toBeLessThanOrEqual(Date.now())
     expect(loaded.journey).toEqual({ currentChapter: 100, currentStage: 64, completed: true })
-    expect(loaded.lottery.fragments).toEqual({ 'scarlet-sky-sword': 3 })
+    expect(loaded.lottery).not.toHaveProperty('fragments')
+    expect(loaded.lottery.ownedEquipmentIds).toContain('scarlet-sky-sword')
     expect(loaded.lottery.pity.equipment).toEqual({ noPurpleDraws: 9, noOrangeDraws: 0 })
   })
 
@@ -438,16 +510,47 @@ describe('equipment loadout', () => {
     }
   })
 
-  it('applies every equipped item to combat stats and removes its bonuses when unequipped', () => {
+  it('applies equipment core rates to the realm panel and removes them when unequipped', () => {
     const game = createInitialGame()
     const unarmed = { ...game.player, equippedEquipment: createEquipmentLoadout() }
     const coldIron = EQUIPMENT.find((item) => item.id === 'cold-iron')!
     const equipped = equipPlayerEquipment(unarmed, 'weapon', coldIron)
 
-    expect(getPlayerCombatStats(equipped).attack).toBe(getPlayerCombatStats(unarmed).attack + 30)
-    expect(getPlayerCombatStats(equipped).defense).toBe(getPlayerCombatStats(unarmed).defense + 8)
+    const realm = getRealmBaseCombatStats(unarmed)
+    const rates = getEquipmentCombatRates(unarmed, coldIron)
+    const unarmedStats = getPlayerCombatStats(unarmed)
+    const equippedStats = getPlayerCombatStats(equipped)
+
+    expect(coldIron.combatBonuses?.attack).toBeGreaterThan(0)
+    expect(coldIron.combatRates).toMatchObject({ attack: expect.any(Number), defense: expect.any(Number) })
+    expect(equippedStats.attack).toBe(Math.round(realm.attack * (1 + (rates.attack ?? 0) / 100)) + unarmedStats.attack - realm.attack + (coldIron.combatBonuses?.attack ?? 0))
+    expect(equippedStats.defense).toBe(Math.round(realm.defense * (1 + (rates.defense ?? 0) / 100)) + unarmedStats.defense - realm.defense + (coldIron.combatBonuses?.defense ?? 0))
     expect(unequipPlayerEquipment(equipped, 'weapon').equippedEquipment.weapon).toBeNull()
     expect(getPlayerCombatStats(unequipPlayerEquipment(equipped, 'weapon')).attack).toBe(getPlayerCombatStats(unarmed).attack)
+  })
+
+  it('keeps equipment contribution proportional across realms and scales it with enhancement', () => {
+    const game = createInitialGame()
+    const coldIron = EQUIPMENT.find((item) => item.id === 'cold-iron')!
+    const emptyLoadout = createEquipmentLoadout()
+    const early = { ...game.player, equippedEquipment: emptyLoadout, realmId: 'body-tempering' as const, realmLevel: 1 }
+    const late = { ...game.player, equippedEquipment: emptyLoadout, realmId: 'martial-saint' as const, realmLevel: 9 }
+    const earlyEquipped = equipPlayerEquipment(early, 'weapon', coldIron)
+    const lateEquipped = equipPlayerEquipment(late, 'weapon', coldIron)
+
+    const earlyContribution = getPlayerCombatStats(earlyEquipped).attack - getPlayerCombatStats(early).attack
+    const lateContribution = getPlayerCombatStats(lateEquipped).attack - getPlayerCombatStats(late).attack
+    expect(lateContribution).toBeGreaterThan(earlyContribution)
+    const attackRate = getEquipmentCombatRates(early, coldIron).attack ?? 0
+    const earlyBaseAttack = getRealmBaseCombatStats(early).attack
+    const lateBaseAttack = getRealmBaseCombatStats(late).attack
+    const earlyRateContribution = Math.round(earlyBaseAttack * (1 + attackRate / 100)) - earlyBaseAttack
+    const lateRateContribution = Math.round(lateBaseAttack * (1 + attackRate / 100)) - lateBaseAttack
+    expect(lateRateContribution / lateBaseAttack).toBeCloseTo(earlyRateContribution / earlyBaseAttack, 2)
+
+    const enhanced = { ...earlyEquipped, equipmentEnhancements: { [coldIron.id]: 10 } }
+    expect(getEquipmentCombatRates(enhanced, coldIron).attack).toBeGreaterThan(getEquipmentCombatRates(earlyEquipped, coldIron).attack ?? 0)
+    expect(getPlayerCombatStats(enhanced).attack).toBeGreaterThan(getPlayerCombatStats(earlyEquipped).attack)
   })
 
   it('migrates a legacy equipped weapon and supplies the remaining default slots', () => {
@@ -496,6 +599,25 @@ describe('equipment loadout', () => {
     expect(dualRings.equippedEquipment.ring2?.equipmentId).toBe('iron-ring')
     expect(equipPlayerEquipment(unarmed, 'weapon', jadeRing)).toBe(unarmed)
   })
+
+  it('only enhances currently equipped gear and applies the upgraded bonuses to combat power', () => {
+    const game = createInitialGame()
+    const equippedWeapon = EQUIPMENT.find((equipment) => equipment.id === game.player.equippedEquipment.weapon?.equipmentId)!
+    const unequippedWeapon = EQUIPMENT.find((equipment) => equipment.id === 'cold-iron')!
+    const player = { ...game.player, forge: 10_000 }
+
+    expect(canEnhanceEquipment(player, unequippedWeapon)).toBe(false)
+    expect(enhanceEquipment(player, unequippedWeapon)).toBeNull()
+
+    const beforeAttack = getPlayerCombatStats(player).attack
+    const cost = getEquipmentEnhancementCost(player, equippedWeapon)
+    const enhanced = enhanceEquipment(player, equippedWeapon)
+    expect(enhanced).not.toBeNull()
+    expect(getEquipmentEnhancementLevel(enhanced!, equippedWeapon.id)).toBe(1)
+    expect(enhanced!.forge).toBe(player.forge - cost)
+    expect(getPlayerCombatStats(enhanced!).attack).toBeGreaterThanOrEqual(beforeAttack)
+    expect(getPlayerPower(enhanced!)).toBeGreaterThan(getPlayerPower(player))
+  })
 })
 
 describe('martial art loadout and equipment sets', () => {
@@ -518,7 +640,7 @@ describe('martial art loadout and equipment sets', () => {
     let completePlayer = { ...game.player, equippedEquipment: createEquipmentLoadout() }
     for (const [index, equipment] of setPieces.entries()) completePlayer = equipPlayerEquipment(completePlayer, setSlots[index]!, equipment)
     expect(getPlayerCombatPassives(completePlayer)).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: 'rimebound-opening-rage', kind: 'battle-start-rage', value: 50 }),
+      expect.objectContaining({ id: 'rimebound-snow-trace', kind: 'battle-start-dodge', value: 2 }),
     ]))
   })
 
@@ -578,6 +700,88 @@ describe('combat', () => {
     expect(step.action?.outcome).toBe('dodge')
   })
 
+  it('renders a triggered combo as a separate follow-up attack', () => {
+    const playerStats = createCombatStats({ maxHealth: 1_000, attack: 100, speed: 200, hitRate: 100, comboRate: 100 })
+    const enemyStats = createCombatStats({ maxHealth: 10_000, attack: 1, speed: 100, hitRate: 100 })
+    let encounter = createEncounter({ playerStats, enemyStats, random: () => 0.5 })
+    encounter.status = 'fighting'
+
+    const firstStep = advanceEncounterAction(encounter)
+    expect(firstStep.action).toMatchObject({ attacker: { side: 'player' }, outcome: 'hit' })
+    expect(firstStep.action?.isCombo).toBeFalsy()
+    expect(firstStep.encounter.actionQueue[0]).toMatchObject({ side: 'player', isCombo: true })
+
+    const comboStep = advanceEncounterAction(firstStep.encounter)
+    expect(comboStep.action).toMatchObject({ attacker: { side: 'player' }, outcome: 'hit', isCombo: true })
+    expect(comboStep.action?.sequence).toBeGreaterThan(firstStep.action!.sequence)
+    expect(comboStep.encounter.enemies[0]!.hp).toBeLessThan(firstStep.encounter.enemies[0]!.hp)
+  })
+
+  it('applies six-piece opening passives without changing their duration semantics', () => {
+    const playerStats = createCombatStats({ maxHealth: 1_000, attack: 100, speed: 200, hitRate: 100 })
+    const enemyStats = createCombatStats({ maxHealth: 10_000, attack: 100, speed: 100, hitRate: 100 })
+    const create = (passive: CombatPassiveEffect) => {
+      const encounter = createEncounter({ playerStats, enemyStats, playerPassives: [passive], random: () => 0.5 })
+      encounter.status = 'fighting'
+      return encounter
+    }
+
+    const baseline = advanceEncounterAction(create({ id: 'baseline', label: '', description: '', kind: 'survive-lethal', value: 0 })).action!
+    const boosted = advanceEncounterAction(create({ id: 'sunfire', label: '', description: '', kind: 'damage-bonus-for-rounds', value: 80, duration: 1 })).action!
+    expect(boosted.damage).toBeGreaterThan(baseline.damage)
+
+    const immuneEncounter = create({ id: 'ironwall', label: '', description: '', kind: 'damage-immunity-for-rounds', value: 1, duration: 1 })
+    immuneEncounter.playerStats = createCombatStats({ maxHealth: 1_000, attack: 1, speed: 1, hitRate: 100 })
+    immuneEncounter.enemies[0]!.stats = createCombatStats({ maxHealth: 10_000, attack: 10_000, speed: 200, hitRate: 100 })
+    immuneEncounter.status = 'fighting'
+    const immuneStep = advanceEncounterAction(immuneEncounter)
+    expect(immuneStep.action?.outcome).toBe('immune')
+    expect(immuneStep.encounter.playerHp).toBe(immuneStep.encounter.playerMaxHealth)
+
+    const blocked = create({ id: 'skyward', label: '', description: '', kind: 'block-enemy-actions-for-rounds', value: 1, duration: 1 })
+    blocked.playerStats = createCombatStats({ maxHealth: 1_000, attack: 1, speed: 1, hitRate: 100 })
+    blocked.enemies[0]!.stats = createCombatStats({ maxHealth: 10_000, attack: 1, speed: 200, hitRate: 100 })
+    blocked.status = 'fighting'
+    expect(advanceEncounterAction(blocked).action?.outcome).toBe('stunned')
+  })
+
+  it('consumes opening guaranteed dodges one attack at a time', () => {
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ maxHealth: 1_000, attack: 1, speed: 1, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 10_000, attack: 100, speed: 200, hitRate: 100 }),
+      playerPassives: [{ id: 'snow', label: '', description: '', kind: 'battle-start-dodge', value: 2 }],
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+
+    const first = advanceEncounterAction(encounter)
+    expect(first.action?.outcome).toBe('dodge')
+    const second = advanceEncounterAction(first.encounter)
+    const third = advanceEncounterAction(second.encounter)
+    expect(third.action?.outcome).toBe('dodge')
+    expect(third.encounter.playerEffects.guaranteedDodge).toBe(0)
+  })
+
+  it('expires round-limited damage reduction after its configured rounds', () => {
+    let encounter = createEncounter({
+      playerStats: createCombatStats({ maxHealth: 100_000, attack: 1, speed: 1, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 100_000, attack: 100, speed: 200, hitRate: 100 }),
+      playerPassives: [{ id: 'tide', label: '', description: '', kind: 'damage-reduction-for-rounds', value: 35, duration: 3 }],
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+
+    let firstEnemyAction = advanceEncounterAction(encounter)
+    const reducedDamage = firstEnemyAction.action?.damage ?? 0
+    encounter = advanceEncounterAction(firstEnemyAction.encounter).encounter
+    for (let round = 2; round <= 3; round += 1) {
+      const enemyAction = advanceEncounterAction(encounter)
+      encounter = advanceEncounterAction(enemyAction.encounter).encounter
+    }
+    const fourthEnemyAction = advanceEncounterAction(encounter)
+    expect(fourthEnemyAction.action?.damage).toBeGreaterThan(reducedDamage)
+  })
+
   it('uses all overflow rage as the active skill multiplier and clears it after casting', () => {
     const playerStats = createCombatStats({ maxHealth: 1_000, attack: 10, speed: 100, hitRate: 100 })
     const enemyStats = createCombatStats({ maxHealth: 10_000, attack: 10, speed: 200, hitRate: 100 })
@@ -585,7 +789,7 @@ describe('combat', () => {
       playerStats,
       enemyStats,
       playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
-      playerOuterSkills: [{ id: 'test-skill', name: '试招', description: '', damageMultiplier: 2 }],
+      playerOuterSkills: [{ id: 'test-skill', name: '试招', damageMultiplier: 2 }],
       random: () => 0.5,
     })
     encounter.status = 'fighting'
@@ -605,8 +809,8 @@ describe('combat', () => {
       enemyStats,
       playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
       playerOuterSkills: [
-        { id: 'first', name: '第一式', description: '', damageMultiplier: 1.5 },
-        { id: 'second', name: '第二式', description: '', damageMultiplier: 1.5 },
+        { id: 'first', name: '第一式', damageMultiplier: 1.5 },
+        { id: 'second', name: '第二式', damageMultiplier: 1.5 },
       ],
       random: () => 0.5,
     })
@@ -639,7 +843,7 @@ describe('combat', () => {
         playerStats,
         enemyStats,
         playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
-        playerOuterSkills: [{ id: 'affinity-strike', name: '试招', description: '', damageMultiplier: 1, weaponAffinityActive }],
+        playerOuterSkills: [{ id: 'affinity-strike', name: '试招', damageMultiplier: 1, weaponAffinityActive }],
         random: () => 0.5,
       })
       encounter.status = 'fighting'
@@ -662,7 +866,7 @@ describe('combat', () => {
         playerStats,
         enemyStats,
         playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
-        playerOuterSkills: [{ id: 'affinity-stun', name: '试招', description: '', damageMultiplier: 1, stunRate: 40, weaponAffinityActive }],
+        playerOuterSkills: [{ id: 'affinity-stun', name: '试招', damageMultiplier: 1, stunRate: 40, weaponAffinityActive }],
         random: () => 0.45,
       })
       encounter.status = 'fighting'
@@ -681,8 +885,8 @@ describe('combat', () => {
       enemyStats,
       playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 100 }],
       playerOuterSkills: [
-        { id: 'first', name: '第一式', description: '', damageMultiplier: 1.5 },
-        { id: 'second', name: '第二式', description: '', damageMultiplier: 1.5 },
+        { id: 'first', name: '第一式', damageMultiplier: 1.5 },
+        { id: 'second', name: '第二式', damageMultiplier: 1.5 },
       ],
       random: () => 0.5,
     })
@@ -855,6 +1059,19 @@ describe('combat', () => {
 })
 
 describe('main story progression', () => {
+  it('scales forge material and insight rewards together every three chapters', () => {
+    expect(getMainStage(1, 1)!.reward.forge).toBe(5)
+    expect(getMainStage(1, 1)!.reward.insight).toBe(1)
+    expect(getMainStage(1, 16)!.reward.forge).toBe(16)
+    expect(getMainStage(1, 16)!.reward.insight).toBe(3)
+    expect(getMainStage(10, 1)!.reward.forge).toBe(8)
+    expect(getMainStage(10, 1)!.reward.insight).toBe(4)
+    expect(getMainStage(10, 32)!.reward.forge).toBe(19)
+    expect(getMainStage(10, 32)!.reward.insight).toBe(6)
+    expect(getMainStage(100, 1)!.reward.forge).toBe(38)
+    expect(getMainStage(100, 1)!.reward.insight).toBe(34)
+  })
+
   it('grants reduced repeat rewards and reserves an extra drop chance for elite stages', () => {
     const stage = getMainStage(1, 1)!
     const reward = getMainStageReplayReward({ ...stage, reward: { silver: 100, langyu: 4, forge: 10, insight: 10, fame: 10 } }, () => 0.99)

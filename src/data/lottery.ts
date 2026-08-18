@@ -4,6 +4,8 @@ import { MARTIAL_ARTS } from './martial-arts'
 
 export const LOTTERY_DRAW_COST = 160
 export const LOTTERY_DRAW_COUNTS: readonly LotteryDrawCount[] = [1, 10]
+/** Applied only when the 50-draw high-grade pity is triggered. */
+export const LOTTERY_HIGH_GRADE_PITY_MYTHIC_RATE = 10
 export const LOTTERY_GRADE_RATES: Readonly<Record<GradeTone, number>> = {
   white: 43.7,
   green: 30,
@@ -16,7 +18,7 @@ export const LOTTERY_GRADE_NAMES: Readonly<Record<GradeTone, string>> = {
   white: '普通', green: '优秀', blue: '精良', purple: '史诗', orange: '传说', red: '神话',
 }
 export const LOTTERY_POOL_META: Readonly<Record<LotteryPoolId, { label: string; description: string; shortDescription: string }>> = {
-  equipment: { label: '兵器匣', description: '开匣可得江湖装备；传说与神话装备会化作碎片。', shortDescription: '装备与铸器残片' },
+  equipment: { label: '兵器匣', description: '开匣可得江湖装备，传说与神话装备亦可直接获得。', shortDescription: '江湖装备与铸材' },
   martial: { label: '功法卷', description: '卷中藏有各路套路、心法与身法，可直接领悟。', shortDescription: '套路、心法与身法' },
 }
 
@@ -36,4 +38,3 @@ export const STARTER_MARTIAL_ART_IDS = ['wind-sword', 'inner-breath', 'snow-step
 export const LOTTERY_DUPLICATE_REWARDS: Readonly<Record<GradeTone, number>> = {
   white: 2, green: 4, blue: 7, purple: 12, orange: 20, red: 32,
 }
-export const LOTTERY_FRAGMENT_REQUIREMENTS: Readonly<Partial<Record<GradeTone, number>>> = { orange: 5, red: 10 }

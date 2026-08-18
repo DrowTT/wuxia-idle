@@ -22,12 +22,6 @@ const weaponStyleLabels: Record<WeaponStyle, string> = {
 const mastery = computed(() => getMartialMastery(props.player, props.art.id))
 const affinityActive = computed(() => hasMartialWeaponAffinity(props.player, props.art))
 const affinityStyles = computed(() => props.art.affinityWeaponStyles?.map((style) => weaponStyleLabels[style]).join(' / ') ?? '')
-const gradeTagType = computed<'success' | 'primary' | 'info'>(() => {
-  if (props.art.gradeTone === 'green') return 'success'
-  if (props.art.gradeTone === 'blue') return 'primary'
-  return 'info'
-})
-
 function formatDecimal(value: number): string {
   return Number(value.toFixed(2)).toString()
 }
@@ -49,16 +43,32 @@ const martialStats = computed(() => {
   }
   return stats
 })
+
+const activeSkillEffectDescription = computed(() => {
+  const skill = props.art.activeSkill
+  if (!skill) return ''
+  const effects = [`攻击造成 ${formatDecimal(skill.damageMultiplier * 100)}% 攻击伤害`]
+  if (skill.bonusCritRate !== undefined) effects.push(`额外获得 ${formatDecimal(skill.bonusCritRate)}% 暴击率`)
+  if (skill.defensePierceRate !== undefined) effects.push(`无视目标 ${formatDecimal(skill.defensePierceRate)}% 防御`)
+  if (skill.guaranteedHit) effects.push('攻击必定命中')
+  if (skill.stunRate !== undefined) effects.push(`命中后有 ${formatDecimal(skill.stunRate)}% 概率使目标眩晕`)
+  if (skill.grantDodge !== undefined) effects.push('命中后使你下一次受到的攻击必定闪避')
+  return `${effects.join('，')}。`
+})
 </script>
 
 <template>
   <section class="equipment-tooltip">
-    <header><div><small>{{ art.category }}</small><b>{{ art.name }}</b></div><el-tag size="small" :type="gradeTagType">{{ art.grade }}</el-tag></header>
-    <p>{{ art.keyword }} · {{ art.description }}</p>
-    <p v-if="art.activeSkill"><b>{{ art.activeSkill.name }}</b>：{{ art.activeSkill.description }}</p>
+    <header><div><small>{{ art.category }}</small><b>{{ art.name }}</b></div><el-tag size="small" class="quality-tag" :class="art.gradeTone">{{ art.grade }}</el-tag></header>
+    <div class="tooltip-copy tooltip-lore"><small>背景</small><p>{{ art.keyword }} · {{ art.lore }}</p></div>
+    <section v-if="art.activeSkill" class="martial-active-skill">
+      <header><div><small>主动效果 · 外功</small><b>{{ art.activeSkill.name }}</b></div></header>
+      <p class="martial-active-effect-copy">{{ activeSkillEffectDescription }}</p>
+    </section>
     <p v-if="art.affinityWeaponStyles?.length" class="martial-affinity"><span>兵器契合：{{ affinityStyles }}</span><b :class="{ active: affinityActive }">{{ affinityActive ? '当前已契合' : '当前未契合' }}</b></p>
     <p v-if="art.affinityWeaponStyles?.length">契合时，外功伤害 x1.18；数值型招式效果 x1.25</p>
-    <p v-if="art.passiveEffects?.length"><b>内功特效</b>：{{ art.passiveEffects.map((effect) => effect.description).join(' · ') }}</p>
-    <dl><div v-for="stat in martialStats" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl>
+    <div v-if="art.passiveEffects?.length" class="tooltip-copy tooltip-effect"><small>被动效果</small><p>{{ art.passiveEffects.map((effect) => effect.description).join(' · ') }}</p></div>
+    <div v-if="martialStats.length" class="tooltip-section-label">属性效果</div>
+    <dl v-if="martialStats.length"><div v-for="stat in martialStats" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl>
   </section>
 </template>

@@ -29,3 +29,5 @@ export const PRACTICE_REALM_COST_MULTIPLIER = 3.2
 export const SMALL_REALM_COST_GROWTH = 1.2
 /** Current enhancement advances a martial art's mastery by four points. */
 export const MARTIAL_ENHANCEMENT_STEP = 4
+export const EQUIPMENT_ENHANCEMENT_MAX_LEVEL = 20
+export const EQUIPMENT_ENHANCEMENT_STAT_GROWTH = 0.05

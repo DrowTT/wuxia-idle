@@ -10,6 +10,7 @@ export const INITIAL_PLAYER_PROFILE = {
   forge: 68,
   insight: 22,
   fame: 135,
+  equipmentEnhancements: {},
   mastery: { 'wind-sword': 58, 'inner-breath': 36, 'snow-step': 18 },
   martialLoadout: { inner1: 'inner-breath', inner2: null, outer1: 'wind-sword', outer2: 'snow-step' },
 } as const

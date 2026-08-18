@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { X } from '@lucide/vue'
-import { getEquippedEquipment, getEquippedMartialArts, getRealm, getRealmBaseCombatStats } from '../domain/game'
+import { getEquipmentCombatBonuses, getEquipmentCombatRates, getEquippedEquipment, getEquippedMartialArts, getRealm, getRealmBaseCombatStats } from '../domain/game'
 import type { CombatStats, PlayerState } from '../domain/types'
 
 type StatKey = keyof CombatStats
@@ -58,9 +58,9 @@ const statSources = computed(() => {
   const equipment = getEquippedEquipment(props.player)
   const arts = getEquippedMartialArts(props.player)
   return [
-    { name: `${realm.value?.label ?? '当前境界'} 第${props.player.realmLevel}重`, bonuses: realmStats, base: true },
-    ...equipment.map((item) => ({ name: item.name, bonuses: item.combatBonuses, base: false })),
-    ...arts.map((art) => ({ name: art.name, bonuses: art.combatBonuses, base: false })),
+    { name: `${realm.value?.label ?? '当前境界'} 第${props.player.realmLevel}重`, bonuses: realmStats, rates: undefined, base: true },
+    ...equipment.map((item) => ({ name: item.name, bonuses: getEquipmentCombatBonuses(props.player, item), rates: getEquipmentCombatRates(props.player, item), base: false })),
+    ...arts.map((art) => ({ name: art.name, bonuses: art.combatBonuses, rates: undefined, base: false })),
   ]
 })
 
@@ -73,19 +73,24 @@ function valueFor(row: StatRow): string {
   return row.percentage ? `${value}%` : value.toLocaleString()
 }
 
-function sourceSummary(bonuses: Partial<CombatStats> | undefined, base: boolean): string {
-  if (!bonuses) return '暂无属性加成'
+function sourceSummary(bonuses: Partial<CombatStats> | undefined, coreRates: Partial<Record<'maxHealth' | 'attack' | 'defense' | 'speed', number>> | undefined, base: boolean): string {
+  if (!bonuses && !coreRates) return '暂无属性加成'
+  const source = bonuses ?? {}
   const rows = basicStats.flatMap(({ key, label }) => {
-    const value = bonuses[key]
+    const value = source[key]
     if (!value) return []
     return `${label} ${base ? value.toLocaleString() : `${value > 0 ? '+' : ''}${value}`}`
   })
-  const rates = [...battleStats, ...advancedStats].flatMap(({ key, label }) => {
-    const value = bonuses[key]
+  const secondaryRates = [...battleStats, ...advancedStats].flatMap(({ key, label }) => {
+    const value = source[key]
     if (!value || base) return []
     return `${label} ${value > 0 ? '+' : ''}${value}%`
   })
-  const summary = [...rows, ...rates]
+  const coreRateRows = Object.entries(coreRates ?? {}).flatMap(([key, value]) => {
+    const label = basicStats.find((row) => row.key === key)?.label
+    return label && typeof value === 'number' ? `${label} +${value}%` : []
+  })
+  const summary = [...rows, ...coreRateRows, ...secondaryRates]
   return summary.length ? summary.join(' · ') : '暂无属性加成'
 }
 </script>
@@ -128,7 +133,7 @@ function sourceSummary(bonuses: Partial<CombatStats> | undefined, base: boolean)
     <section class="attribute-section attribute-source-section">
       <h3>属性来源</h3>
       <ul class="attribute-sources">
-        <li v-for="source in statSources" :key="source.name"><b>{{ source.name }}</b><span>{{ sourceSummary(source.bonuses, source.base) }}</span></li>
+        <li v-for="source in statSources" :key="source.name"><b>{{ source.name }}</b><span>{{ sourceSummary(source.bonuses, source.rates, source.base) }}</span></li>
       </ul>
     </section>
   </el-dialog>

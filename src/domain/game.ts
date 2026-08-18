@@ -13,9 +13,9 @@ import {
   LOTTERY_DRAW_COUNTS,
   LOTTERY_DUPLICATE_REWARDS,
   LOTTERY_EQUIPMENT_PRIZE_IDS,
-  LOTTERY_FRAGMENT_REQUIREMENTS,
   LOTTERY_GRADE_NAMES,
   LOTTERY_GRADE_RATES,
+  LOTTERY_HIGH_GRADE_PITY_MYTHIC_RATE,
   LOTTERY_MARTIAL_PRIZE_IDS,
   MAIN_STORY_CHAPTERS,
   MARTIAL_ARTS,
@@ -35,6 +35,8 @@ import {
   INITIAL_EQUIPMENT_LOADOUT,
   INITIAL_DAILY_CHECK_IN,
   DAILY_CHECK_IN_REWARD,
+  EQUIPMENT_ENHANCEMENT_MAX_LEVEL,
+  EQUIPMENT_ENHANCEMENT_STAT_GROWTH,
   INITIAL_GAME_LOGS,
   INITIAL_PLAYER_PROFILE,
 } from '../data'
@@ -73,18 +75,20 @@ import type {
   RealmId,
   JourneyState,
   CombatPassiveEffect,
+  CombatRateBonuses,
   EquipmentSet,
   MartialActiveSkill,
   MartialArtKind,
   MartialArtLoadout,
   MartialArtSlot,
   WeaponStyle,
+  CoreCombatStat,
 } from './types'
 
 export * from '../data'
 
 const SAVE_KEY = 'shanhe-wuwen-save'
-const CURRENT_GAME_VERSION = 13
+const CURRENT_GAME_VERSION = 15
 const LANGYU_CURRENCY_VERSION = 11
 const LEGACY_LANGYU_DRAW_COST = 1
 const PRACTICE_ACTIONS_PER_LEVEL = Math.ceil(PRACTICE_PROGRESS_MAX / PRACTICE_PROGRESS_PER_ACTION)
@@ -169,6 +173,29 @@ function addCombatBonuses(stats: CombatStats, bonuses: Partial<CombatStats> | un
   return normalizeCombatStats(next)
 }
 
+const CORE_COMBAT_STATS: readonly CoreCombatStat[] = ['maxHealth', 'attack', 'defense', 'speed']
+
+function addCombatRates(stats: CombatStats, rates: CombatRateBonuses | undefined): CombatStats {
+  if (!rates) return stats
+  const next = { ...stats }
+  for (const stat of CORE_COMBAT_STATS) {
+    const rate = rates[stat]
+    if (typeof rate === 'number' && Number.isFinite(rate)) next[stat] *= 1 + rate / 100
+  }
+  return normalizeCombatStats(next)
+}
+
+function sumCombatRates(rateSources: readonly CombatRateBonuses[]): CombatRateBonuses {
+  const total: CombatRateBonuses = {}
+  for (const rates of rateSources) {
+    for (const stat of CORE_COMBAT_STATS) {
+      const rate = rates[stat]
+      if (typeof rate === 'number' && Number.isFinite(rate)) total[stat] = (total[stat] ?? 0) + rate
+    }
+  }
+  return total
+}
+
 function normalizePracticeProgress(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 0
   return Math.min(PRACTICE_PROGRESS_MAX, Math.max(0, value))
@@ -245,6 +272,80 @@ export function getEquippedEquipment(player: GameState['player']): Equipment[] {
   })
 }
 
+export function isEquipmentEquipped(player: GameState['player'], equipmentId: string): boolean {
+  return EQUIPMENT_SLOTS.some((slot) => player.equippedEquipment?.[slot]?.equipmentId === equipmentId)
+}
+
+export function getEquipmentEnhancementLevel(player: GameState['player'], equipmentId: string): number {
+  const value = player.equipmentEnhancements && typeof player.equipmentEnhancements === 'object'
+    ? player.equipmentEnhancements[equipmentId]
+    : undefined
+  return clamp(Math.floor(finiteNumber(value, 0)), 0, EQUIPMENT_ENHANCEMENT_MAX_LEVEL)
+}
+
+function isPercentageCombatStat(stat: keyof CombatStats): boolean {
+  return !['maxHealth', 'attack', 'defense', 'speed'].includes(stat)
+}
+
+export function getEquipmentCombatBonuses(player: GameState['player'], equipment: Equipment): Partial<CombatStats> {
+  const level = getEquipmentEnhancementLevel(player, equipment.id)
+  if (!level) return { ...equipment.combatBonuses }
+  const multiplier = 1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH
+  return Object.fromEntries(Object.entries(equipment.combatBonuses ?? {}).flatMap(([key, value]) => {
+    if (typeof value !== 'number') return []
+    const stat = key as keyof CombatStats
+    const enhanced = isPercentageCombatStat(stat)
+      ? Math.round(value * multiplier * 10) / 10
+      : Math.round(value * multiplier)
+    return [[stat, enhanced]]
+  })) as Partial<CombatStats>
+}
+
+/** Core-stat multipliers scale with equipment enhancement and the realm panel. */
+export function getEquipmentCombatRates(player: GameState['player'], equipment: Equipment): CombatRateBonuses {
+  const level = getEquipmentEnhancementLevel(player, equipment.id)
+  const multiplier = 1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH
+  return Object.fromEntries(CORE_COMBAT_STATS.flatMap((stat) => {
+    const rate = equipment.combatRates?.[stat]
+    if (typeof rate !== 'number' || !Number.isFinite(rate)) return []
+    return [[stat, Math.round(rate * multiplier * 100) / 100]]
+  })) as CombatRateBonuses
+}
+
+const EQUIPMENT_ENHANCEMENT_GRADE_COST: Record<GradeTone, number> = {
+  white: 1,
+  green: 1.3,
+  blue: 1.7,
+  purple: 2.2,
+  orange: 2.9,
+  red: 3.7,
+}
+
+export function getEquipmentEnhancementCost(player: GameState['player'], equipment: Equipment): number {
+  const level = getEquipmentEnhancementLevel(player, equipment.id)
+  return Math.max(1, Math.ceil((6 + level * 2) * EQUIPMENT_ENHANCEMENT_GRADE_COST[equipment.gradeTone]))
+}
+
+export function canEnhanceEquipment(player: GameState['player'], equipment: Equipment): boolean {
+  return isEquipmentEquipped(player, equipment.id)
+    && getEquipmentEnhancementLevel(player, equipment.id) < EQUIPMENT_ENHANCEMENT_MAX_LEVEL
+    && player.forge >= getEquipmentEnhancementCost(player, equipment)
+}
+
+export function enhanceEquipment(player: GameState['player'], equipment: Equipment): GameState['player'] | null {
+  if (!canEnhanceEquipment(player, equipment)) return null
+  const level = getEquipmentEnhancementLevel(player, equipment.id)
+  const cost = getEquipmentEnhancementCost(player, equipment)
+  const enhancements = player.equipmentEnhancements && typeof player.equipmentEnhancements === 'object'
+    ? player.equipmentEnhancements
+    : {}
+  return syncPlayerPower({
+    ...player,
+    forge: player.forge - cost,
+    equipmentEnhancements: { ...enhancements, [equipment.id]: level + 1 },
+  })
+}
+
 function getEquipmentSetById(id: string): EquipmentSet | undefined {
   return EQUIPMENT_SETS.find((set) => set.id === id)
 }
@@ -265,6 +366,10 @@ export function getEquipmentSetActivations(player: GameState['player']): Array<{
 
 export function getActiveEquipmentSetBonuses(player: GameState['player']): Array<Partial<CombatStats>> {
   return getEquipmentSetActivations(player).flatMap((activation) => activation.activeBonuses.flatMap((bonus) => bonus.combatBonuses ? [bonus.combatBonuses] : []))
+}
+
+export function getActiveEquipmentSetRates(player: GameState['player']): CombatRateBonuses[] {
+  return getEquipmentSetActivations(player).flatMap((activation) => activation.activeBonuses.flatMap((bonus) => bonus.combatRates ? [bonus.combatRates] : []))
 }
 
 export function createMartialLoadout(values: Partial<MartialArtLoadout> = {}): MartialArtLoadout {
@@ -354,7 +459,6 @@ function createLotteryPity(): LotteryPity {
 function createInitialLottery(): LotteryState {
   return {
     pity: { equipment: createLotteryPity(), martial: createLotteryPity() },
-    fragments: {},
     ownedEquipmentIds: [...STARTER_EQUIPMENT_IDS],
     ownedMartialArtIds: [...STARTER_MARTIAL_ART_IDS],
     history: [],
@@ -380,12 +484,12 @@ function pickGradeTone(random: () => number): GradeTone {
   return 'red'
 }
 
-function pickPrizeId(ids: readonly string[], random: () => number): string {
-  return ids[Math.min(ids.length - 1, Math.floor(getRandomValue(random) * ids.length))]!
+function pickHighGradePityTone(random: () => number): Extract<GradeTone, 'orange' | 'red'> {
+  return getRandomValue(random) < LOTTERY_HIGH_GRADE_PITY_MYTHIC_RATE / 100 ? 'red' : 'orange'
 }
 
-function duplicateForgeReward(tone: GradeTone): number {
-  return LOTTERY_DUPLICATE_REWARDS[tone]
+function pickPrizeId(ids: readonly string[], random: () => number): string {
+  return ids[Math.min(ids.length - 1, Math.floor(getRandomValue(random) * ids.length))]!
 }
 
 function duplicateInsightReward(tone: GradeTone): number {
@@ -412,53 +516,6 @@ export function getLotteryPity(lottery: LotteryState, pool: LotteryPoolId): Lott
   }
 }
 
-export function getLotteryFragmentRequirement(tone: GradeTone): number {
-  return LOTTERY_FRAGMENT_REQUIREMENTS[tone] ?? 0
-}
-
-export function getLotteryFragmentTargets(): Equipment[] {
-  return ['orange', 'red'].flatMap((tone) => LOTTERY_EQUIPMENT_PRIZE_IDS[tone as 'orange' | 'red'])
-    .flatMap((id) => {
-      const equipment = getEquipmentById(id)
-      return equipment ? [equipment] : []
-    })
-}
-
-export function getLotteryFragmentCount(lottery: LotteryState, equipmentId: string): number {
-  const amount = lottery?.fragments?.[equipmentId]
-  return typeof amount === 'number' && Number.isFinite(amount) ? Math.max(0, Math.floor(amount)) : 0
-}
-
-export function getOwnedLotteryFragmentTargets(lottery: LotteryState): Equipment[] {
-  return getLotteryFragmentTargets().filter((equipment) => getLotteryFragmentCount(lottery, equipment.id) > 0)
-}
-
-export function canComposeLotteryEquipment(lottery: LotteryState, equipmentId: string): boolean {
-  const equipment = getEquipmentById(equipmentId)
-  const required = equipment ? getLotteryFragmentRequirement(equipment.gradeTone) : 0
-  const ownedEquipmentIds = Array.isArray(lottery?.ownedEquipmentIds) ? lottery.ownedEquipmentIds : []
-  return Boolean(required && !ownedEquipmentIds.includes(equipmentId) && getLotteryFragmentCount(lottery, equipmentId) >= required)
-}
-
-export function composeLotteryEquipment(player: GameState['player'], lottery: LotteryState, equipmentId: string): { player: GameState['player']; lottery: LotteryState; equipment: Equipment } | null {
-  const equipment = getEquipmentById(equipmentId)
-  if (!equipment || !canComposeLotteryEquipment(lottery, equipmentId)) return null
-  const required = getLotteryFragmentRequirement(equipment.gradeTone)
-  const remainingFragments = getLotteryFragmentCount(lottery, equipmentId) - required
-  const fragments = { ...(lottery.fragments ?? {}) }
-  if (remainingFragments > 0) fragments[equipmentId] = remainingFragments
-  else delete fragments[equipmentId]
-  return {
-    player,
-    lottery: {
-      ...lottery,
-      fragments,
-      ownedEquipmentIds: [...new Set([...lottery.ownedEquipmentIds, equipmentId])],
-    },
-    equipment,
-  }
-}
-
 export function drawLottery(
   player: GameState['player'],
   lottery: LotteryState,
@@ -481,7 +538,6 @@ export function drawLottery(
       equipment: { ...getLotteryPity(lottery, 'equipment') },
       martial: { ...getLotteryPity(lottery, 'martial') },
     },
-    fragments: { ...(lottery.fragments ?? {}) },
     ownedEquipmentIds: Array.isArray(lottery.ownedEquipmentIds) ? [...lottery.ownedEquipmentIds] : [],
     ownedMartialArtIds: Array.isArray(lottery.ownedMartialArtIds) ? [...lottery.ownedMartialArtIds] : [],
   }
@@ -489,7 +545,7 @@ export function drawLottery(
 
   for (let index = 0; index < count; index += 1) {
     const pity = nextLottery.pity[pool]
-    const tone = pity.noOrangeDraws >= 49 ? 'orange' : pity.noPurpleDraws >= 9 ? 'purple' : pickGradeTone(random)
+    const tone = pity.noOrangeDraws >= 49 ? pickHighGradePityTone(random) : pity.noPurpleDraws >= 9 ? 'purple' : pickGradeTone(random)
     nextLottery.pity[pool] = {
       noPurpleDraws: isPurpleOrBetter(tone) ? 0 : pity.noPurpleDraws + 1,
       noOrangeDraws: isOrangeOrBetter(tone) ? 0 : pity.noOrangeDraws + 1,
@@ -501,22 +557,14 @@ export function drawLottery(
     if (!source) continue
 
     const rewardId = `${now}-${pool}-${nextLottery.history.length + index}`
-    if (pool === 'equipment' && getLotteryFragmentRequirement(tone)) {
-      nextLottery.fragments[id] = (nextLottery.fragments[id] ?? 0) + 1
-      rewards.push({ id: rewardId, pool, kind: 'fragment', itemId: id, name: `${source.name}碎片`, grade: source.grade, gradeTone: tone, quantity: 1 })
-      continue
-    }
-
-    const owned = pool === 'equipment' ? nextLottery.ownedEquipmentIds : nextLottery.ownedMartialArtIds
-    if (owned.includes(id)) {
-      const quantity = pool === 'equipment' ? duplicateForgeReward(tone) : duplicateInsightReward(tone)
-      if (pool === 'equipment') nextPlayer = { ...nextPlayer, forge: nextPlayer.forge + quantity }
-      else nextPlayer = { ...nextPlayer, insight: nextPlayer.insight + quantity }
+    if (pool === 'martial' && nextLottery.ownedMartialArtIds.includes(id)) {
+      const quantity = duplicateInsightReward(tone)
+      nextPlayer = { ...nextPlayer, insight: nextPlayer.insight + quantity }
       rewards.push({
         id: rewardId,
         pool,
-        kind: pool === 'equipment' ? 'forge' : 'insight',
-        name: pool === 'equipment' ? '铸材' : '功法心得',
+        kind: 'insight',
+        name: '功法心得',
         grade: source.grade,
         gradeTone: tone,
         quantity,
@@ -694,9 +742,18 @@ export function getRealmBaseCombatStats(player: GameState['player']): CombatStat
 }
 
 export function getPlayerCombatStats(player: GameState['player']): CombatStats {
+  const equipment = getEquippedEquipment(player)
   let stats = getRealmBaseCombatStats(player)
-  for (const equipment of getEquippedEquipment(player)) {
-    stats = addCombatBonuses(stats, equipment.combatBonuses)
+
+  // Rates intentionally scale only the realm panel. Fixed bonuses remain
+  // additive, so a later flat stat cannot recursively inflate equipment.
+  stats = addCombatRates(stats, sumCombatRates([
+    ...equipment.map((item) => getEquipmentCombatRates(player, item)),
+    ...getActiveEquipmentSetRates(player),
+  ]))
+
+  for (const item of equipment) {
+    stats = addCombatBonuses(stats, getEquipmentCombatBonuses(player, item))
   }
   for (const bonuses of getActiveEquipmentSetBonuses(player)) stats = addCombatBonuses(stats, bonuses)
   for (const art of getEquippedMartialArts(player)) stats = addCombatBonuses(stats, art.combatBonuses)
@@ -734,6 +791,7 @@ export function createInitialGame(): GameState {
   const player = {
     ...INITIAL_PLAYER_PROFILE,
     power: 0,
+    equipmentEnhancements: { ...INITIAL_PLAYER_PROFILE.equipmentEnhancements },
     mastery: { ...INITIAL_PLAYER_PROFILE.mastery },
     equippedEquipment: createEquipmentLoadout(INITIAL_EQUIPMENT_LOADOUT),
     martialLoadout: createMartialLoadout(INITIAL_PLAYER_PROFILE.martialLoadout),
@@ -1025,37 +1083,43 @@ function loadLotteryPity(value: unknown): LotteryPity {
 
 function loadLottery(value: unknown, initial: LotteryState): LotteryState {
   if (typeof value !== 'object' || value === null) return initial
-  const saved = value as Partial<LotteryState>
+  const saved = value as Partial<LotteryState> & { fragments?: unknown }
   const savedPity = typeof saved.pity === 'object' && saved.pity !== null ? saved.pity : undefined
   const knownEquipment = new Set(EQUIPMENT.map((equipment) => equipment.id))
   const knownMartialArts = new Set(MARTIAL_ARTS.map((art) => art.id))
-  const knownFragmentIds = new Set(getLotteryFragmentTargets().map((equipment) => equipment.id))
+  const legacyFragmentEquipmentIds = new Set([
+    ...LOTTERY_EQUIPMENT_PRIZE_IDS.orange,
+    ...LOTTERY_EQUIPMENT_PRIZE_IDS.red,
+  ])
   const savedFragments = typeof saved.fragments === 'object' && saved.fragments !== null ? saved.fragments : {}
-  const fragments = Object.entries(savedFragments).reduce<Record<string, number>>((result, [id, amount]) => {
-    if (knownFragmentIds.has(id) && typeof amount === 'number' && Number.isFinite(amount) && amount > 0) result[id] = Math.floor(amount)
-    return result
-  }, {})
-  const ownedEquipmentIds = Array.isArray(saved.ownedEquipmentIds)
-    ? [...new Set(saved.ownedEquipmentIds.filter((id): id is string => typeof id === 'string' && knownEquipment.has(id)))]
+  // Equipment drawn under the retired collection rule becomes available immediately.
+  const migratedEquipmentIds = Object.entries(savedFragments).flatMap(([id, amount]) => (
+    legacyFragmentEquipmentIds.has(id) && typeof amount === 'number' && Number.isFinite(amount) && amount > 0 ? [id] : []
+  ))
+  const savedEquipmentIds = Array.isArray(saved.ownedEquipmentIds)
+    ? saved.ownedEquipmentIds.filter((id): id is string => typeof id === 'string' && knownEquipment.has(id))
     : initial.ownedEquipmentIds
+  const ownedEquipmentIds = [...savedEquipmentIds, ...migratedEquipmentIds]
   const ownedMartialArtIds = Array.isArray(saved.ownedMartialArtIds)
     ? [...new Set(saved.ownedMartialArtIds.filter((id): id is string => typeof id === 'string' && knownMartialArts.has(id)))]
     : initial.ownedMartialArtIds
   const history = Array.isArray(saved.history)
     ? saved.history.flatMap((entry): LotteryReward[] => {
       if (typeof entry !== 'object' || entry === null) return []
-      const reward = entry as Partial<LotteryReward>
+      const reward = entry as Omit<Partial<LotteryReward>, 'kind'> & { kind?: LotteryReward['kind'] | 'fragment' }
       const validPool = reward.pool === 'equipment' || reward.pool === 'martial'
-      const validKind = reward.kind === 'equipment' || reward.kind === 'martial' || reward.kind === 'fragment' || reward.kind === 'forge' || reward.kind === 'insight'
+      const kind = reward.kind === 'fragment' ? 'equipment' : reward.kind
+      const validKind = kind === 'equipment' || kind === 'martial' || kind === 'forge' || kind === 'insight'
       const validTone = GRADE_ORDER.includes(reward.gradeTone as GradeTone)
       const source = typeof reward.itemId === 'string'
         ? (reward.pool === 'equipment' ? getEquipmentById(reward.itemId) : getMartialArtById(reward.itemId))
         : undefined
-      const validItem = reward.kind === 'fragment' || reward.kind === 'equipment' || reward.kind === 'martial' ? Boolean(source) : true
-      if (!validPool || !validKind || !validTone || !validItem || typeof reward.id !== 'string' || typeof reward.name !== 'string' || typeof reward.grade !== 'string' || typeof reward.quantity !== 'number' || !Number.isFinite(reward.quantity)) return []
+      const validItem = kind === 'equipment' || kind === 'martial' ? Boolean(source) : true
+      const validLegacyFragment = reward.kind !== 'fragment' || (reward.pool === 'equipment' && Boolean(source) && legacyFragmentEquipmentIds.has(reward.itemId ?? ''))
+      if (!validPool || !validKind || !validTone || !validItem || !validLegacyFragment || typeof reward.id !== 'string' || typeof reward.name !== 'string' || typeof reward.grade !== 'string' || typeof reward.quantity !== 'number' || !Number.isFinite(reward.quantity)) return []
       return [{
-        id: boundedText(reward.id, `reward-${Date.now()}`, 96), pool: reward.pool as LotteryPoolId, kind: reward.kind as LotteryReward['kind'], itemId: typeof reward.itemId === 'string' ? reward.itemId : undefined,
-        name: boundedText(reward.name, '未知奖励', 80), grade: boundedText(reward.grade, LOTTERY_GRADE_NAMES[reward.gradeTone as GradeTone], 20), gradeTone: reward.gradeTone as GradeTone, quantity: Math.max(1, Math.floor(reward.quantity)),
+        id: boundedText(reward.id, `reward-${Date.now()}`, 96), pool: reward.pool as LotteryPoolId, kind, itemId: typeof reward.itemId === 'string' ? reward.itemId : undefined,
+        name: reward.kind === 'fragment' && source ? source.name : boundedText(reward.name, '未知奖励', 80), grade: reward.kind === 'fragment' && source ? source.grade : boundedText(reward.grade, LOTTERY_GRADE_NAMES[reward.gradeTone as GradeTone], 20), gradeTone: reward.kind === 'fragment' && source ? source.gradeTone : reward.gradeTone as GradeTone, quantity: Math.max(1, Math.floor(reward.quantity)),
       }]
     }).slice(0, 24)
     : []
@@ -1064,7 +1128,6 @@ function loadLottery(value: unknown, initial: LotteryState): LotteryState {
       equipment: loadLotteryPity(savedPity?.equipment),
       martial: loadLotteryPity(savedPity?.martial),
     },
-    fragments,
     ownedEquipmentIds,
     ownedMartialArtIds,
     history,
@@ -1080,6 +1143,19 @@ function loadMastery(value: unknown, fallback: Record<string, number>): Record<s
     if (knownIds.has(id) && typeof amount === 'number' && Number.isFinite(amount)) mastery[id] = clamp(Math.floor(amount), 0, 100)
   }
   return mastery
+}
+
+function loadEquipmentEnhancements(value: unknown, fallback: Record<string, number>): Record<string, number> {
+  const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
+  const knownIds = new Set(EQUIPMENT.map((equipment) => equipment.id))
+  const enhancements = { ...fallback }
+  if (!saved) return enhancements
+  for (const [id, amount] of Object.entries(saved)) {
+    if (knownIds.has(id) && typeof amount === 'number' && Number.isFinite(amount)) {
+      enhancements[id] = clamp(Math.floor(amount), 0, EQUIPMENT_ENHANCEMENT_MAX_LEVEL)
+    }
+  }
+  return enhancements
 }
 
 function loadMartialLoadout(value: unknown, legacyValue: unknown, fallback: MartialArtLoadout, ownedIds: readonly string[]): MartialArtLoadout {
@@ -1138,6 +1214,7 @@ export function loadGame(): GameState {
       forge: nonNegativeInteger(playerValues.forge, initial.player.forge),
       insight: nonNegativeInteger(playerValues.insight, initial.player.insight),
       fame: nonNegativeInteger(playerValues.fame, initial.player.fame),
+      equipmentEnhancements: loadEquipmentEnhancements(playerValues.equipmentEnhancements, initial.player.equipmentEnhancements),
       mastery: loadMastery(playerValues.mastery, initial.player.mastery),
       martialLoadout: loadMartialLoadout(playerValues.martialLoadout, legacyPlayer?.equippedArts, initial.player.martialLoadout, lottery.ownedMartialArtIds),
       equippedEquipment: loadEquippedEquipment(equippedEquipment, equippedWeapon, initial.player.equippedEquipment),

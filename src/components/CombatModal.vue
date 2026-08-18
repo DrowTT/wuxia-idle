@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { Award, Coins, Gem, Hammer, Play, Sparkles, Swords, X } from '@lucide/vue'
 import type { BattleReward, CombatAction, CombatStats, CombatTarget, Encounter, PlayerState } from '../domain/types'
 
@@ -15,6 +15,8 @@ const props = defineProps<{
   autoBattle: boolean
 }>()
 const emit = defineEmits<{ close: []; start: [] }>()
+const combatLogElement = ref<HTMLElement | null>(null)
+const isFollowingCombatLog = ref(true)
 
 const activePlayerStats = computed(() => props.encounter?.playerStats ?? props.playerStats)
 const activeEnemies = computed(() => {
@@ -28,10 +30,39 @@ const playerSkillAction = computed(() => {
   if (!action?.skill || action.attacker.side !== 'player') return null
   return { sequence: action.sequence, name: action.skill.name }
 })
+const playerComboAction = computed(() => {
+  const action = props.action
+  return action?.isCombo && action.attacker.side === 'player' ? { sequence: action.sequence } : null
+})
 
 function updateVisibility(visible: boolean): void {
   if (!visible) emit('close')
 }
+
+function scrollCombatLogToLatest(): void {
+  void nextTick(() => {
+    const element = combatLogElement.value
+    if (element) element.scrollTop = element.scrollHeight
+  })
+}
+
+function updateCombatLogFollowingState(event: Event): void {
+  const element = event.currentTarget as HTMLElement
+  isFollowingCombatLog.value = element.scrollTop + element.clientHeight >= element.scrollHeight - 8
+}
+
+watch(() => props.open, (open) => {
+  if (open) {
+    isFollowingCombatLog.value = true
+    scrollCombatLogToLatest()
+  } else {
+    isFollowingCombatLog.value = true
+  }
+}, { flush: 'post', immediate: true })
+
+watch(() => props.encounter?.logs.length ?? 0, () => {
+  if (props.open && isFollowingCombatLog.value) scrollCombatLogToLatest()
+}, { flush: 'post' })
 
 function healthPercentage(current: number, max: number): number {
   return max > 0 ? Math.round((current / max) * 100) : 0
@@ -56,6 +87,7 @@ function animationClass(target: 'player' | string): Record<string, boolean> {
     'is-hit': action.outcome === 'hit' && matchesActionTarget(target, action.defender),
     'is-dodging': action.outcome === 'dodge' && matchesActionTarget(target, action.defender),
     'is-stunned': action.outcome === 'stunned' && matchesActionTarget(target, action.attacker),
+    'is-immune': action.outcome === 'immune' && matchesActionTarget(target, action.defender),
   }
 }
 
@@ -69,8 +101,14 @@ function feedbackText(target: 'player' | string): string {
   const action = props.action
   if (!action || !matchesActionTarget(target, action.defender)) return ''
   if (action.outcome === 'dodge') return '闪避'
+  if (action.outcome === 'immune') return '无伤'
   if (action.outcome === 'hit') return `-${action.damage}`
   return ''
+}
+
+function isComboAttacker(target: 'player' | string): boolean {
+  const action = props.action
+  return Boolean(action?.isCombo && matchesActionTarget(target, action.attacker))
 }
 </script>
 
@@ -123,8 +161,9 @@ function feedbackText(target: 'player' | string): string {
           <span class="fighter-avatar-wrap">
             <span :key="animationKey('player')" class="fighter-avatar player" :class="animationClass('player')">沈</span>
             <span v-if="playerSkillAction" :key="`skill-${playerSkillAction.sequence}`" class="combat-skill-bubble"><Swords :size="12" /><b>{{ playerSkillAction.name }}</b></span>
+            <span v-if="playerComboAction" :key="`combo-${playerComboAction.sequence}`" class="combat-skill-bubble combo-bubble"><Swords :size="12" /><b>连击</b></span>
           </span>
-          <span v-if="feedbackText('player')" :key="`feedback-${animationKey('player')}`" class="combat-feedback" :class="{ critical: action?.isCritical }">{{ feedbackText('player') }}</span>
+          <span v-if="feedbackText('player')" :key="`feedback-${animationKey('player')}`" class="combat-feedback" :class="{ critical: action?.isCritical, immune: action?.outcome === 'immune' }">{{ feedbackText('player') }}</span>
           <div class="fighter-health progress-meter" :aria-label="`生命 ${playerHp} / ${encounter.playerMaxHealth}`"><el-progress :percentage="healthPercentage(playerHp, encounter.playerMaxHealth)" :show-text="false" :stroke-width="8" /><span class="progress-meter-value">{{ playerHp.toLocaleString() }} / {{ encounter.playerMaxHealth.toLocaleString() }}</span></div>
           <div class="fighter-rage" :aria-label="`怒气 ${encounter.playerRage} / 100`"><div class="progress-meter"><el-progress :percentage="Math.min(100, encounter.playerRage)" :show-text="false" :stroke-width="6" color="#e49a35" /><span class="progress-meter-value">{{ encounter.playerRage }} / 100</span></div></div>
         </div>
@@ -132,8 +171,11 @@ function feedbackText(target: 'player' | string): string {
         <div class="enemy-team" :aria-label="enemyCountLabel">
           <div v-for="enemy in activeEnemies" :key="enemy.id" class="fighter enemy-fighter" :class="{ defeated: enemy.hp <= 0 }">
             <strong>{{ enemy.name }}</strong>
-            <span :key="animationKey(enemy.id)" class="fighter-avatar enemy" :class="animationClass(enemy.id)">敌</span>
-            <span v-if="feedbackText(enemy.id)" :key="`feedback-${animationKey(enemy.id)}`" class="combat-feedback" :class="{ critical: action?.isCritical }">{{ feedbackText(enemy.id) }}</span>
+            <span class="fighter-avatar-wrap">
+              <span :key="animationKey(enemy.id)" class="fighter-avatar enemy" :class="animationClass(enemy.id)">敌</span>
+              <span v-if="isComboAttacker(enemy.id)" :key="`combo-${enemy.id}-${action?.sequence}`" class="combat-skill-bubble combo-bubble"><Swords :size="12" /><b>连击</b></span>
+            </span>
+            <span v-if="feedbackText(enemy.id)" :key="`feedback-${animationKey(enemy.id)}`" class="combat-feedback" :class="{ critical: action?.isCritical, immune: action?.outcome === 'immune' }">{{ feedbackText(enemy.id) }}</span>
             <div class="fighter-health progress-meter" :aria-label="`生命 ${enemy.hp} / ${enemy.maxHealth}`"><el-progress class="enemy-hp" :percentage="healthPercentage(enemy.hp, enemy.maxHealth)" :show-text="false" :stroke-width="8" /><span class="progress-meter-value">{{ enemy.hp.toLocaleString() }} / {{ enemy.maxHealth.toLocaleString() }}</span></div>
           </div>
         </div>
@@ -152,7 +194,7 @@ function feedbackText(target: 'player' | string): string {
         </div>
         <p v-if="reward.eliteBonus"><Sparkles :size="13" />精英额外掉落</p>
       </section>
-      <div class="combat-log"><p v-for="(line, index) in encounter.logs" :key="`${line}-${index}`">{{ line }}</p></div>
+      <div ref="combatLogElement" class="combat-log" @scroll="updateCombatLogFollowingState"><p v-for="(line, index) in encounter.logs" :key="`${line}-${index}`">{{ line }}</p></div>
       <el-button v-if="encounter.status !== 'fighting' && !autoBattle" class="full" type="primary" @click="emit('close')">收下战果</el-button>
     </template>
   </el-dialog>
