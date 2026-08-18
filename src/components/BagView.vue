@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { BookOpen, CircleDot, Crown, Hand, Shield, Shirt, Sparkles, Swords, Trophy } from '@lucide/vue'
-import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_SETS, EQUIPMENT_SLOTS, MARTIAL_ARTS, canComposeLotteryEquipment, canEnhanceMartialArt, canEquipEquipmentInSlot, getEquipmentForSlot, getEquipmentSetActivations, getEquippedMartialArts, getInnerForceRateBonus, getLotteryFragmentCount, getLotteryFragmentRequirement, getMartialEnhancementCost, getMartialMastery, getOwnedLotteryFragmentTargets, hasMartialWeaponAffinity, isMartialArtEnhanceable } from '../domain/game'
-import type { CombatStats, Equipment, EquipmentCategory, EquipmentSlot, GameState, MartialArt, MartialArtSlot, WeaponStyle } from '../domain/types'
+import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_SETS, EQUIPMENT_SLOTS, MARTIAL_ARTS, canComposeLotteryEquipment, canEnhanceMartialArt, canEquipEquipmentInSlot, getEquipmentForSlot, getEquipmentSetActivations, getEquippedMartialArts, getLotteryFragmentCount, getLotteryFragmentRequirement, getMartialEnhancementCost, getMartialMastery, getOwnedLotteryFragmentTargets, isMartialArtEnhanceable } from '../domain/game'
+import MartialArtTooltip from './MartialArtTooltip.vue'
+import type { CombatStats, Equipment, EquipmentCategory, EquipmentSlot, GameState, MartialArt, MartialArtSlot } from '../domain/types'
 
 const props = defineProps<{ game: GameState }>()
 const emit = defineEmits<{
@@ -38,14 +39,6 @@ const martialSlotMeta: Record<MartialArtSlot, { label: string; hint: string }> =
   inner2: { label: '内功二', hint: '被动心法' },
   outer1: { label: '外功一', hint: '主动招式' },
   outer2: { label: '外功二', hint: '主动招式' },
-}
-
-const weaponStyleLabels: Record<WeaponStyle, string> = {
-  sword: '长剑',
-  saber: '刀',
-  spear: '枪戟',
-  staff: '棍',
-  fist: '拳套',
 }
 
 const categoryLabels: Record<EquipmentCategory, string> = {
@@ -162,24 +155,6 @@ function equipMartialArt(art: MartialArt): void {
   emit('equip-martial', slot, art)
 }
 
-function martialStats(art: MartialArt): Array<{ label: string; value: string }> {
-  return Object.entries(art.combatBonuses ?? {}).flatMap(([key, value]) => {
-    if (typeof value !== 'number') return []
-    const label = statLabels[key as keyof CombatStats]
-    if (!label) return []
-    const percentage = !['maxHealth', 'attack', 'defense', 'speed'].includes(key)
-    return [{ label, value: `${value > 0 ? '+' : ''}${value}${percentage ? '%' : ''}` }]
-  })
-}
-
-function martialAffinityStyles(art: MartialArt): string {
-  return art.affinityWeaponStyles?.map((style) => weaponStyleLabels[style]).join(' / ') ?? ''
-}
-
-function martialAffinityActive(art: MartialArt): boolean {
-  return hasMartialWeaponAffinity(props.game.player, art)
-}
-
 function artEnhancementCost(art: MartialArt): number { return getMartialEnhancementCost(props.game.player, art) }
 function artMastery(art: MartialArt): number { return getMartialMastery(props.game.player, art.id) }
 function canEnhanceMartial(art: MartialArt): boolean { return canEnhanceMartialArt(props.game.player, art) }
@@ -293,13 +268,13 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                 <div class="martial-slot-group"><small>内功 · 被动</small><div class="martial-slot-grid">
                   <el-popover v-for="slot in ['inner1', 'inner2'] as MartialArtSlot[]" :key="slot" trigger="hover" placement="right" :width="270" :enterable="false" :show-after="0" :hide-after="0" transition="none" popper-class="equipment-popover">
                     <template #reference><div class="martial-slot-control"><el-button class="martial-slot" :class="{ empty: !martialAt(slot), enhanceable: martialAt(slot) && isMartialArtEnhanceable(martialAt(slot)!), [martialAt(slot)?.gradeTone ?? 'empty']: true }" :aria-label="martialAt(slot) ? `卸下${martialAt(slot)?.name}` : `${martialSlotMeta[slot].label}未装配`" @click="clickMartialSlot(slot)"><span class="martial-slot-glyph"><BookOpen :size="21" /></span><b v-if="martialAt(slot)">{{ martialAt(slot)?.name }}</b><i v-else>{{ martialSlotMeta[slot].label }}</i><small>{{ martialAt(slot)?.keyword ?? martialSlotMeta[slot].hint }}</small></el-button><el-button v-if="martialAt(slot) && isMartialArtEnhanceable(martialAt(slot)!)" class="martial-enhance-button" type="primary" size="small" :disabled="!canEnhanceMartial(martialAt(slot)!)" @click.stop="$emit('enhance-art', martialAt(slot)!)">{{ martialEnhancementLabel(martialAt(slot)!) }}</el-button></div></template>
-                    <section v-if="martialAt(slot)" class="equipment-tooltip"><header><div><small>{{ martialAt(slot)?.category }}</small><b>{{ martialAt(slot)?.name }}</b></div><el-tag size="small" :type="gradeTagType({ gradeTone: martialAt(slot)!.gradeTone } as Equipment)">{{ martialAt(slot)?.grade }}</el-tag></header><p>{{ martialAt(slot)?.keyword }} · {{ martialAt(slot)?.description }}</p><dl><div v-for="stat in martialStats(martialAt(slot)!)" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl><p v-if="martialAt(slot)?.activeSkill">怒气达到100后，于后续回合施放：{{ martialAt(slot)?.activeSkill?.name }}</p><p v-if="martialAt(slot)?.passiveEffects?.length">{{ martialAt(slot)?.passiveEffects?.map((effect) => effect.description).join(' · ') }}</p></section><section v-else class="equipment-tooltip empty-tooltip"><b>{{ martialSlotMeta[slot].label }}</b><p>点击右侧功法装配</p></section>
+                    <MartialArtTooltip v-if="martialAt(slot)" :art="martialAt(slot)!" :player="game.player" /><section v-else class="equipment-tooltip empty-tooltip"><b>{{ martialSlotMeta[slot].label }}</b><p>点击右侧功法装配</p></section>
                   </el-popover>
                 </div></div>
                 <div class="martial-slot-group"><small>外功 · 主动</small><div class="martial-slot-grid">
                   <el-popover v-for="slot in ['outer1', 'outer2'] as MartialArtSlot[]" :key="slot" trigger="hover" placement="right" :width="270" :enterable="false" :show-after="0" :hide-after="0" transition="none" popper-class="equipment-popover">
                     <template #reference><div class="martial-slot-control"><el-button class="martial-slot" :class="{ empty: !martialAt(slot), enhanceable: martialAt(slot) && isMartialArtEnhanceable(martialAt(slot)!), [martialAt(slot)?.gradeTone ?? 'empty']: true }" :aria-label="martialAt(slot) ? `卸下${martialAt(slot)?.name}` : `${martialSlotMeta[slot].label}未装配`" @click="clickMartialSlot(slot)"><span class="martial-slot-glyph"><Swords :size="21" /></span><b v-if="martialAt(slot)">{{ martialAt(slot)?.name }}</b><i v-else>{{ martialSlotMeta[slot].label }}</i><small>{{ martialAt(slot)?.activeSkill?.name ?? martialSlotMeta[slot].hint }}</small></el-button><el-button v-if="martialAt(slot) && isMartialArtEnhanceable(martialAt(slot)!)" class="martial-enhance-button" type="primary" size="small" :disabled="!canEnhanceMartial(martialAt(slot)!)" @click.stop="$emit('enhance-art', martialAt(slot)!)">{{ martialEnhancementLabel(martialAt(slot)!) }}</el-button></div></template>
-                    <section v-if="martialAt(slot)" class="equipment-tooltip"><header><div><small>{{ martialAt(slot)?.category }}</small><b>{{ martialAt(slot)?.name }}</b></div><el-tag size="small" :type="gradeTagType({ gradeTone: martialAt(slot)!.gradeTone } as Equipment)">{{ martialAt(slot)?.grade }}</el-tag></header><p>{{ martialAt(slot)?.keyword }} · {{ martialAt(slot)?.description }}</p><p v-if="martialAt(slot)?.activeSkill">{{ martialAt(slot)?.activeSkill?.name }}：{{ martialAt(slot)?.activeSkill?.description }}</p><p v-if="martialAt(slot)?.affinityWeaponStyles?.length" class="martial-affinity"><span>兵器契合：{{ martialAffinityStyles(martialAt(slot)!) }}</span><b :class="{ active: martialAffinityActive(martialAt(slot)!) }">{{ martialAffinityActive(martialAt(slot)!) ? '当前已契合' : '当前未契合' }}</b></p><p v-if="martialAt(slot)?.affinityWeaponStyles?.length">契合时，外功伤害 x1.18；数值型招式效果 x1.25</p><dl><div v-for="stat in martialStats(martialAt(slot)!)" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl></section><section v-else class="equipment-tooltip empty-tooltip"><b>{{ martialSlotMeta[slot].label }}</b><p>点击右侧功法装配</p></section>
+                    <MartialArtTooltip v-if="martialAt(slot)" :art="martialAt(slot)!" :player="game.player" /><section v-else class="equipment-tooltip empty-tooltip"><b>{{ martialSlotMeta[slot].label }}</b><p>点击右侧功法装配</p></section>
                   </el-popover>
                 </div></div>
               </div>
@@ -311,7 +286,7 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
               <div class="martial-library-grid">
                 <el-popover v-for="art in filteredMartialArts" :key="art.id" trigger="hover" placement="left" :width="270" :enterable="false" :show-after="0" :hide-after="0" transition="none" popper-class="equipment-popover">
                   <template #reference><div class="martial-library-card" :class="art.gradeTone" role="button" tabindex="0" :aria-label="`装配${art.name}`" @click="equipMartialArt(art)" @keydown.enter="equipMartialArt(art)"><span class="martial-library-glyph"><BookOpen v-if="art.kind === 'inner'" :size="21" /><Swords v-else :size="21" /></span><div><b>{{ art.name }}</b><small>{{ art.kind === 'inner' ? '内功 · 被动' : '外功 · 主动' }} · {{ art.keyword }}</small><em>{{ art.grade }}</em></div><el-button v-if="isMartialArtEnhanceable(art)" class="martial-enhance-button art-enhance-button" type="primary" size="small" :disabled="!canEnhanceMartial(art)" @click.stop="$emit('enhance-art', art)">{{ martialEnhancementLabel(art) }}</el-button></div></template>
-                  <section class="equipment-tooltip"><header><div><small>{{ art.category }}</small><b>{{ art.name }}</b></div><el-tag size="small" :type="gradeTagType({ gradeTone: art.gradeTone } as Equipment)">{{ art.grade }}</el-tag></header><p>{{ art.keyword }} · {{ art.description }}</p><p v-if="art.activeSkill"><b>{{ art.activeSkill.name }}</b>：{{ art.activeSkill.description }}</p><p v-if="art.affinityWeaponStyles?.length" class="martial-affinity"><span>兵器契合：{{ martialAffinityStyles(art) }}</span><b :class="{ active: martialAffinityActive(art) }">{{ martialAffinityActive(art) ? '当前已契合' : '当前未契合' }}</b></p><p v-if="art.affinityWeaponStyles?.length">契合时，外功伤害 x1.18；数值型招式效果 x1.25</p><p v-if="art.passiveEffects?.length"><b>内功特效</b>：{{ art.passiveEffects.map((effect) => effect.description).join(' · ') }}</p><dl><div v-for="stat in martialStats(art)" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl><p v-if="art.innerForceRateBase !== undefined">当前吐纳增益：+{{ (art.innerForceRateBase + artMastery(art) * (art.innerForceRatePerMastery ?? 0)).toFixed(2) }} / 秒</p></section>
+                  <MartialArtTooltip :art="art" :player="game.player" />
                 </el-popover>
               </div>
             </section>
