@@ -118,6 +118,7 @@ function selectPool(pool: string): void {
         <p class="lottery-probability-caption">兵器匣与功法卷共用以下品质概率。</p>
         <div class="lottery-probability-grid"><span v-for="(rate, tone) in LOTTERY_GRADE_RATES" :key="tone" class="lottery-rate" :class="tone"><i>{{ LOTTERY_GRADE_NAMES[tone] }}</i><b>{{ rate }}%</b></span></div>
         <div class="lottery-detail-list">
+          <div><b>保底机制</b><span>本奖池设有保底机制。</span></div>
           <div v-if="activePool === 'equipment'"><b>碎片规则</b><span>传说装备需 5 枚碎片，神话装备需 10 枚碎片合成。</span></div>
         </div>
       </div>
