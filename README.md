@@ -107,6 +107,8 @@ rsync -av --delete dist/ deploy@your-server:/var/www/wuxia-idle/
 
 注意：`rsync --delete` 会删除服务器目标目录中不在本次构建产物内的文件。部署前请确认目标目录只存放本项目静态文件。
 
+项目同时提供了面向 `wuxia.drowts.cn` 的配置模板：首次签发证书时使用 `deploy/nginx/wuxia-idle.http.conf`，签发后切换为 `deploy/nginx/wuxia-idle.https.conf`。发布目录采用 `releases/` 与 `current` 软链接，便于回滚。
+
 ## 存档说明
 
 游戏进度仅保存在当前浏览器和当前站点域名下。清除浏览器站点数据、更换浏览器或更换域名都会创建新的本地存档；当前版本不包含账号登录或云端存档。
