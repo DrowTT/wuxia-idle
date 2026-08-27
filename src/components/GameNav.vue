@@ -9,8 +9,11 @@ interface NavItem {
 const items: readonly NavItem[] = [
   { id: 'practice', label: '修炼' },
   { id: 'journey', label: '闯荡' },
+  { id: 'dungeon', label: '秘境' },
+  { id: 'temple', label: '武庙' },
   { id: 'bag', label: '背包' },
   { id: 'lottery', label: '抽奖' },
+  { id: 'market', label: '商会' },
 ]
 
 const props = defineProps<{ active: ViewId; cultivationReady: boolean }>()

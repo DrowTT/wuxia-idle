@@ -2,6 +2,9 @@ import type { CombatStats } from '../domain/types'
 
 export const MAX_DODGE_RATE = 20
 
+/** Maximum multiplier for fixed martial-art bonuses at the highest rank. */
+export const MARTIAL_ASCENSION_MAX_STAT_MULTIPLIER = 2
+
 export const DEFAULT_COMBAT_STATS: CombatStats = {
   maxHealth: 1_000,
   attack: 100,

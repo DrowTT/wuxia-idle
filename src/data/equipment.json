@@ -1,0 +1,2660 @@
+{
+  "equipment": [
+    {
+      "id": "nameless",
+      "categoryId": "weapon",
+      "name": "无名旧剑",
+      "category": "长剑",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 94,
+      "gemSlots": 2,
+      "weaponStyle": "sword",
+      "keyword": "旧物 · 未锋",
+      "lore": "剑锋未利，但出手仍比徒手可靠。",
+      "combatBonuses": {
+        "attack": 2,
+        "speed": 1,
+        "hitRate": 1
+      },
+      "combatRates": {
+        "attack": 0.54,
+        "speed": 0.61
+      }
+    },
+    {
+      "id": "willow-staff",
+      "categoryId": "weapon",
+      "name": "柳木长棍",
+      "category": "长棍",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 88,
+      "gemSlots": 2,
+      "weaponStyle": "staff",
+      "keyword": "守拙 · 稳势",
+      "lore": "棍身韧而不折，适合以守待攻。",
+      "combatBonuses": {
+        "attack": 2,
+        "defense": 2,
+        "counterRate": 2
+      },
+      "combatRates": {
+        "attack": 0.38,
+        "defense": 0.77
+      }
+    },
+    {
+      "id": "rough-iron-helm",
+      "categoryId": "helmet",
+      "name": "粗铁护额",
+      "category": "头盔",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 48,
+      "gemSlots": 1,
+      "keyword": "简陋 · 守要",
+      "lore": "一块弯铁片，至少能护住眉骨。",
+      "combatBonuses": {
+        "maxHealth": 9,
+        "defense": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.48,
+        "defense": 0.52
+      }
+    },
+    {
+      "id": "traveler-vest",
+      "categoryId": "chest",
+      "name": "行脚短褂",
+      "category": "胸甲",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 54,
+      "gemSlots": 1,
+      "keyword": "耐磨 · 轻便",
+      "lore": "寻常粗布短褂，耐磨而便于赶路。",
+      "combatBonuses": {
+        "maxHealth": 12,
+        "defense": 1,
+        "speed": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.39,
+        "defense": 0.3,
+        "speed": 0.41
+      }
+    },
+    {
+      "id": "pack-mule",
+      "categoryId": "mount",
+      "name": "驮行骡",
+      "category": "坐骑",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 42,
+      "gemSlots": 1,
+      "keyword": "负重 · 安稳",
+      "lore": "脚力谈不上快，胜在山路里从不失蹄。",
+      "combatBonuses": {
+        "maxHealth": 10,
+        "defense": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.6,
+        "defense": 0.4
+      }
+    },
+    {
+      "id": "reed-cloak",
+      "categoryId": "cloak",
+      "name": "蓑衣披肩",
+      "category": "披风",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 39,
+      "gemSlots": 1,
+      "keyword": "避雨 · 藏形",
+      "lore": "雨中赶路的旧蓑衣，亦能遮掩身形。",
+      "combatBonuses": {
+        "defense": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "defense": 1
+      }
+    },
+    {
+      "id": "hemp-belt",
+      "categoryId": "belt",
+      "name": "麻绳腰带",
+      "category": "腰带",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 36,
+      "gemSlots": 0,
+      "keyword": "束衣 · 定势",
+      "lore": "朴素的麻绳，束紧时也能稳住腰腹。",
+      "combatBonuses": {
+        "maxHealth": 8,
+        "attack": 1,
+        "defense": 1,
+        "speed": 1,
+        "stunResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.18,
+        "attack": 0.14,
+        "defense": 0.29,
+        "speed": 0.29
+      }
+    },
+    {
+      "id": "wooden-talisman",
+      "categoryId": "talisman",
+      "name": "桃木符",
+      "category": "护符",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 35,
+      "gemSlots": 0,
+      "keyword": "安神 · 避祟",
+      "lore": "刻着浅纹的桃木牌，贴身带着总觉心安。",
+      "combatBonuses": {
+        "maxHealth": 7,
+        "lifestealResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.8
+      }
+    },
+    {
+      "id": "bronze-ring",
+      "categoryId": "ring",
+      "name": "铜环",
+      "category": "戒指",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 31,
+      "gemSlots": 0,
+      "keyword": "握劲 · 习拳",
+      "lore": "练拳时常戴的铜环，磨得发亮。",
+      "combatBonuses": {
+        "attack": 1,
+        "hitRate": 1
+      },
+      "combatRates": {
+        "attack": 0.8
+      }
+    },
+    {
+      "id": "green-edge",
+      "categoryId": "weapon",
+      "name": "青锋",
+      "category": "长剑",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 182,
+      "gemSlots": 2,
+      "weaponStyle": "sword",
+      "keyword": "轻灵 · 连击",
+      "lore": "剑势轻灵，连续命中后更易追加一击。",
+      "combatBonuses": {
+        "attack": 3,
+        "speed": 1,
+        "hitRate": 1,
+        "comboRate": 6
+      },
+      "combatRates": {
+        "attack": 0.99,
+        "speed": 1.31
+      }
+    },
+    {
+      "id": "bamboo-hat",
+      "categoryId": "helmet",
+      "name": "青竹斗笠",
+      "category": "头盔",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 76,
+      "gemSlots": 1,
+      "keyword": "轻甲 · 回避",
+      "lore": "竹篾编成的斗笠，挡雨遮目，行走江湖颇为自在。",
+      "combatBonuses": {
+        "maxHealth": 14,
+        "defense": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.97,
+        "defense": 1.03
+      }
+    },
+    {
+      "id": "cloud-vest",
+      "categoryId": "chest",
+      "name": "云纹软甲",
+      "category": "胸甲",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 112,
+      "gemSlots": 1,
+      "keyword": "柔韧 · 护身",
+      "lore": "内衬细密锁甲，不妨碍腾挪，亦能卸去数分劲力。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "defense": 2,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.12,
+        "defense": 1.08
+      }
+    },
+    {
+      "id": "green-mane",
+      "categoryId": "mount",
+      "name": "青鬃马",
+      "category": "坐骑",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 88,
+      "gemSlots": 1,
+      "keyword": "疾行 · 先手",
+      "lore": "性情温顺而脚程不俗，穿行山道时尤见灵便。",
+      "combatBonuses": {
+        "maxHealth": 9,
+        "speed": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.41,
+        "speed": 1.59
+      }
+    },
+    {
+      "id": "goose-cloak",
+      "categoryId": "cloak",
+      "name": "雁翎披风",
+      "category": "披风",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 70,
+      "gemSlots": 1,
+      "keyword": "游身 · 闪转",
+      "lore": "披风落肩如雁翎，转身之间颇能迷惑来敌。",
+      "combatBonuses": {
+        "defense": 1,
+        "speed": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "defense": 0.91,
+        "speed": 1.09
+      }
+    },
+    {
+      "id": "linen-belt",
+      "categoryId": "belt",
+      "name": "百纳腰封",
+      "category": "腰带",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 72,
+      "gemSlots": 0,
+      "keyword": "蓄力 · 守势",
+      "lore": "层层缝制的腰封稳住腰胯，发力时更有根基。",
+      "combatBonuses": {
+        "maxHealth": 15,
+        "attack": 1,
+        "defense": 1,
+        "speed": 1,
+        "stunResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.49,
+        "attack": 0.33,
+        "defense": 0.49,
+        "speed": 0.49
+      }
+    },
+    {
+      "id": "peace-talisman",
+      "categoryId": "talisman",
+      "name": "平安符",
+      "category": "护符",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 58,
+      "gemSlots": 0,
+      "keyword": "定心 · 守元",
+      "lore": "随身护符虽旧，危急时总能让人心神一稳。",
+      "combatBonuses": {
+        "maxHealth": 13,
+        "healingBonus": 2,
+        "lifestealResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.6
+      }
+    },
+    {
+      "id": "jade-ring",
+      "categoryId": "ring",
+      "name": "青玉扳指",
+      "category": "戒指",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 64,
+      "gemSlots": 0,
+      "keyword": "凝神 · 准星",
+      "lore": "温润玉色养人心神，扣弦出掌都更见沉稳。",
+      "combatBonuses": {
+        "attack": 1,
+        "hitRate": 1,
+        "critRate": 1
+      },
+      "combatRates": {
+        "attack": 1.6
+      }
+    },
+    {
+      "id": "cold-iron",
+      "categoryId": "weapon",
+      "name": "寒铁刀",
+      "category": "单刀",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 228,
+      "gemSlots": 2,
+      "weaponStyle": "saber",
+      "keyword": "蓄力 · 破甲",
+      "lore": "刀势沉稳，强攻时更容易撕开防御。",
+      "combatBonuses": {
+        "attack": 5,
+        "defense": 1,
+        "speed": -4,
+        "critRate": 2,
+        "damageBonus": 4
+      },
+      "combatRates": {
+        "attack": 2.88,
+        "defense": 1.15
+      }
+    },
+    {
+      "id": "black-iron-helm",
+      "categoryId": "helmet",
+      "name": "乌铁兜鍪",
+      "category": "头盔",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 108,
+      "gemSlots": 1,
+      "keyword": "沉稳 · 护体",
+      "lore": "旧军制式的兜鍪，虽有划痕，仍能护住要害。",
+      "combatBonuses": {
+        "maxHealth": 17,
+        "defense": 2,
+        "critResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 1.56,
+        "defense": 1.94
+      }
+    },
+    {
+      "id": "river-leather",
+      "categoryId": "chest",
+      "name": "渡江皮甲",
+      "category": "胸甲",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 154,
+      "gemSlots": 1,
+      "keyword": "坚韧 · 反震",
+      "lore": "以江鳄背革鞣制，厚实坚韧，适合硬桥硬马的打法。",
+      "combatBonuses": {
+        "maxHealth": 29,
+        "defense": 2,
+        "counterResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 1.88,
+        "defense": 1.97
+      }
+    },
+    {
+      "id": "storm-hoof",
+      "categoryId": "mount",
+      "name": "追风骓",
+      "category": "坐骑",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 136,
+      "gemSlots": 1,
+      "keyword": "疾驰 · 压阵",
+      "lore": "奔走如风的良驹，冲阵时能为主人抢得先机。",
+      "combatBonuses": {
+        "maxHealth": 13,
+        "attack": 1,
+        "speed": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.67,
+        "attack": 0.46,
+        "speed": 2.37
+      }
+    },
+    {
+      "id": "night-cloak",
+      "categoryId": "cloak",
+      "name": "夜行斗篷",
+      "category": "披风",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 102,
+      "gemSlots": 1,
+      "keyword": "藏锋 · 会心",
+      "lore": "墨色斗篷吞没身形，出手前总能多藏一分杀机。",
+      "combatBonuses": {
+        "defense": 1,
+        "critRate": 2,
+        "critDamageReduction": 2
+      },
+      "combatRates": {
+        "defense": 3.5
+      }
+    },
+    {
+      "id": "tiger-belt",
+      "categoryId": "belt",
+      "name": "伏虎革带",
+      "category": "腰带",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 104,
+      "gemSlots": 0,
+      "keyword": "束劲 · 坚守",
+      "lore": "厚革制成的革带，能将周身劲力收束一处。",
+      "combatBonuses": {
+        "maxHealth": 18,
+        "attack": 2,
+        "defense": 2,
+        "speed": 1,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.83,
+        "attack": 0.58,
+        "defense": 0.87,
+        "speed": 0.87
+      }
+    },
+    {
+      "id": "returning-pendant",
+      "categoryId": "talisman",
+      "name": "归元佩",
+      "category": "护符",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 94,
+      "gemSlots": 0,
+      "keyword": "归元 · 护脉",
+      "lore": "古玉佩贴身温润，行气时可护住胸腹要穴。",
+      "combatBonuses": {
+        "maxHealth": 15,
+        "defense": 1,
+        "healingBonus": 4
+      },
+      "combatRates": {
+        "maxHealth": 1.49,
+        "defense": 1.31
+      }
+    },
+    {
+      "id": "iron-ring",
+      "categoryId": "ring",
+      "name": "寒星指环",
+      "category": "戒指",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 96,
+      "gemSlots": 0,
+      "keyword": "锋芒 · 暴击",
+      "lore": "寒铁打成的指环，指上力道透出一丝锐意。",
+      "combatBonuses": {
+        "attack": 2,
+        "critRate": 2,
+        "critDamage": 8
+      },
+      "combatRates": {
+        "attack": 2.8
+      }
+    },
+    {
+      "id": "violet-edge",
+      "categoryId": "weapon",
+      "name": "紫电长剑",
+      "category": "长剑",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 356,
+      "gemSlots": 2,
+      "weaponStyle": "sword",
+      "keyword": "惊雷 · 破势",
+      "lore": "剑身隐有紫纹，起势如电，专破守势未稳之敌。",
+      "combatBonuses": {
+        "attack": 6,
+        "speed": 1,
+        "critRate": 4,
+        "damageBonus": 6
+      },
+      "combatRates": {
+        "attack": 3.65,
+        "speed": 2.1
+      }
+    },
+    {
+      "id": "frostwind-sword",
+      "categoryId": "weapon",
+      "name": "霜行剑",
+      "category": "长剑",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 392,
+      "gemSlots": 2,
+      "weaponStyle": "sword",
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 剑",
+      "lore": "剑脊微寒，雪夜挥出时不见半点滞涩。",
+      "combatBonuses": {
+        "attack": 7,
+        "speed": 1,
+        "dodgeRate": 2
+      },
+      "combatRates": {
+        "attack": 3.55,
+        "speed": 2.2
+      }
+    },
+    {
+      "id": "snowcap-helm",
+      "categoryId": "helmet",
+      "name": "寒鸦兜帽",
+      "category": "头盔",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 218,
+      "gemSlots": 2,
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 盔",
+      "lore": "边沿缀着白貂绒，能隔北地凛风。",
+      "combatBonuses": {
+        "maxHealth": 22,
+        "defense": 2,
+        "critResist": 3
+      },
+      "combatRates": {
+        "maxHealth": 2.09,
+        "defense": 2.91
+      }
+    },
+    {
+      "id": "frostscale-armor",
+      "categoryId": "chest",
+      "name": "霜鳞软甲",
+      "category": "胸甲",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 276,
+      "gemSlots": 2,
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 甲",
+      "lore": "层层细鳞如冰面，受力时将劲道卸往四方。",
+      "combatBonuses": {
+        "maxHealth": 34,
+        "defense": 3,
+        "damageReduction": 2
+      },
+      "combatRates": {
+        "maxHealth": 2.49,
+        "defense": 3.01
+      }
+    },
+    {
+      "id": "white-horse",
+      "categoryId": "mount",
+      "name": "照夜白",
+      "category": "坐骑",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 232,
+      "gemSlots": 2,
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 骑",
+      "lore": "踏霜而行的白马，夜路中也能抢得先手。",
+      "combatBonuses": {
+        "maxHealth": 15,
+        "speed": 3,
+        "hitRate": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.93,
+        "speed": 4.07
+      }
+    },
+    {
+      "id": "snowwing-cloak",
+      "categoryId": "cloak",
+      "name": "雪翎披风",
+      "category": "披风",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 204,
+      "gemSlots": 2,
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 披",
+      "lore": "披风翻起如白羽，转折之间极难捉摸。",
+      "combatBonuses": {
+        "defense": 2,
+        "speed": 1,
+        "dodgeRate": 3
+      },
+      "combatRates": {
+        "defense": 2.5,
+        "speed": 2.5
+      }
+    },
+    {
+      "id": "icecord-belt",
+      "categoryId": "belt",
+      "name": "冰蚕束带",
+      "category": "腰带",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 210,
+      "gemSlots": 1,
+      "setId": "rimebound",
+      "keyword": "踏雪行旅 · 腰",
+      "lore": "冰蚕丝织成，令行气与步法衔接得更紧。",
+      "combatBonuses": {
+        "maxHealth": 20,
+        "attack": 2,
+        "defense": 2,
+        "speed": 1,
+        "comboResist": 3
+      },
+      "combatRates": {
+        "maxHealth": 1.07,
+        "attack": 0.74,
+        "defense": 1.26,
+        "speed": 1.42
+      }
+    },
+    {
+      "id": "moon-shadow-pendant",
+      "categoryId": "talisman",
+      "name": "月影坠",
+      "category": "护符",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 190,
+      "gemSlots": 0,
+      "keyword": "月华 · 养息",
+      "lore": "夜色下温润如月，令伤势恢复得更从容。",
+      "combatBonuses": {
+        "maxHealth": 25,
+        "healingBonus": 8,
+        "damageReduction": 2
+      },
+      "combatRates": {
+        "maxHealth": 4
+      }
+    },
+    {
+      "id": "seven-star-ring",
+      "categoryId": "ring",
+      "name": "七星戒",
+      "category": "戒指",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 186,
+      "gemSlots": 0,
+      "keyword": "星斗 · 会神",
+      "lore": "戒面暗刻七星，出招时心念尤为专注。",
+      "combatBonuses": {
+        "attack": 3,
+        "hitRate": 3,
+        "critRate": 4
+      },
+      "combatRates": {
+        "attack": 4
+      }
+    },
+    {
+      "id": "town-mountain-saber",
+      "categoryId": "weapon",
+      "name": "镇岳宝刀",
+      "category": "单刀",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 572,
+      "gemSlots": 3,
+      "weaponStyle": "saber",
+      "keyword": "沉岳 · 断甲",
+      "lore": "名匠以百炼寒铁锻成，刀势如山，专擅正面破阵。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "attack": 8,
+        "defense": 3,
+        "critDamage": 18,
+        "damageBonus": 9
+      },
+      "combatRates": {
+        "maxHealth": 1.6,
+        "attack": 4.3,
+        "defense": 2.15
+      }
+    },
+    {
+      "id": "stonebreaker-saber",
+      "categoryId": "weapon",
+      "name": "裂碑战刀",
+      "category": "单刀",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 624,
+      "gemSlots": 3,
+      "weaponStyle": "saber",
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 刀",
+      "lore": "厚背长刀，落势沉重如崩石。",
+      "combatBonuses": {
+        "maxHealth": 33,
+        "attack": 10,
+        "defense": 3,
+        "damageBonus": 8
+      },
+      "combatRates": {
+        "maxHealth": 1.72,
+        "attack": 4.25,
+        "defense": 2.08
+      }
+    },
+    {
+      "id": "black-tiger-helm",
+      "categoryId": "helmet",
+      "name": "玄虎战盔",
+      "category": "头盔",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 362,
+      "gemSlots": 3,
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 盔",
+      "lore": "盔顶如伏虎之首，重击之下也不失阵脚。",
+      "combatBonuses": {
+        "maxHealth": 35,
+        "defense": 4,
+        "critResist": 5
+      },
+      "combatRates": {
+        "maxHealth": 2.97,
+        "defense": 4.03
+      }
+    },
+    {
+      "id": "mountain-armor",
+      "categoryId": "chest",
+      "name": "镇岳重铠",
+      "category": "胸甲",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 468,
+      "gemSlots": 3,
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 甲",
+      "lore": "甲叶层叠相扣，攻守之间自成一体。",
+      "combatBonuses": {
+        "maxHealth": 52,
+        "defense": 5,
+        "damageReduction": 4
+      },
+      "combatRates": {
+        "maxHealth": 3.42,
+        "defense": 4.28
+      }
+    },
+    {
+      "id": "iron-hoof",
+      "categoryId": "mount",
+      "name": "铁蹄乌骓",
+      "category": "坐骑",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 350,
+      "gemSlots": 3,
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 骑",
+      "lore": "冲阵时蹄声如雷，主人气势也随之高涨。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "attack": 2,
+        "defense": 2,
+        "speed": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.9,
+        "attack": 1.46,
+        "defense": 1.82,
+        "speed": 1.82
+      }
+    },
+    {
+      "id": "battle-cloak",
+      "categoryId": "cloak",
+      "name": "铁幕战披",
+      "category": "披风",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 316,
+      "gemSlots": 3,
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 披",
+      "lore": "厚实披风覆在肩背，能遮住兵刃来路。",
+      "combatBonuses": {
+        "maxHealth": 23,
+        "defense": 3,
+        "damageReduction": 3
+      },
+      "combatRates": {
+        "maxHealth": 2.78,
+        "defense": 4.22
+      }
+    },
+    {
+      "id": "tiger-cinch",
+      "categoryId": "belt",
+      "name": "玄虎束腰",
+      "category": "腰带",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 320,
+      "gemSlots": 2,
+      "setId": "ironwall",
+      "keyword": "玄甲镇岳 · 腰",
+      "lore": "锁扣如虎首，束紧一刻，周身劲力浑然一体。",
+      "combatBonuses": {
+        "maxHealth": 25,
+        "attack": 2,
+        "defense": 3,
+        "speed": 1,
+        "stunResist": 4
+      },
+      "combatRates": {
+        "maxHealth": 1.46,
+        "attack": 1.19,
+        "defense": 1.86,
+        "speed": 1.79
+      }
+    },
+    {
+      "id": "tiger-soul-pendant",
+      "categoryId": "talisman",
+      "name": "虎魄符",
+      "category": "护符",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 284,
+      "gemSlots": 0,
+      "keyword": "虎魄 · 不退",
+      "lore": "古符温热，危局中能激出胸中一口硬气。",
+      "combatBonuses": {
+        "maxHealth": 30,
+        "defense": 2,
+        "counterRate": 5,
+        "damageReduction": 2
+      },
+      "combatRates": {
+        "maxHealth": 2.92,
+        "defense": 2.68
+      }
+    },
+    {
+      "id": "sea-vault-ring",
+      "categoryId": "ring",
+      "name": "沧海戒",
+      "category": "戒指",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 276,
+      "gemSlots": 0,
+      "keyword": "沧海 · 藏锋",
+      "lore": "戒面深蓝如海，令招式沉稳而后劲绵长。",
+      "combatBonuses": {
+        "attack": 5,
+        "defense": 1,
+        "critDamage": 16,
+        "comboResist": 4
+      },
+      "combatRates": {
+        "attack": 3.82,
+        "defense": 1.78
+      }
+    },
+    {
+      "id": "scarlet-sky-sword",
+      "categoryId": "weapon",
+      "name": "赤霄神剑",
+      "category": "长剑",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 818,
+      "gemSlots": 3,
+      "weaponStyle": "sword",
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 剑",
+      "lore": "古剑锋芒内敛，出鞘时有一往无前之势。",
+      "combatBonuses": {
+        "maxHealth": 29,
+        "attack": 10,
+        "defense": 3,
+        "speed": 1,
+        "critRate": 7,
+        "damageBonus": 13
+      },
+      "combatRates": {
+        "maxHealth": 1.67,
+        "attack": 4.63,
+        "defense": 1.97,
+        "speed": 2.08
+      }
+    },
+    {
+      "id": "sun-crown",
+      "categoryId": "helmet",
+      "name": "曜阳冠",
+      "category": "头盔",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 492,
+      "gemSlots": 3,
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 冠",
+      "lore": "冠沿镶着赤金细纹，仿佛将晨光引在额前。",
+      "combatBonuses": {
+        "maxHealth": 38,
+        "defense": 4,
+        "critResist": 6,
+        "hitRate": 3
+      },
+      "combatRates": {
+        "maxHealth": 4.05,
+        "defense": 4.95
+      }
+    },
+    {
+      "id": "red-sun-mail",
+      "categoryId": "chest",
+      "name": "赤日神甲",
+      "category": "胸甲",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 658,
+      "gemSlots": 3,
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 甲",
+      "lore": "鳞甲泛着炽色，受劲时如日轮般层层荡开。",
+      "combatBonuses": {
+        "maxHealth": 61,
+        "defense": 6,
+        "damageReduction": 5
+      },
+      "combatRates": {
+        "maxHealth": 4.53,
+        "defense": 5.37
+      }
+    },
+    {
+      "id": "dragon-scale-steed",
+      "categoryId": "mount",
+      "name": "龙鳞天驹",
+      "category": "坐骑",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 486,
+      "gemSlots": 3,
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 骑",
+      "lore": "鬃毛曳火，疾驰时如一道掠过原野的赤光。",
+      "combatBonuses": {
+        "maxHealth": 29,
+        "attack": 4,
+        "speed": 3,
+        "critRate": 3
+      },
+      "combatRates": {
+        "maxHealth": 1.98,
+        "attack": 2.2,
+        "speed": 4.82
+      }
+    },
+    {
+      "id": "flame-cloak",
+      "categoryId": "cloak",
+      "name": "焚云大氅",
+      "category": "披风",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 448,
+      "gemSlots": 3,
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 披",
+      "lore": "大氅迎风如焰，出手时气势压得人难以喘息。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "defense": 3,
+        "speed": 1,
+        "damageBonus": 6
+      },
+      "combatRates": {
+        "maxHealth": 2.36,
+        "defense": 3.32,
+        "speed": 3.32
+      }
+    },
+    {
+      "id": "heaven-sash",
+      "categoryId": "belt",
+      "name": "天火腰绦",
+      "category": "腰带",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 452,
+      "gemSlots": 2,
+      "setId": "sunfire",
+      "keyword": "赤霄逐日 · 腰",
+      "lore": "绦带收束丹田之气，使每一招都更为凌厉。",
+      "combatBonuses": {
+        "maxHealth": 28,
+        "attack": 3,
+        "defense": 2,
+        "speed": 1,
+        "comboRate": 5
+      },
+      "combatRates": {
+        "maxHealth": 1.97,
+        "attack": 1.78,
+        "defense": 2.11,
+        "speed": 2.25
+      }
+    },
+    {
+      "id": "tianwu-pendant",
+      "categoryId": "talisman",
+      "name": "天武令",
+      "category": "护符",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 420,
+      "gemSlots": 0,
+      "keyword": "天武 · 破限",
+      "lore": "传承久远的令牌，握在掌中便觉武意沸腾。",
+      "combatBonuses": {
+        "maxHealth": 34,
+        "attack": 5,
+        "critRate": 6,
+        "damageBonus": 7
+      },
+      "combatRates": {
+        "maxHealth": 3.23,
+        "attack": 3.97
+      }
+    },
+    {
+      "id": "bloodjade-ring",
+      "categoryId": "ring",
+      "name": "血玉戒",
+      "category": "戒指",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 408,
+      "gemSlots": 0,
+      "keyword": "血玉 · 绝杀",
+      "lore": "玉色如血，愈在险处愈显锋锐。",
+      "combatBonuses": {
+        "attack": 5,
+        "critRate": 7,
+        "critDamage": 28,
+        "lifestealRate": 4
+      },
+      "combatRates": {
+        "attack": 7.2
+      }
+    },
+    {
+      "id": "iron-ruler",
+      "categoryId": "weapon",
+      "name": "铁尺",
+      "category": "短兵",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 86,
+      "gemSlots": 2,
+      "weaponStyle": "staff",
+      "keyword": "量势 · 守中",
+      "lore": "短尺沉手，攻守转换间自有分寸。",
+      "combatBonuses": {
+        "attack": 2,
+        "defense": 1,
+        "hitRate": 2
+      },
+      "combatRates": {
+        "attack": 0.56,
+        "defense": 0.59
+      }
+    },
+    {
+      "id": "leather-cap",
+      "categoryId": "helmet",
+      "name": "旧皮护盔",
+      "category": "头盔",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 50,
+      "gemSlots": 1,
+      "keyword": "护额 · 挺身",
+      "lore": "牛皮缝制的护盔，雨打风吹后仍算结实。",
+      "combatBonuses": {
+        "maxHealth": 10,
+        "defense": 1,
+        "stunResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.44,
+        "defense": 0.56
+      }
+    },
+    {
+      "id": "cloth-mail",
+      "categoryId": "chest",
+      "name": "布面护心衣",
+      "category": "胸甲",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 58,
+      "gemSlots": 1,
+      "keyword": "贴身 · 护心",
+      "lore": "布层里压着薄铁片，护得住胸口要害。",
+      "combatBonuses": {
+        "maxHealth": 16,
+        "defense": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.61,
+        "defense": 0.49
+      }
+    },
+    {
+      "id": "sorrel-horse",
+      "categoryId": "mount",
+      "name": "枣红马",
+      "category": "坐骑",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 49,
+      "gemSlots": 1,
+      "keyword": "耐走 · 赶路",
+      "lore": "跑不出惊人脚程，却能陪人走过长路。",
+      "combatBonuses": {
+        "maxHealth": 11,
+        "speed": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.3,
+        "speed": 0.7
+      }
+    },
+    {
+      "id": "worn-cloak",
+      "categoryId": "cloak",
+      "name": "旧斗篷",
+      "category": "披风",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 43,
+      "gemSlots": 1,
+      "keyword": "遮风 · 藏拙",
+      "lore": "边角已有磨损，仍足以遮住来路风尘。",
+      "combatBonuses": {
+        "defense": 1,
+        "hitRate": 1
+      },
+      "combatRates": {
+        "defense": 1
+      }
+    },
+    {
+      "id": "oxhide-belt",
+      "categoryId": "belt",
+      "name": "牛皮腰封",
+      "category": "腰带",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 46,
+      "gemSlots": 0,
+      "keyword": "束腹 · 定步",
+      "lore": "厚皮收束腰腹，练拳时格外踏实。",
+      "combatBonuses": {
+        "maxHealth": 11,
+        "attack": 1,
+        "defense": 1,
+        "speed": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.2,
+        "attack": 0.15,
+        "defense": 0.22,
+        "speed": 0.33
+      }
+    },
+    {
+      "id": "red-cord-knot",
+      "categoryId": "talisman",
+      "name": "红绳结",
+      "category": "护符",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 38,
+      "gemSlots": 0,
+      "keyword": "守念 · 安心",
+      "lore": "家人系上的红绳，危急时总让人多一分定力。",
+      "combatBonuses": {
+        "maxHealth": 9,
+        "healingBonus": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.8
+      }
+    },
+    {
+      "id": "ebony-ring",
+      "categoryId": "ring",
+      "name": "乌木指环",
+      "category": "戒指",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 36,
+      "gemSlots": 0,
+      "keyword": "凝握 · 反制",
+      "lore": "乌木打磨成环，贴手而不碍出拳。",
+      "combatBonuses": {
+        "attack": 1,
+        "defense": 1,
+        "counterRate": 1
+      },
+      "combatRates": {
+        "attack": 0.62,
+        "defense": 0.18
+      }
+    },
+    {
+      "id": "hundredfold-dagger",
+      "categoryId": "weapon",
+      "name": "百炼短刀",
+      "category": "短刀",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 176,
+      "gemSlots": 2,
+      "weaponStyle": "saber",
+      "keyword": "短促 · 锋回",
+      "lore": "刀身不长，却最擅长贴身抢攻。",
+      "combatBonuses": {
+        "attack": 4,
+        "speed": 1,
+        "critRate": 2
+      },
+      "combatRates": {
+        "attack": 1.25,
+        "speed": 1.05
+      }
+    },
+    {
+      "id": "willow-helm",
+      "categoryId": "helmet",
+      "name": "柳叶盔",
+      "category": "头盔",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 82,
+      "gemSlots": 1,
+      "keyword": "贴面 · 凝神",
+      "lore": "盔沿似柳叶微垂，既护眉眼也不遮视线。",
+      "combatBonuses": {
+        "maxHealth": 16,
+        "defense": 1,
+        "hitRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.97,
+        "defense": 1.03
+      }
+    },
+    {
+      "id": "vine-armor",
+      "categoryId": "chest",
+      "name": "青藤甲",
+      "category": "胸甲",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 118,
+      "gemSlots": 1,
+      "keyword": "柔韧 · 卸劲",
+      "lore": "藤丝与软革交织，受力时能略卸锋芒。",
+      "combatBonuses": {
+        "maxHealth": 24,
+        "defense": 2,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.13,
+        "defense": 1.07
+      }
+    },
+    {
+      "id": "chestnut-horse",
+      "categoryId": "mount",
+      "name": "枣骝马",
+      "category": "坐骑",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 94,
+      "gemSlots": 1,
+      "keyword": "快蹄 · 追击",
+      "lore": "善走碎石险路，一旦起速便极难追上。",
+      "combatBonuses": {
+        "maxHealth": 10,
+        "speed": 2,
+        "critRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.41,
+        "speed": 1.59
+      }
+    },
+    {
+      "id": "cloud-cloak",
+      "categoryId": "cloak",
+      "name": "流云斗篷",
+      "category": "披风",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 78,
+      "gemSlots": 1,
+      "keyword": "借风 · 游身",
+      "lore": "轻纱随风而动，令人难辨下一步去向。",
+      "combatBonuses": {
+        "defense": 1,
+        "speed": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "defense": 0.86,
+        "speed": 1.14
+      }
+    },
+    {
+      "id": "rhino-belt",
+      "categoryId": "belt",
+      "name": "犀角腰封",
+      "category": "腰带",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 80,
+      "gemSlots": 0,
+      "keyword": "收劲 · 不乱",
+      "lore": "角扣锁住腰胯，连番出招也不失重心。",
+      "combatBonuses": {
+        "maxHealth": 17,
+        "attack": 1,
+        "defense": 1,
+        "speed": 1,
+        "comboResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 0.47,
+        "attack": 0.32,
+        "defense": 0.47,
+        "speed": 0.54
+      }
+    },
+    {
+      "id": "focus-pendant",
+      "categoryId": "talisman",
+      "name": "凝神佩",
+      "category": "护符",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 70,
+      "gemSlots": 0,
+      "keyword": "观隙 · 定心",
+      "lore": "佩中细纹如水波，令出手时心念更为澄澈。",
+      "combatBonuses": {
+        "maxHealth": 15,
+        "hitRate": 2,
+        "critResist": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.6
+      }
+    },
+    {
+      "id": "emerald-ring",
+      "categoryId": "ring",
+      "name": "碧玉戒",
+      "category": "戒指",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 72,
+      "gemSlots": 0,
+      "keyword": "碧色 · 追势",
+      "lore": "玉色清润，追招时总能多添几分锐意。",
+      "combatBonuses": {
+        "attack": 2,
+        "critRate": 2,
+        "comboRate": 2
+      },
+      "combatRates": {
+        "attack": 1.6
+      }
+    },
+    {
+      "id": "blazing-spear",
+      "categoryId": "weapon",
+      "name": "流火枪",
+      "category": "长枪",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 244,
+      "gemSlots": 2,
+      "weaponStyle": "spear",
+      "keyword": "长驱 · 夺隙",
+      "lore": "枪缨如火，最擅在对手换势时长驱直入。",
+      "combatBonuses": {
+        "attack": 5,
+        "speed": 1,
+        "hitRate": 3,
+        "critRate": 2
+      },
+      "combatRates": {
+        "attack": 2.74,
+        "speed": 1.28
+      }
+    },
+    {
+      "id": "bronze-helm",
+      "categoryId": "helmet",
+      "name": "玄铜护盔",
+      "category": "头盔",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 124,
+      "gemSlots": 1,
+      "keyword": "玄铜 · 镇首",
+      "lore": "铜色深沉，能抗下重击而不乱耳目。",
+      "combatBonuses": {
+        "maxHealth": 20,
+        "defense": 2,
+        "critResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 1.56,
+        "defense": 1.94
+      }
+    },
+    {
+      "id": "scale-mail",
+      "categoryId": "chest",
+      "name": "锁子鱼鳞甲",
+      "category": "胸甲",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 168,
+      "gemSlots": 1,
+      "keyword": "环扣 · 护身",
+      "lore": "细环层叠如鳞，既有韧性也能分散来力。",
+      "combatBonuses": {
+        "maxHealth": 32,
+        "defense": 2,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 2.03,
+        "defense": 1.82
+      }
+    },
+    {
+      "id": "dark-cloud-steed",
+      "categoryId": "mount",
+      "name": "墨云驹",
+      "category": "坐骑",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 148,
+      "gemSlots": 1,
+      "keyword": "掠影 · 先机",
+      "lore": "通体乌黑如云，急驰时只余一道残影。",
+      "combatBonuses": {
+        "maxHealth": 14,
+        "speed": 2,
+        "hitRate": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.72,
+        "speed": 2.78
+      }
+    },
+    {
+      "id": "moon-cloak",
+      "categoryId": "cloak",
+      "name": "逐月氅",
+      "category": "披风",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 116,
+      "gemSlots": 1,
+      "keyword": "追月 · 闪身",
+      "lore": "披风外沿缀着银线，转身时能乱人目光。",
+      "combatBonuses": {
+        "defense": 1,
+        "speed": 1,
+        "dodgeRate": 2
+      },
+      "combatRates": {
+        "defense": 1.4,
+        "speed": 2.1
+      }
+    },
+    {
+      "id": "azure-scale-belt",
+      "categoryId": "belt",
+      "name": "青鳞腰甲",
+      "category": "腰带",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 118,
+      "gemSlots": 0,
+      "keyword": "护腰 · 抗震",
+      "lore": "细鳞贴合腰腹，能抵去暗劲余波。",
+      "combatBonuses": {
+        "maxHealth": 20,
+        "attack": 2,
+        "defense": 2,
+        "speed": 1,
+        "stunResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.83,
+        "attack": 0.56,
+        "defense": 0.84,
+        "speed": 0.92
+      }
+    },
+    {
+      "id": "clear-mind-jade",
+      "categoryId": "talisman",
+      "name": "明心玉",
+      "category": "护符",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 108,
+      "gemSlots": 0,
+      "keyword": "明澈 · 守意",
+      "lore": "玉色澄净，令人在乱战中仍能看清破绽。",
+      "combatBonuses": {
+        "maxHealth": 20,
+        "hitRate": 2,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 2.8
+      }
+    },
+    {
+      "id": "glimmer-ring",
+      "categoryId": "ring",
+      "name": "流光戒",
+      "category": "戒指",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 112,
+      "gemSlots": 0,
+      "keyword": "流光 · 连势",
+      "lore": "戒面流光一闪，招式衔接愈发圆融。",
+      "combatBonuses": {
+        "attack": 2,
+        "critRate": 3,
+        "comboRate": 3
+      },
+      "combatRates": {
+        "attack": 2.8
+      }
+    },
+    {
+      "id": "dragon-roam-sword",
+      "categoryId": "weapon",
+      "name": "游龙剑",
+      "category": "长剑",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 416,
+      "gemSlots": 2,
+      "weaponStyle": "sword",
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 剑",
+      "lore": "剑路灵动如游龙，最适合在山风间抢占先机。",
+      "combatBonuses": {
+        "attack": 7,
+        "speed": 2,
+        "hitRate": 3,
+        "dodgeRate": 2
+      },
+      "combatRates": {
+        "attack": 3.33,
+        "speed": 2.42
+      }
+    },
+    {
+      "id": "azure-mist-hood",
+      "categoryId": "helmet",
+      "name": "青岚巾",
+      "category": "头盔",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 224,
+      "gemSlots": 2,
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 巾",
+      "lore": "青巾轻覆额前，奔走时不扰视线。",
+      "combatBonuses": {
+        "maxHealth": 23,
+        "defense": 2,
+        "speed": 1,
+        "dodgeRate": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.68,
+        "defense": 1.99,
+        "speed": 1.33
+      }
+    },
+    {
+      "id": "windward-armor",
+      "categoryId": "chest",
+      "name": "逐风轻甲",
+      "category": "胸甲",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 286,
+      "gemSlots": 2,
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 甲",
+      "lore": "甲片极薄，身随意动而不失护持。",
+      "combatBonuses": {
+        "maxHealth": 30,
+        "defense": 3,
+        "speed": 1,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.72,
+        "defense": 2.06,
+        "speed": 1.72
+      }
+    },
+    {
+      "id": "cloud-stepper",
+      "categoryId": "mount",
+      "name": "踏云骢",
+      "category": "坐骑",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 248,
+      "gemSlots": 2,
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 骑",
+      "lore": "蹄声轻若踏云，翻山越岭亦不减速。",
+      "combatBonuses": {
+        "maxHealth": 17,
+        "speed": 3,
+        "hitRate": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.94,
+        "speed": 4.06
+      }
+    },
+    {
+      "id": "mist-cloak",
+      "categoryId": "cloak",
+      "name": "流岚披风",
+      "category": "披风",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 216,
+      "gemSlots": 2,
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 披",
+      "lore": "青岚拂肩，转折之际只留一片残影。",
+      "combatBonuses": {
+        "defense": 2,
+        "speed": 1,
+        "dodgeRate": 4
+      },
+      "combatRates": {
+        "defense": 1.94,
+        "speed": 3.06
+      }
+    },
+    {
+      "id": "drifting-sash",
+      "categoryId": "belt",
+      "name": "流云束带",
+      "category": "腰带",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 218,
+      "gemSlots": 1,
+      "setId": "windchaser",
+      "keyword": "青岚游侠 · 腰",
+      "lore": "束带如云纹回转，使步法与出招连为一气。",
+      "combatBonuses": {
+        "maxHealth": 19,
+        "attack": 2,
+        "defense": 2,
+        "speed": 1,
+        "comboRate": 4,
+        "comboResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 0.98,
+        "attack": 0.84,
+        "defense": 1.1,
+        "speed": 1.58
+      }
+    },
+    {
+      "id": "wave-pendant",
+      "categoryId": "talisman",
+      "name": "凌波佩",
+      "category": "护符",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 210,
+      "gemSlots": 0,
+      "keyword": "凌波 · 化影",
+      "lore": "佩光浮动如水，来势越急越容易借步避开。",
+      "combatBonuses": {
+        "maxHealth": 23,
+        "speed": 1,
+        "dodgeRate": 2,
+        "damageReduction": 1
+      },
+      "combatRates": {
+        "maxHealth": 1.63,
+        "speed": 2.37
+      }
+    },
+    {
+      "id": "sunset-ring",
+      "categoryId": "ring",
+      "name": "流霞双环",
+      "category": "戒指",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 208,
+      "gemSlots": 0,
+      "keyword": "流霞 · 追锋",
+      "lore": "双环映光如霞，追击时锋芒更盛。",
+      "combatBonuses": {
+        "attack": 3,
+        "critRate": 3,
+        "counterRate": 3
+      },
+      "combatRates": {
+        "attack": 4
+      }
+    },
+    {
+      "id": "sea-suppressing-spear",
+      "categoryId": "weapon",
+      "name": "沧澜枪",
+      "category": "长枪",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 662,
+      "gemSlots": 3,
+      "weaponStyle": "spear",
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 枪",
+      "lore": "枪身沉如铁锚，横扫时自有定海之势。",
+      "combatBonuses": {
+        "maxHealth": 28,
+        "attack": 10,
+        "defense": 3,
+        "hitRate": 4,
+        "damageBonus": 7
+      },
+      "combatRates": {
+        "maxHealth": 1.55,
+        "attack": 4.7,
+        "defense": 1.8
+      }
+    },
+    {
+      "id": "sea-guard-helm",
+      "categoryId": "helmet",
+      "name": "定海盔",
+      "category": "头盔",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 372,
+      "gemSlots": 3,
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 盔",
+      "lore": "盔脊如浪，重击临头也不失方寸。",
+      "combatBonuses": {
+        "maxHealth": 38,
+        "defense": 4,
+        "critResist": 4,
+        "stunResist": 2
+      },
+      "combatRates": {
+        "maxHealth": 3.02,
+        "defense": 3.98
+      }
+    },
+    {
+      "id": "tide-armor",
+      "categoryId": "chest",
+      "name": "玄潮重甲",
+      "category": "胸甲",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 486,
+      "gemSlots": 3,
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 甲",
+      "lore": "甲面暗纹似潮，受劲后层层散去。",
+      "combatBonuses": {
+        "maxHealth": 56,
+        "defense": 5,
+        "damageReduction": 3
+      },
+      "combatRates": {
+        "maxHealth": 3.64,
+        "defense": 4.06
+      }
+    },
+    {
+      "id": "wave-runner",
+      "categoryId": "mount",
+      "name": "踏浪龙驹",
+      "category": "坐骑",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 368,
+      "gemSlots": 3,
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 骑",
+      "lore": "鬃毛如浪翻卷，冲锋时稳得惊人。",
+      "combatBonuses": {
+        "maxHealth": 28,
+        "attack": 3,
+        "defense": 2,
+        "speed": 2
+      },
+      "combatRates": {
+        "maxHealth": 1.76,
+        "attack": 1.47,
+        "defense": 1.41,
+        "speed": 2.36
+      }
+    },
+    {
+      "id": "tide-cloak",
+      "categoryId": "cloak",
+      "name": "沧涛战氅",
+      "category": "披风",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 332,
+      "gemSlots": 3,
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 披",
+      "lore": "大氅厚而不滞，能将背后劲风尽数卸开。",
+      "combatBonuses": {
+        "maxHealth": 24,
+        "defense": 3,
+        "damageReduction": 3,
+        "counterResist": 3
+      },
+      "combatRates": {
+        "maxHealth": 2.73,
+        "defense": 4.27
+      }
+    },
+    {
+      "id": "tide-belt",
+      "categoryId": "belt",
+      "name": "镇潮腰甲",
+      "category": "腰带",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 334,
+      "gemSlots": 2,
+      "setId": "tideguard",
+      "keyword": "沧澜定海 · 腰",
+      "lore": "腰甲扣紧，出招时如立潮头而不摇。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "attack": 3,
+        "defense": 3,
+        "speed": 1,
+        "comboRate": 4,
+        "stunResist": 3
+      },
+      "combatRates": {
+        "maxHealth": 1.43,
+        "attack": 1.29,
+        "defense": 1.79,
+        "speed": 1.79
+      }
+    },
+    {
+      "id": "war-banner-talisman",
+      "categoryId": "talisman",
+      "name": "定军符",
+      "category": "护符",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 310,
+      "gemSlots": 0,
+      "keyword": "定军 · 不退",
+      "lore": "旧军旗一角制成的符牌，危局中尤能安定心气。",
+      "combatBonuses": {
+        "maxHealth": 28,
+        "defense": 2,
+        "stunResist": 4,
+        "damageReduction": 2
+      },
+      "combatRates": {
+        "maxHealth": 2.76,
+        "defense": 2.84
+      }
+    },
+    {
+      "id": "dawn-ring",
+      "categoryId": "ring",
+      "name": "破晓戒",
+      "category": "戒指",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 308,
+      "gemSlots": 0,
+      "keyword": "破晓 · 振锋",
+      "lore": "晨光映入戒面，久战之后锋势反而更盛。",
+      "combatBonuses": {
+        "attack": 5,
+        "speed": 1,
+        "critRate": 6,
+        "comboRate": 3
+      },
+      "combatRates": {
+        "attack": 4.27,
+        "speed": 1.33
+      }
+    },
+    {
+      "id": "skyward-sword",
+      "categoryId": "weapon",
+      "name": "天衡剑",
+      "category": "长剑",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 858,
+      "gemSlots": 3,
+      "weaponStyle": "sword",
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 剑",
+      "lore": "剑脊如天衡贯空，挥落时气势不容人退。",
+      "combatBonuses": {
+        "maxHealth": 30,
+        "attack": 11,
+        "defense": 2,
+        "speed": 2,
+        "hitRate": 5,
+        "critRate": 6,
+        "damageBonus": 11
+      },
+      "combatRates": {
+        "maxHealth": 1.64,
+        "attack": 4.73,
+        "defense": 1.61,
+        "speed": 2.37
+      }
+    },
+    {
+      "id": "heaven-crown",
+      "categoryId": "helmet",
+      "name": "昊天冠",
+      "category": "头盔",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 508,
+      "gemSlots": 3,
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 冠",
+      "lore": "冠纹如星河垂落，镇定心神而不失锐气。",
+      "combatBonuses": {
+        "maxHealth": 40,
+        "defense": 4,
+        "speed": 1,
+        "critResist": 5
+      },
+      "combatRates": {
+        "maxHealth": 3.46,
+        "defense": 4.15,
+        "speed": 1.38
+      }
+    },
+    {
+      "id": "heaven-armor",
+      "categoryId": "chest",
+      "name": "镇天神甲",
+      "category": "胸甲",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 676,
+      "gemSlots": 3,
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 甲",
+      "lore": "重甲不显笨拙，仿佛能将来势尽数镇回。",
+      "combatBonuses": {
+        "maxHealth": 66,
+        "defense": 6,
+        "damageReduction": 5
+      },
+      "combatRates": {
+        "maxHealth": 4.59,
+        "defense": 5.31
+      }
+    },
+    {
+      "id": "heaven-steed",
+      "categoryId": "mount",
+      "name": "玄天麟驹",
+      "category": "坐骑",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 502,
+      "gemSlots": 3,
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 骑",
+      "lore": "鳞纹随步明灭，冲阵时如有雷音相随。",
+      "combatBonuses": {
+        "maxHealth": 31,
+        "attack": 4,
+        "speed": 3,
+        "critRate": 2
+      },
+      "combatRates": {
+        "maxHealth": 1.98,
+        "attack": 2.2,
+        "speed": 4.82
+      }
+    },
+    {
+      "id": "sky-cloak",
+      "categoryId": "cloak",
+      "name": "天游战袍",
+      "category": "披风",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 462,
+      "gemSlots": 3,
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 披",
+      "lore": "袍袖展开如云海覆天，能压住敌方攻势。",
+      "combatBonuses": {
+        "maxHealth": 27,
+        "defense": 3,
+        "speed": 1,
+        "damageReduction": 3
+      },
+      "combatRates": {
+        "maxHealth": 2.47,
+        "defense": 3.63,
+        "speed": 2.9
+      }
+    },
+    {
+      "id": "cosmos-belt",
+      "categoryId": "belt",
+      "name": "乾坤玉带",
+      "category": "腰带",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 468,
+      "gemSlots": 2,
+      "setId": "skyward",
+      "keyword": "苍穹问鼎 · 腰",
+      "lore": "玉带收束周天，蓄势一击格外雄浑。",
+      "combatBonuses": {
+        "maxHealth": 30,
+        "attack": 3,
+        "defense": 2,
+        "speed": 1,
+        "comboRate": 6,
+        "counterRate": 3
+      },
+      "combatRates": {
+        "maxHealth": 1.97,
+        "attack": 1.87,
+        "defense": 1.87,
+        "speed": 2.4
+      }
+    },
+    {
+      "id": "firmament-token",
+      "categoryId": "talisman",
+      "name": "玄穹令",
+      "category": "护符",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 438,
+      "gemSlots": 0,
+      "keyword": "玄穹 · 不坠",
+      "lore": "令牌沉静如夜空，最能压住临阵杂念。",
+      "combatBonuses": {
+        "maxHealth": 36,
+        "defense": 3,
+        "critResist": 5,
+        "damageReduction": 4
+      },
+      "combatRates": {
+        "maxHealth": 3.81,
+        "defense": 3.39
+      }
+    },
+    {
+      "id": "heavenly-ring",
+      "categoryId": "ring",
+      "name": "问天指环",
+      "category": "戒指",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 424,
+      "gemSlots": 0,
+      "keyword": "问天 · 破锋",
+      "lore": "指环边缘锋锐，出手时仿佛要问天借势。",
+      "combatBonuses": {
+        "attack": 6,
+        "hitRate": 6,
+        "critRate": 7,
+        "critDamage": 20
+      },
+      "combatRates": {
+        "attack": 7.2
+      }
+    },
+    {
+      "id": "leather-wraps",
+      "categoryId": "weapon",
+      "name": "牛皮护拳",
+      "category": "拳套",
+      "grade": "普通",
+      "gradeTone": "white",
+      "power": 90,
+      "gemSlots": 2,
+      "weaponStyle": "fist",
+      "keyword": "贴身 · 固腕",
+      "lore": "粗皮裹住拳锋，出拳时更不伤筋骨。",
+      "combatBonuses": {
+        "attack": 2,
+        "defense": 1,
+        "counterRate": 1
+      },
+      "combatRates": {
+        "attack": 0.69,
+        "defense": 0.46
+      }
+    },
+    {
+      "id": "vine-gauntlets",
+      "categoryId": "weapon",
+      "name": "青藤拳套",
+      "category": "拳套",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "power": 184,
+      "gemSlots": 2,
+      "weaponStyle": "fist",
+      "keyword": "缠劲 · 灵变",
+      "lore": "藤丝柔韧贴手，擒拿与变招都更自如。",
+      "combatBonuses": {
+        "attack": 4,
+        "speed": 1,
+        "hitRate": 2,
+        "counterRate": 3
+      },
+      "combatRates": {
+        "attack": 1.41,
+        "speed": 0.89
+      }
+    },
+    {
+      "id": "steel-knuckles",
+      "categoryId": "weapon",
+      "name": "乌钢护拳",
+      "category": "拳套",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "power": 236,
+      "gemSlots": 2,
+      "weaponStyle": "fist",
+      "keyword": "震骨 · 碎劲",
+      "lore": "乌钢环扣护住拳骨，短距离爆发尤见凌厉。",
+      "combatBonuses": {
+        "attack": 5,
+        "defense": 1,
+        "critRate": 2,
+        "stunRate": 2
+      },
+      "combatRates": {
+        "attack": 2.83,
+        "defense": 1.19
+      }
+    },
+    {
+      "id": "silkworm-gauntlets",
+      "categoryId": "weapon",
+      "name": "天蚕手甲",
+      "category": "拳套",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "power": 382,
+      "gemSlots": 2,
+      "weaponStyle": "fist",
+      "keyword": "蚕丝 · 缠锁",
+      "lore": "内衬天蚕丝，刚柔并济，最适合近身缠斗。",
+      "combatBonuses": {
+        "attack": 7,
+        "speed": 1,
+        "hitRate": 3,
+        "counterRate": 5,
+        "comboRate": 3
+      },
+      "combatRates": {
+        "attack": 3.88,
+        "speed": 1.87
+      }
+    },
+    {
+      "id": "dragon-grip-gauntlets",
+      "categoryId": "weapon",
+      "name": "擒龙手甲",
+      "category": "拳套",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "power": 604,
+      "gemSlots": 3,
+      "weaponStyle": "fist",
+      "keyword": "擒龙 · 裂甲",
+      "lore": "甲片如龙爪扣合，擒住便能撕开对手防势。",
+      "combatBonuses": {
+        "maxHealth": 22,
+        "attack": 9,
+        "defense": 2,
+        "critRate": 5,
+        "damageBonus": 7
+      },
+      "combatRates": {
+        "maxHealth": 1.42,
+        "attack": 4.85,
+        "defense": 1.78
+      }
+    },
+    {
+      "id": "heaven-shaking-gauntlets",
+      "categoryId": "weapon",
+      "name": "撼天拳甲",
+      "category": "拳套",
+      "grade": "神话",
+      "gradeTone": "red",
+      "power": 838,
+      "gemSlots": 3,
+      "weaponStyle": "fist",
+      "keyword": "撼天 · 裂空",
+      "lore": "拳甲沉如山岳，挥动时仿佛连空气也会崩裂。",
+      "combatBonuses": {
+        "maxHealth": 26,
+        "attack": 10,
+        "defense": 3,
+        "speed": 1,
+        "critRate": 7,
+        "damageBonus": 11
+      },
+      "combatRates": {
+        "maxHealth": 1.6,
+        "attack": 5.1,
+        "defense": 1.94,
+        "speed": 1.7
+      }
+    }
+  ],
+  "sets": [
+    {
+      "id": "rimebound",
+      "name": "踏雪行旅",
+      "gradeTone": "purple",
+      "description": "北地旧侠的行装，轻灵如雪，来去无痕。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +1.35%，防御 +1.45%，速度 +1.2%",
+          "combatRates": {
+            "maxHealth": 1.35,
+            "defense": 1.45,
+            "speed": 1.2
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "攻击 +5%，暴击 +3%",
+          "combatBonuses": {
+            "critRate": 3
+          },
+          "combatRates": {
+            "attack": 5
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "伤害加成 +7%，闪避 +2%",
+          "combatBonuses": {
+            "damageBonus": 7,
+            "dodgeRate": 2
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "开战后前 2 次受到攻击必定闪避",
+          "passiveEffects": [
+            {
+              "id": "rimebound-snow-trace",
+              "label": "踏雪无痕",
+              "description": "开战后前 2 次受到攻击必定闪避。",
+              "kind": "battle-start-dodge",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ironwall",
+      "name": "玄甲镇岳",
+      "gradeTone": "orange",
+      "description": "军中镇阵的重甲遗制，稳若山岳，百战不摧。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +2.37%，防御 +2.63%",
+          "combatRates": {
+            "maxHealth": 2.37,
+            "defense": 2.63
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "伤害减免 +5%，暴抗 +4%",
+          "combatBonuses": {
+            "damageReduction": 5,
+            "critResist": 4
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "生命 +3.08%，攻击 +3.92%",
+          "combatRates": {
+            "maxHealth": 3.08,
+            "attack": 3.92
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "首回合免疫所有伤害",
+          "passiveEffects": [
+            {
+              "id": "ironwall-immovable",
+              "label": "不动如山",
+              "description": "首回合免疫所有伤害。",
+              "kind": "damage-immunity-for-rounds",
+              "value": 1,
+              "duration": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sunfire",
+      "name": "赤霄逐日",
+      "gradeTone": "red",
+      "description": "传说中逐日剑客的遗装，气血如焰，锋芒贯日。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +2.71%，攻击 +3.29%",
+          "combatRates": {
+            "maxHealth": 2.71,
+            "attack": 3.29
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "速度 +7%，暴击 +8%，伤害加成 +12%",
+          "combatBonuses": {
+            "critRate": 8,
+            "damageBonus": 12
+          },
+          "combatRates": {
+            "speed": 7
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "生命 +3.82%，防御 +4.18%，伤害减免 +6%",
+          "combatBonuses": {
+            "damageReduction": 6
+          },
+          "combatRates": {
+            "maxHealth": 3.82,
+            "defense": 4.18
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "首回合伤害提高 80%",
+          "passiveEffects": [
+            {
+              "id": "sunfire-rising-sun",
+              "label": "赤霄贯日",
+              "description": "首回合伤害提高 80%。",
+              "kind": "damage-bonus-for-rounds",
+              "value": 80,
+              "duration": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windchaser",
+      "name": "青岚游侠",
+      "gradeTone": "purple",
+      "description": "山岚间的游侠行装，步落无声，剑起如风。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +1.28%，防御 +1.23%，速度 +1.48%",
+          "combatRates": {
+            "maxHealth": 1.28,
+            "defense": 1.23,
+            "speed": 1.48
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "攻击 +5%，命中 +3%，暴击 +3%",
+          "combatBonuses": {
+            "hitRate": 3,
+            "critRate": 3
+          },
+          "combatRates": {
+            "attack": 5
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "闪避 +2%，连击 +6%",
+          "combatBonuses": {
+            "dodgeRate": 2,
+            "comboRate": 6
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "前三回合连击率 +18%",
+          "passiveEffects": [
+            {
+              "id": "windchaser-gale-chain",
+              "label": "乘风连斩",
+              "description": "前三回合连击率 +18%。",
+              "kind": "combo-bonus-for-rounds",
+              "value": 18,
+              "duration": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tideguard",
+      "name": "沧澜定海",
+      "gradeTone": "orange",
+      "description": "海防名将的旧制战装，静则如渊，动则如潮。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +2.52%，防御 +2.48%",
+          "combatRates": {
+            "maxHealth": 2.52,
+            "defense": 2.48
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "攻击 +6%，伤害加成 +6%，连击 +5%",
+          "combatBonuses": {
+            "damageBonus": 6,
+            "comboRate": 5
+          },
+          "combatRates": {
+            "attack": 6
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "速度 +7%，命中 +4%，暴击 +4%",
+          "combatBonuses": {
+            "hitRate": 4,
+            "critRate": 4
+          },
+          "combatRates": {
+            "speed": 7
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "前三回合伤害减免 +35%",
+          "passiveEffects": [
+            {
+              "id": "tideguard-tidal-guard",
+              "label": "沧澜守势",
+              "description": "前三回合伤害减免 +35%。",
+              "kind": "damage-reduction-for-rounds",
+              "value": 35,
+              "duration": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skyward",
+      "name": "苍穹问鼎",
+      "gradeTone": "red",
+      "description": "问鼎之战后遗落的御制甲胄，意在凌云，不惧强敌。",
+      "bonuses": [
+        {
+          "pieces": 3,
+          "description": "生命 +2.87%，攻击 +3.13%",
+          "combatRates": {
+            "maxHealth": 2.87,
+            "attack": 3.13
+          }
+        },
+        {
+          "pieces": 4,
+          "description": "防御 +3.75%，速度 +3.25%，伤害加成 +10%",
+          "combatBonuses": {
+            "damageBonus": 10
+          },
+          "combatRates": {
+            "defense": 3.75,
+            "speed": 3.25
+          }
+        },
+        {
+          "pieces": 5,
+          "description": "暴击 +6%，暴伤 +18%，闪避 +2%",
+          "combatBonuses": {
+            "critRate": 6,
+            "critDamage": 18,
+            "dodgeRate": 2
+          }
+        },
+        {
+          "pieces": 6,
+          "description": "首回合敌方无法行动",
+          "passiveEffects": [
+            {
+              "id": "skyward-suppress",
+              "label": "问鼎压阵",
+              "description": "首回合敌方无法行动。",
+              "kind": "block-enemy-actions-for-rounds",
+              "value": 1,
+              "duration": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

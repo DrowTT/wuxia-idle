@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Coins, Gem, Hammer, Sparkles, Swords, Trophy } from '@lucide/vue'
+import { Coins, Flame, Gem, Hammer, Sparkles, Swords, Trophy } from '@lucide/vue'
 import { formatCompactNumber } from '../domain/game'
 import type { GameState } from '../domain/types'
 
@@ -34,6 +34,11 @@ defineProps<{ game: GameState; playerPower: number }>()
         <Sparkles :size="14" aria-hidden="true" />
         <small>心得</small>
         <b>{{ formatCompactNumber(game.player.insight) }}</b>
+      </span>
+      <span class="incense" :title="`香火 ${game.player.incense.toLocaleString('zh-CN')}`">
+        <Flame :size="14" aria-hidden="true" />
+        <small>香火</small>
+        <b>{{ formatCompactNumber(game.player.incense) }}</b>
       </span>
       <span class="vermilion" :title="`江湖声名 ${game.player.fame.toLocaleString('zh-CN')}`">
         <Trophy :size="14" aria-hidden="true" />

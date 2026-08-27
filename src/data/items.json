@@ -1,0 +1,437 @@
+{
+  "items": [
+    {
+      "id": "equipment-ascension-seal",
+      "name": "名器残印",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "growth",
+      "description": "可在装备升阶时替代一件相同装备。",
+      "lore": "名器毁而神韵未散的残印，足以补全一件兵甲的缺憾。"
+    },
+    {
+      "id": "martial-ascension-seal",
+      "name": "心法残印",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "growth",
+      "description": "可在功法升阶时替代一份相同功法。",
+      "lore": "残存的心法印记，虽无完整篇章，却能补足功法缺失的一环。"
+    },
+    {
+      "id": "pill-condensing-qi",
+      "name": "凝气丹",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升吐纳速度 0.6 点/秒。",
+      "lore": "以百草晨露炼成，入口微凉，气息自然而长。",
+      "pillEffects": [{ "kind": "innerForceRate", "amount": 0.6 }]
+    },
+    {
+      "id": "pill-gathering-origin",
+      "name": "聚元丹",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升吐纳速度 1.8 点/秒。",
+      "lore": "丹火收束散乱元气，适合久坐行功。",
+      "pillEffects": [{ "kind": "innerForceRate", "amount": 1.8 }]
+    },
+    {
+      "id": "pill-nine-turns",
+      "name": "九转归息丹",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升吐纳速度 5 点/秒，并提升生命 80。",
+      "lore": "九转丹纹如环，药力绵密，能让气血与呼吸同调。",
+      "pillEffects": [
+        { "kind": "innerForceRate", "amount": 5 },
+        { "kind": "combatBonus", "stat": "maxHealth", "amount": 80 }
+      ]
+    },
+    {
+      "id": "pill-void-nourish",
+      "name": "太虚养气丹",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升吐纳速度 14 点/秒，并提升攻击 100。",
+      "lore": "丹成时炉中无烟，药力却如深谷回风，源源不绝。",
+      "pillEffects": [
+        { "kind": "innerForceRate", "amount": 14 },
+        { "kind": "combatBonus", "stat": "attack", "amount": 100 }
+      ]
+    },
+    {
+      "id": "pill-heavenly-rebirth",
+      "name": "天命洗髓丹",
+      "grade": "神话",
+      "gradeTone": "red",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升吐纳速度 38 点/秒，并提升四项基础属性 260。",
+      "lore": "传说只有逆境中仍守本心者，才配承受这一粒丹的药力。",
+      "pillEffects": [
+        { "kind": "innerForceRate", "amount": 38 },
+        { "kind": "combatBonus", "stat": "maxHealth", "amount": 260 },
+        { "kind": "combatBonus", "stat": "attack", "amount": 260 },
+        { "kind": "combatBonus", "stat": "defense", "amount": 260 },
+        { "kind": "combatBonus", "stat": "speed", "amount": 260 }
+      ]
+    },
+    {
+      "id": "pill-forged-body",
+      "name": "淬体丹",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升生命 55，防御 18。",
+      "lore": "药性温和，适合初入江湖者稳固筋骨。",
+      "pillEffects": [
+        { "kind": "combatBonus", "stat": "maxHealth", "amount": 55 },
+        { "kind": "combatBonus", "stat": "defense", "amount": 18 }
+      ]
+    },
+    {
+      "id": "pill-dragon-bone",
+      "name": "龙虎壮骨丹",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升攻击 38，防御 38。",
+      "lore": "龙虎药形一沉一浮，服下后骨节如鸣。",
+      "pillEffects": [
+        { "kind": "combatBonus", "stat": "attack", "amount": 38 },
+        { "kind": "combatBonus", "stat": "defense", "amount": 38 }
+      ]
+    },
+    {
+      "id": "pill-iron-vein",
+      "name": "玄甲护脉丹",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "pill",
+      "usable": true,
+      "description": "永久提升防御 105，速度 30。",
+      "lore": "药力沉入经脉，像披上一层看不见的玄甲。",
+      "pillEffects": [
+        { "kind": "combatBonus", "stat": "defense", "amount": 105 },
+        { "kind": "combatBonus", "stat": "speed", "amount": 30 }
+      ]
+    },
+    {
+      "id": "equipment-essence",
+      "name": "装备精魄",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "material",
+      "description": "装备升阶所需的精炼材料。",
+      "lore": "百炼兵甲留下的精魄，能让一件装备突破原有的极限。"
+    },
+    {
+      "id": "equipment-reforge-stone",
+      "name": "洗炼石",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "material",
+      "description": "用于重置装备的一条洗炼词条。",
+      "lore": "磨去旧痕，方能让锋芒显出新的方向。"
+    },
+    {
+      "id": "gem-ruby",
+      "name": "赤玉",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "gem",
+      "description": "镶嵌后攻击 +18。",
+      "lore": "赤色玉石温热如火，适合打磨锋芒。",
+      "gemFamily": "attack",
+      "gemTier": 1,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 18 }]
+    },
+    {
+      "id": "gem-jade",
+      "name": "青玉",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "gem",
+      "description": "镶嵌后生命 +120。",
+      "lore": "玉质温润，能将外来的劲力化开几分。",
+      "gemFamily": "maxHealth",
+      "gemTier": 1,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 120 }]
+    },
+    {
+      "id": "gem-azure",
+      "name": "苍蓝石",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "gem",
+      "description": "镶嵌后防御 +43。",
+      "lore": "石中仿佛封着一线寒光，守势因此更稳。",
+      "gemFamily": "defense",
+      "gemTier": 2,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 43 }]
+    },
+    {
+      "id": "gem-wind",
+      "name": "风痕石",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "gem",
+      "description": "镶嵌后速度 +18。",
+      "lore": "石面纹路如风过湖，行气与步法都更轻快。",
+      "gemFamily": "speed",
+      "gemTier": 2,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 18 }]
+    },
+    {
+      "id": "gem-sand-attack",
+      "name": "砺锋砂",
+      "grade": "普通",
+      "gradeTone": "white",
+      "category": "gem",
+      "description": "镶嵌后攻击 +10。",
+      "lore": "百炼砂中取一粒锋芒，虽微小也能磨快兵刃。",
+      "gemFamily": "attack",
+      "gemTier": 0,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 10 }]
+    },
+    {
+      "id": "gem-stone-heart",
+      "name": "石心珠",
+      "grade": "普通",
+      "gradeTone": "white",
+      "category": "gem",
+      "description": "镶嵌后生命 +70。",
+      "lore": "山石沉默，却替佩戴者守住一口元气。",
+      "gemFamily": "maxHealth",
+      "gemTier": 0,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 70 }]
+    },
+    {
+      "id": "gem-iron-slag",
+      "name": "沉铁屑",
+      "grade": "普通",
+      "gradeTone": "white",
+      "category": "gem",
+      "description": "镶嵌后防御 +14。",
+      "lore": "炉底沉铁凝成的碎屑，质朴却耐得住冲击。",
+      "gemFamily": "defense",
+      "gemTier": 0,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 14 }]
+    },
+    {
+      "id": "gem-light-trace",
+      "name": "流光屑",
+      "grade": "普通",
+      "gradeTone": "white",
+      "category": "gem",
+      "description": "镶嵌后速度 +6。",
+      "lore": "细碎如尘的流光，落在身上便轻了脚步。",
+      "gemFamily": "speed",
+      "gemTier": 0,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 6 }]
+    },
+    {
+      "id": "gem-violet-flame",
+      "name": "紫焰玉",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "gem",
+      "description": "镶嵌后攻击 +58。",
+      "lore": "玉中紫焰不灭，锋芒在沉默中燃烧。",
+      "gemFamily": "attack",
+      "gemTier": 3,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 58 }]
+    },
+    {
+      "id": "gem-violet-heart",
+      "name": "紫髓珠",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "gem",
+      "description": "镶嵌后生命 +389。",
+      "lore": "紫髓温养血脉，久战之中气息不绝。",
+      "gemFamily": "maxHealth",
+      "gemTier": 3,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 389 }]
+    },
+    {
+      "id": "gem-violet-aegis",
+      "name": "紫垣石",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "gem",
+      "description": "镶嵌后防御 +77。",
+      "lore": "紫垣如壁，劲力撞上也只能化作回声。",
+      "gemFamily": "defense",
+      "gemTier": 3,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 77 }]
+    },
+    {
+      "id": "gem-violet-wind",
+      "name": "紫霄痕",
+      "grade": "史诗",
+      "gradeTone": "purple",
+      "category": "gem",
+      "description": "镶嵌后速度 +32。",
+      "lore": "紫霄一线掠过，身法便多出几分从容。",
+      "gemFamily": "speed",
+      "gemTier": 3,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 32 }]
+    },
+    {
+      "id": "gem-legend-ember",
+      "name": "曜金炎晶",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "gem",
+      "description": "镶嵌后攻击 +104。",
+      "lore": "金炎凝于晶脉，传说曾照亮整座铸剑城。",
+      "gemFamily": "attack",
+      "gemTier": 4,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 104 }]
+    },
+    {
+      "id": "gem-legend-heart",
+      "name": "曜金命髓",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "gem",
+      "description": "镶嵌后生命 +700。",
+      "lore": "命髓如金，能令将熄的气血再起一线。",
+      "gemFamily": "maxHealth",
+      "gemTier": 4,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 700 }]
+    },
+    {
+      "id": "gem-legend-wall",
+      "name": "曜金玄壁",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "gem",
+      "description": "镶嵌后防御 +139。",
+      "lore": "玄壁厚重如山，刀兵落下只留下浅痕。",
+      "gemFamily": "defense",
+      "gemTier": 4,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 139 }]
+    },
+    {
+      "id": "gem-legend-wind",
+      "name": "曜金逐风",
+      "grade": "传说",
+      "gradeTone": "orange",
+      "category": "gem",
+      "description": "镶嵌后速度 +58。",
+      "lore": "晶面映着长风，连追命的箭也会慢上半拍。",
+      "gemFamily": "speed",
+      "gemTier": 4,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 58 }]
+    },
+    {
+      "id": "gem-mythic-sun",
+      "name": "赤曜神晶",
+      "grade": "神话",
+      "gradeTone": "red",
+      "category": "gem",
+      "description": "镶嵌后攻击 +187。",
+      "lore": "神晶如一轮赤日，所向之处皆有锋芒回应。",
+      "gemFamily": "attack",
+      "gemTier": 5,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 187 }]
+    },
+    {
+      "id": "gem-mythic-life",
+      "name": "赤曜命轮",
+      "grade": "神话",
+      "gradeTone": "red",
+      "category": "gem",
+      "description": "镶嵌后生命 +1260。",
+      "lore": "命轮转动一周，衰败的血气也会重新归位。",
+      "gemFamily": "maxHealth",
+      "gemTier": 5,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 1260 }]
+    },
+    {
+      "id": "gem-mythic-guard",
+      "name": "赤曜天门",
+      "grade": "神话",
+      "gradeTone": "red",
+      "category": "gem",
+      "description": "镶嵌后防御 +250。",
+      "lore": "天门一闭，万钧之力也难以越过半步。",
+      "gemFamily": "defense",
+      "gemTier": 5,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 250 }]
+    },
+    {
+      "id": "gem-mythic-step",
+      "name": "赤曜天行",
+      "grade": "神话",
+      "gradeTone": "red",
+      "category": "gem",
+      "description": "镶嵌后速度 +104。",
+      "lore": "赤曜掠空，所行之处连风也只能退让。",
+      "gemFamily": "speed",
+      "gemTier": 5,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 104 }]
+    },
+    {
+      "id": "gem-verdant-ward",
+      "name": "翠华石",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "gem",
+      "description": "镶嵌后防御 +24。",
+      "lore": "翠色灵光沉入甲胄，守势由此生根。",
+      "gemFamily": "defense",
+      "gemTier": 1,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "defense", "amount": 24 }]
+    },
+    {
+      "id": "gem-verdant-wind",
+      "name": "翠影石",
+      "grade": "优秀",
+      "gradeTone": "green",
+      "category": "gem",
+      "description": "镶嵌后速度 +10。",
+      "lore": "翠影贴身而行，转身与起步都更轻快。",
+      "gemFamily": "speed",
+      "gemTier": 1,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "speed", "amount": 10 }]
+    },
+    {
+      "id": "gem-azure-flare",
+      "name": "苍蓝锋晶",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "gem",
+      "description": "镶嵌后攻击 +32。",
+      "lore": "苍蓝晶面映出一线锋光，出手更见凌厉。",
+      "gemFamily": "attack",
+      "gemTier": 2,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "attack", "amount": 32 }]
+    },
+    {
+      "id": "gem-azure-life",
+      "name": "苍蓝命玉",
+      "grade": "精良",
+      "gradeTone": "blue",
+      "category": "gem",
+      "description": "镶嵌后生命 +216。",
+      "lore": "苍蓝玉髓润泽血脉，气息因此更加绵长。",
+      "gemFamily": "maxHealth",
+      "gemTier": 2,
+      "gemEffects": [{ "kind": "combatBonus", "stat": "maxHealth", "amount": 216 }]
+    }
+  ]
+}

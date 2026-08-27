@@ -1,0 +1,27 @@
+{
+  "drawCost": 160,
+  "drawCounts": [1, 10],
+  "highGradePityMythicRate": 10,
+  "ascensionTokenOrangeRate": 10,
+  "gradeRates": {
+    "white": 43.7,
+    "green": 30,
+    "blue": 16,
+    "purple": 7,
+    "orange": 2.5,
+    "red": 0.8
+  },
+  "gradeNames": {
+    "white": "普通",
+    "green": "优秀",
+    "blue": "精良",
+    "purple": "史诗",
+    "orange": "传说",
+    "red": "神话"
+  },
+  "poolMeta": {
+    "equipment": { "label": "兵器匣", "description": "开匣可得江湖装备，传说档位还有机会获得名器残印。", "shortDescription": "江湖装备与升阶材料" },
+    "martial": { "label": "功法卷", "description": "卷中藏有各路套路与心法，传说档位还有机会开出心法残印。", "shortDescription": "套路、心法与升阶材料" }
+  },
+  "gradeOrder": ["white", "green", "blue", "purple", "orange", "red"]
+}

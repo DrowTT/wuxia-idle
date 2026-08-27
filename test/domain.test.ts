@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { CombatPassiveEffect } from '../src/domain/types'
 import { advanceEncounter, advanceEncounterAction, createEncounter, getHitChance, grantNextAttackGuaranteedDodge, grantNextAttackGuaranteedHit } from '../src/domain/combat'
-import { EQUIPMENT, EQUIPMENT_SLOTS, LOTTERY_GRADE_NAMES, LOTTERY_GRADE_RATES, MAX_CULTIVATION_OFFLINE_MS, MAX_DODGE_RATE, PRACTICE_PROGRESS_PER_ACTION, REALMS, accrueInnerForce, advanceMainJourney, breakThroughRealm, canBreakThrough, canClaimDailyCheckIn, canEnhanceEquipment, claimDailyCheckIn, createCombatStats, createEquipmentLoadout, createInitialGame, drawLottery, enhanceEquipment, enhanceMartialArt, equipPlayerEquipment, equipPlayerMartialArt, formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber, getCombatPower, getCurrentMainStage, getEliteEnemyCount, getEquipmentCombatRates, getEquipmentEnhancementCost, getEquipmentEnhancementLevel, getEquipmentSetActivations, getEquippedEquipment, getEquippedMartialArts, getInnerForceRate, getInnerForceRateBonus, getMainStage, getMainStageReplayReward, getMartialEnhancementCost, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getPracticeCost, getRealm, getRealmBaseCombatStats, getRealmInnerForceRate, getRealmInnerForceRateBonus, getStagesPerChapter, getVisibleMainChapters, hasMartialWeaponAffinity, isEliteMainStage, loadGame, normalizeCombatStats, normalizeRealmId, practiceOnce, prependGameLog, unequipPlayerEquipment } from '../src/domain/game'
+import { setAutoPractice } from '../src/domain/game'
+import { EQUIPMENT, EQUIPMENT_SLOTS, INVENTORY_ITEMS, LOTTERY_GRADE_NAMES, LOTTERY_GRADE_RATES, MAX_CULTIVATION_OFFLINE_MS, MAX_DODGE_RATE, PRACTICE_PROGRESS_PER_ACTION, REALMS, accrueInnerForce, ascendEquipment, ascendMartialArt, advanceMainJourney, breakThroughRealm, canAscendEquipment, canAscendMartialArt, canBreakThrough, canClaimDailyCheckIn, canClaimDailyMaterialBounty, canClaimWeeklyMaterialBounty, canEnhanceEquipment, canEnterDungeon, canRefineEquipment, canSynthesizeGem, canUnlockEquipmentGemSlot, cancelDungeonChallenge, claimDailyCheckIn, claimDailyMaterialBounty, claimWeeklyMaterialBounty, createCombatStats, createEquipmentLoadout, createInitialGame, drawLottery, enhanceEquipment, enhanceMartialArt, enterDungeon, equipPlayerEquipment, equipPlayerMartialArt, formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber, getCombatPower, getCurrentMainStage, getDungeonAttemptsRemaining, getDungeonEnemies, getDungeonHighestCleared, getEliteEnemyCount, getEquipmentAscensionRequirement, getEquipmentCombatBonuses, getEquipmentCombatRates, getEquipmentDuplicateCount, getEquipmentEnhancementCost, getEquipmentEnhancementLevel, getEquipmentGemSocketLimit, getEquipmentRefinement, getEquipmentSetActivations, getEquippedEquipment, getEquippedMartialArts, getGemSynthesisSuccessRate, getGemSynthesisTarget, getInnerForceRate, getInnerForceRateBonus, getMainStage, getMainStageReplayReward, getMartialActiveSkill, getMartialAscensionRequirement, getMartialCombatBonuses, getMartialEnhancementCost, getMartialMastery, getPlayerCombatPassives, getPlayerCombatStats, getPlayerOuterSkills, getPlayerPower, getPracticeCost, getRealm, getRealmBaseCombatStats, getRealmInnerForceRate, getRealmInnerForceRateBonus, getSilverShopOffer, getSilverShopPurchaseRemaining, getStagesPerChapter, getVisibleMainChapters, hasMartialWeaponAffinity, isEliteMainStage, loadGame, normalizeCombatStats, normalizeRealmId, practiceOnce, prependGameLog, purchaseSilverShopProduct, recordDungeonMaterialBountyWin, refineEquipment, removeEquipmentGem, resolveDungeonReward, resolveMainStageVictory, saveGame, socketEquipmentGem, sweepDungeon, synthesizeGem, unlockEquipmentGemSlot, unequipPlayerEquipment, useInventoryItem } from '../src/domain/game'
 import {
   DUNGEONS,
   COMBAT_BALANCE,
@@ -17,11 +18,14 @@ import {
   MAIN_STORY_CHAPTER_CONFIGS,
   MAIN_STORY_RULES,
   MARTIAL_ARTS,
+  MARTIAL_ASCENSION_TOKEN_ID,
+  EQUIPMENT_ASCENSION_TOKEN_ID,
   STARTER_EQUIPMENT_IDS,
   STARTER_MARTIAL_ART_IDS,
   getMainStoryStageMultiplier,
   compareEquipmentInventory,
   compareMartialArtInventory,
+  SILVER_SHOP_PRODUCTS,
 } from '../src/data'
 
 afterEach(() => {
@@ -42,6 +46,9 @@ describe('content data integrity', () => {
     expect(EQUIPMENT_SLOTS).toContain('ring2')
     expect(EQUIPMENT).toHaveLength(105)
     expect(MARTIAL_ARTS).toHaveLength(41)
+    const gems = INVENTORY_ITEMS.filter((item) => item.category === 'gem')
+    expect(gems).toHaveLength(24)
+    expect(new Set(gems.map((gem) => `${gem.gemFamily}:${gem.gemTier}`)).size).toBe(24)
     for (const equipment of EQUIPMENT) {
       expect(Object.values(equipment.combatRates ?? {}).some((value) => value > 0)).toBe(true)
       for (const stat of ['maxHealth', 'attack', 'defense', 'speed'] as const) {
@@ -61,6 +68,17 @@ describe('content data integrity', () => {
       expect(art.kind).toBe('outer')
       for (const style of art.affinityWeaponStyles ?? []) expect(weaponStyles.has(style)).toBe(true)
     }
+  })
+
+  it('keeps JSON-backed content immutable at the data boundary', () => {
+    expect(Object.isFrozen(EQUIPMENT)).toBe(true)
+    expect(Object.isFrozen(EQUIPMENT[0])).toBe(true)
+    expect(Object.isFrozen(MARTIAL_ARTS)).toBe(true)
+    expect(Object.isFrozen(MARTIAL_ARTS[0])).toBe(true)
+    expect(Object.isFrozen(DUNGEONS)).toBe(true)
+    expect(Object.isFrozen(INVENTORY_ITEMS)).toBe(true)
+    expect(Object.isFrozen(LOTTERY_EQUIPMENT_PRIZE_IDS)).toBe(true)
+    expect(Object.isFrozen(LOTTERY_EQUIPMENT_PRIZE_IDS.white)).toBe(true)
   })
 
   it('orders inventory by quality before equipment position or martial art type', () => {
@@ -116,6 +134,18 @@ describe('content data integrity', () => {
     expect(lotteryEquipmentIds).toEqual(new Set(EQUIPMENT.map((equipment) => equipment.id)))
     expect(lotteryMartialIds).toEqual(new Set(MARTIAL_ARTS.map((art) => art.id)))
     expect(new Set(STARTER_EQUIPMENT_IDS)).toEqual(new Set(Object.values(INITIAL_EQUIPMENT_LOADOUT).filter((id): id is string => id !== null)))
+  })
+
+  it('defines valid daily-limited silver shop goods', () => {
+    expect(SILVER_SHOP_PRODUCTS.length).toBeGreaterThanOrEqual(4)
+    expect(new Set(SILVER_SHOP_PRODUCTS.map((product) => product.id)).size).toBe(SILVER_SHOP_PRODUCTS.length)
+    for (const product of SILVER_SHOP_PRODUCTS) {
+      expect(product.basePrice).toBeGreaterThan(0)
+      expect(product.dailyLimit).toBeGreaterThan(0)
+      expect(product.growthEveryChapters).toBeGreaterThan(0)
+      expect(product.rewards.length).toBeGreaterThan(0)
+      expect(product.rewards.every((reward) => reward.amount > 0)).toBe(true)
+    }
   })
 
   it('covers all chapters exactly once and generates contiguous stage ordinals', () => {
@@ -191,6 +221,44 @@ describe('content data integrity', () => {
   })
 })
 
+describe('silver shop', () => {
+  const today = new Date(2026, 7, 19, 12).getTime()
+
+  it('deducts silver, grants configured resources, and enforces the daily limit atomically', () => {
+    const game = createInitialGame()
+    const product = SILVER_SHOP_PRODUCTS.find((entry) => entry.id === 'cold-iron-supply')!
+    const offer = getSilverShopOffer(game.journey, product.id)!
+    const first = purchaseSilverShopProduct(game.player, game.cultivation, game.journey, game.shop, product.id, today)!
+
+    expect(first.player.silver).toBe(game.player.silver - offer.price)
+    expect(first.player.forge).toBe(game.player.forge + offer.rewards.find((reward) => reward.type === 'forge')!.amount)
+    expect(first.cultivation).toEqual(game.cultivation)
+    expect(getSilverShopPurchaseRemaining(first.shop, product.id, today)).toBe(product.dailyLimit - 1)
+
+    let latest = first
+    for (let count = 1; count < product.dailyLimit; count += 1) {
+      latest = purchaseSilverShopProduct({ ...latest.player, silver: 99_999 }, latest.cultivation, game.journey, latest.shop, product.id, today)!
+    }
+    expect(getSilverShopPurchaseRemaining(latest.shop, product.id, today)).toBe(0)
+    expect(purchaseSilverShopProduct({ ...latest.player, silver: 99_999 }, latest.cultivation, game.journey, latest.shop, product.id, today)).toBeNull()
+  })
+
+  it('resets a daily limit by date, scales with chapter progression, and credits inner force to cultivation', () => {
+    const game = createInitialGame()
+    const product = SILVER_SHOP_PRODUCTS.find((entry) => entry.id === 'nourishing-qi-pill')!
+    const startOffer = getSilverShopOffer(game.journey, product.id)!
+    const laterJourney = { ...game.journey, currentChapter: 4 }
+    const laterOffer = getSilverShopOffer(laterJourney, product.id)!
+    const result = purchaseSilverShopProduct({ ...game.player, silver: 99_999 }, game.cultivation, game.journey, game.shop, product.id, today)!
+    const nextDay = today + 24 * 60 * 60 * 1000
+
+    expect(laterOffer.price).toBeGreaterThan(startOffer.price)
+    expect(laterOffer.rewards[0]!.amount).toBeGreaterThan(startOffer.rewards[0]!.amount)
+    expect(result.cultivation.amount).toBe(game.cultivation.amount + startOffer.rewards[0]!.amount)
+    expect(getSilverShopPurchaseRemaining(result.shop, product.id, nextDay)).toBe(product.dailyLimit)
+  })
+})
+
 describe('lottery', () => {
   it('uses traditional quality names and normalized rates', () => {
     expect(LOTTERY_DRAW_COST).toBe(160)
@@ -249,9 +317,155 @@ describe('lottery', () => {
     expect(second.result.rewards).toEqual([expect.objectContaining({ kind: 'equipment', itemId: redPrizeId })])
     expect(second.player.forge).toBe(game.player.forge)
   })
+
+  it('awards the martial ascension item from an independent legendary chance', () => {
+    const game = createInitialGame()
+    let call = 0
+    const result = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST }, game.lottery, 'martial', 1, () => call++ === 0 ? .98 : .05, 300)
+
+    expect(result?.result.rewards[0]).toMatchObject({ kind: 'item', itemId: MARTIAL_ASCENSION_TOKEN_ID, gradeTone: 'orange' })
+    expect(result?.player.items[MARTIAL_ASCENSION_TOKEN_ID]).toBe(1)
+  })
+
+  it('awards the equipment ascension item from the equipment pool', () => {
+    const game = createInitialGame()
+    let call = 0
+    const result = drawLottery({ ...game.player, langyu: LOTTERY_DRAW_COST }, game.lottery, 'equipment', 1, () => call++ === 0 ? .98 : .05, 301)
+
+    expect(result?.result.rewards[0]).toMatchObject({ kind: 'item', itemId: EQUIPMENT_ASCENSION_TOKEN_ID, gradeTone: 'orange' })
+    expect(result?.player.items[EQUIPMENT_ASCENSION_TOKEN_ID]).toBe(1)
+  })
+})
+
+describe('martial ascension', () => {
+  it('keeps outer arts out of panel attributes while scaling their active skill', () => {
+    const game = createInitialGame()
+    const outer = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const inner = MARTIAL_ARTS.find((item) => item.id === 'nirvana-heart')!
+    const basePlayer = { ...game.player, martialRanks: {}, martialLoadout: { ...game.player.martialLoadout, inner1: inner.id, outer1: outer.id } }
+    const maxPlayer = { ...basePlayer, martialRanks: { [outer.id]: 10, [inner.id]: 10 } }
+
+    expect(getMartialCombatBonuses(maxPlayer, outer)).toBeUndefined()
+    expect(getMartialActiveSkill(maxPlayer, outer)?.damageMultiplier).toBeGreaterThan(getMartialActiveSkill(basePlayer, outer)?.damageMultiplier ?? 0)
+    const enhancedOuter = enhanceMartialArt({ ...basePlayer, insight: 100 }, outer)
+    expect(enhancedOuter).not.toBeNull()
+    expect(getMartialActiveSkill(enhancedOuter!, outer)?.damageMultiplier).toBeGreaterThan(getMartialActiveSkill(basePlayer, outer)?.damageMultiplier ?? 0)
+    expect(getInnerForceRateBonus(maxPlayer)).toBeCloseTo(inner.innerForceRateBase! * 2)
+
+    const unmastered = { ...basePlayer, mastery: { ...basePlayer.mastery, [outer.id]: 0 } }
+    const maxRank = { ...unmastered, martialRanks: { [outer.id]: 10 } }
+    expect(getMartialActiveSkill(maxRank, outer)?.damageMultiplier).toBeCloseTo(outer.activeSkill!.damageMultiplier * 2)
+  })
+
+  it('takes opening rage only from equipped inner arts', () => {
+    const game = createInitialGame()
+    const outer = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const inner = MARTIAL_ARTS.find((item) => item.id === 'nirvana-heart')!
+    const player = { ...game.player, martialLoadout: { ...game.player.martialLoadout, inner1: inner.id, outer1: outer.id } }
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ attack: 10, speed: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 100_000, speed: 1 }),
+      playerPassives: getPlayerCombatPassives(player),
+      playerOuterSkills: [],
+    })
+
+    expect(encounter.playerRage).toBe(150)
+  })
+
+  it('uses insight for the first five ranks and scales the outer active skill to max rank', () => {
+    const game = createInitialGame()
+    const art = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const player = { ...game.player, insight: 50, martialRanks: {}, martialLoadout: { ...game.player.martialLoadout, outer1: art.id, outer2: null } }
+    expect(getMartialAscensionRequirement(player, art)).toMatchObject({ rank: 0, insight: 50, duplicates: 0 })
+    const first = ascendMartialArt(player, art, [art.id])
+    expect(first?.player.martialRanks[art.id]).toBe(1)
+    expect(first?.player.insight).toBe(0)
+
+    const maxPlayer = { ...player, martialRanks: { [art.id]: 9 }, items: { [MARTIAL_ASCENSION_TOKEN_ID]: 2 } }
+    const maxed = ascendMartialArt(maxPlayer, art, [art.id])
+    expect(maxed?.player.martialRanks[art.id]).toBe(10)
+    expect(maxed?.player.items[MARTIAL_ASCENSION_TOKEN_ID]).toBe(0)
+    expect(maxed?.consumedTokens).toBe(2)
+    expect(getPlayerCombatPassives(maxed!.player)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'skill-rage-refund', value: 25 }),
+    ]))
+    expect(getMartialActiveSkill(maxed!.player, art)?.damageMultiplier).toBeGreaterThan(art.activeSkill!.damageMultiplier)
+    expect(canAscendMartialArt(maxed!.player, art, maxed!.ownedMartialArtIds)).toBe(false)
+  })
+
+  it('stacks quality-based inner rage effects and refunds rage immediately after a skill', () => {
+    const game = createInitialGame()
+    const orange = MARTIAL_ARTS.find((item) => item.id === 'great-vast-manual')!
+    const red = MARTIAL_ARTS.find((item) => item.id === 'nirvana-heart')!
+    const outer = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const player = { ...game.player, martialLoadout: { inner1: orange.id, inner2: red.id, outer1: outer.id, outer2: null } }
+    const passives = getPlayerCombatPassives(player)
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ attack: 10, speed: 200, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 100_000, speed: 1 }),
+      playerPassives: passives,
+      playerOuterSkills: getPlayerOuterSkills(player),
+      random: () => 0.5,
+    })
+    expect(encounter.playerRage).toBe(200)
+    encounter.status = 'fighting'
+    const firstSkill = advanceEncounterAction(encounter)
+    expect(firstSkill.action?.skill).toBeDefined()
+    // The orange and red inner arts both refund rage after the same skill.
+    expect(firstSkill.encounter.playerRage).toBe(125)
+
+    const maxRed = { ...player, martialRanks: { [red.id]: 10 } }
+    const maxedEncounter = createEncounter({
+      playerStats: createCombatStats({ attack: 10, speed: 200, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 100_000, speed: 1 }),
+      playerPassives: getPlayerCombatPassives(maxRed),
+      playerOuterSkills: [],
+    })
+    expect(maxedEncounter.playerRage).toBe(350)
+  })
+
+  it('applies the purple inner art skill refund after a skill', () => {
+    const game = createInitialGame()
+    const purple = MARTIAL_ARTS.find((item) => item.id === 'inner-breath')!
+    const outer = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const player = { ...game.player, martialLoadout: { inner1: purple.id, inner2: null, outer1: outer.id, outer2: null } }
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ attack: 10, speed: 200, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 100_000, speed: 1 }),
+      playerPassives: getPlayerCombatPassives(player),
+      playerOuterSkills: getPlayerOuterSkills(player),
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+    encounter.playerRage = 100
+
+    const step = advanceEncounterAction(encounter)
+
+    expect(step.action?.skill).toBeDefined()
+    expect(step.encounter.playerRage).toBe(25)
+  })
+
+  it('does not grant rage from an outer skill before the rage threshold', () => {
+    const game = createInitialGame()
+    const art = MARTIAL_ARTS.find((item) => item.id === 'one-sword')!
+    const player = { ...game.player, martialLoadout: { ...game.player.martialLoadout, outer1: art.id, outer2: null } }
+    const encounter = createEncounter({ playerStats: createCombatStats({ attack: 10, speed: 100 }), enemyStats: createCombatStats({ maxHealth: 100_000, speed: 1 }), playerPassives: getPlayerCombatPassives(player), playerOuterSkills: getPlayerOuterSkills(player) })
+    encounter.status = 'fighting'
+    const step = advanceEncounterAction(encounter)
+    expect(step.action?.skill).toBeUndefined()
+    expect(step.encounter.playerRage).toBe(50)
+  })
 })
 
 describe('inner force and practice', () => {
+  it('changes auto-practice through a domain operation', () => {
+    const game = createInitialGame()
+    const enabled = setAutoPractice(game.cultivation, true)
+
+    expect(enabled).toMatchObject({ autoPractice: true, amount: game.cultivation.amount })
+    expect(game.cultivation.autoPractice).toBe(false)
+  })
+
   it('accrues passively from timestamps and caps offline time', () => {
     const game = createInitialGame()
     const cultivation = { ...game.cultivation, amount: 0, lastAccruedAt: 1_000 }
@@ -260,6 +474,17 @@ describe('inner force and practice', () => {
     expect(afterOneMinute.amount).toBeCloseTo(60 * getInnerForceRate(game.player))
     expect(afterOneMinute.practiceProgress).toBe(0)
     expect(accrueInnerForce(cultivation, game.player, 1_000 + MAX_CULTIVATION_OFFLINE_MS * 2).amount).toBeCloseTo(MAX_CULTIVATION_OFFLINE_MS / 1000 * getInnerForceRate(game.player))
+  })
+
+  it('retains sub-second accrual time between high-frequency settlements', () => {
+    const game = createInitialGame()
+    const cultivation = { ...game.cultivation, amount: 0, lastAccruedAt: 1_000 }
+    const halfSecond = accrueInnerForce(cultivation, game.player, 1_500)
+    expect(halfSecond.amount).toBe(0)
+    expect(halfSecond.lastAccruedAt).toBe(1_000)
+    const fullSecond = accrueInnerForce(halfSecond, game.player, 2_000)
+    expect(fullSecond.amount).toBeCloseTo(getInnerForceRate(game.player))
+    expect(fullSecond.lastAccruedAt).toBe(2_000)
   })
 
   it('spends inner force per practice, advances small realms automatically, and reserves breakthroughs for manual action', () => {
@@ -418,6 +643,31 @@ describe('wuxia terminology migration', () => {
     expect(loadGame().cultivation.practiceProgress).toBe(0)
   })
 
+  it('reports whether browser storage accepted a save', () => {
+    const game = createInitialGame()
+    vi.stubGlobal('localStorage', { setItem: () => undefined })
+    expect(saveGame(game)).toBe(true)
+
+    vi.stubGlobal('localStorage', { setItem: () => { throw new Error('quota exceeded') } })
+    expect(saveGame(game)).toBe(false)
+  })
+
+  it('keeps a recovery copy when the local save cannot be parsed', () => {
+    let recoveryKey = ''
+    let recoveryValue = ''
+    vi.stubGlobal('localStorage', {
+      getItem: () => '{malformed-save',
+      setItem: (key: string, value: string) => {
+        recoveryKey = key
+        recoveryValue = value
+      },
+    })
+
+    expect(loadGame().version).toBeGreaterThan(0)
+    expect(recoveryKey).toBe('shanhe-wuwen-save-recovery')
+    expect(recoveryValue).toBe('{malformed-save')
+  })
+
   it('normalizes malformed saved resources, progress, journey, and collections at the load boundary', () => {
     const game = createInitialGame()
     const { martialLoadout: _, ...legacyPlayer } = game.player
@@ -465,6 +715,43 @@ describe('wuxia terminology migration', () => {
     expect(loaded.lottery.pity.equipment).toEqual({ noPurpleDraws: 9, noOrangeDraws: 0 })
   })
 
+  it('does not carry unknown save fields into the live aggregate', () => {
+    const game = createInitialGame()
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({ ...game, staleRuntimeField: { shouldNotLoad: true } }),
+      setItem: () => undefined,
+    })
+
+    expect(loadGame()).not.toHaveProperty('staleRuntimeField')
+  })
+
+  it('does not resurrect zero-count items or duplicate an owned equipment copy while loading', () => {
+    const game = createInitialGame()
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({
+        ...game,
+        player: {
+          ...game.player,
+          items: { 'pill-condensing-qi': 0, 'gem-ruby': -4 },
+          equippedEquipment: {
+            ...game.player.equippedEquipment,
+            ring1: { equipmentId: 'jade-ring', gems: [] },
+            ring2: { equipmentId: 'jade-ring', gems: [] },
+            weapon: { equipmentId: 'green-edge', gems: ['pill-condensing-qi', 'gem-ruby'] },
+          },
+        },
+      }),
+      setItem: () => undefined,
+    })
+
+    const loaded = loadGame()
+    expect(loaded.player.items['pill-condensing-qi']).toBe(0)
+    expect(loaded.player.items['gem-ruby']).toBe(0)
+    expect(loaded.player.equippedEquipment.ring1?.equipmentId).toBe('jade-ring')
+    expect(loaded.player.equippedEquipment.ring2).toBeNull()
+    expect(loaded.player.equippedEquipment.weapon?.gems).toEqual([null, 'gem-ruby'])
+  })
+
   it('migrates prior premium-currency keys and preserves legacy draw value', () => {
     const game = createInitialGame()
     vi.stubGlobal('localStorage', {
@@ -485,6 +772,12 @@ describe('wuxia terminology migration', () => {
       setItem: () => undefined,
     })
     expect(loadGame().player.langyu).toBe(160)
+
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({ ...game, version: 10, player: { ...game.player, langyu: undefined, yuanbao: undefined, silverTickets: undefined } }),
+      setItem: () => undefined,
+    })
+    expect(loadGame().player.langyu).toBe(game.player.langyu)
   })
 
   it('bounds runtime log history before it can bloat the save', () => {
@@ -497,7 +790,7 @@ describe('wuxia terminology migration', () => {
 })
 
 describe('equipment loadout', () => {
-  it('creates all eight equipment slots with gem storage sized to each item', () => {
+  it('creates nine equipment slots with two opened sockets and a four-socket ceiling where supported', () => {
     const game = createInitialGame()
 
     expect(EQUIPMENT_SLOTS).toHaveLength(9)
@@ -506,8 +799,20 @@ describe('equipment loadout', () => {
       const entry = game.player.equippedEquipment[slot]
       const equipment = EQUIPMENT.find((item) => item.id === entry?.equipmentId)
       expect(equipment).toBeDefined()
-      expect(entry?.gems).toHaveLength(equipment!.gemSlots)
+      expect(entry?.gems).toHaveLength(equipment!.gemSlots > 0 ? 2 : 0)
+      expect(getEquipmentGemSocketLimit(equipment!)).toBe(equipment!.gemSlots)
     }
+  })
+
+  it('does not equip a second copy without an owned inventory copy', () => {
+    const game = createInitialGame()
+    const ring = EQUIPMENT.find((item) => item.id === 'jade-ring')!
+    const empty = { ...game.player, equippedEquipment: createEquipmentLoadout() }
+    const first = equipPlayerEquipment(empty, 'ring1', ring, [ring.id])
+    const blocked = equipPlayerEquipment(first, 'ring2', ring, [ring.id])
+
+    expect(blocked.equippedEquipment.ring1?.equipmentId).toBe(ring.id)
+    expect(blocked.equippedEquipment.ring2).toBeNull()
   })
 
   it('applies equipment core rates to the realm panel and removes them when unequipped', () => {
@@ -527,6 +832,27 @@ describe('equipment loadout', () => {
     expect(equippedStats.defense).toBe(Math.round(realm.defense * (1 + (rates.defense ?? 0) / 100)) + unarmedStats.defense - realm.defense + (coldIron.combatBonuses?.defense ?? 0))
     expect(unequipPlayerEquipment(equipped, 'weapon').equippedEquipment.weapon).toBeNull()
     expect(getPlayerCombatStats(unequipPlayerEquipment(equipped, 'weapon')).attack).toBe(getPlayerCombatStats(unarmed).attack)
+  })
+
+  it('applies temple rates before the independent equipment rate zone', () => {
+    const game = createInitialGame()
+    const coldIron = EQUIPMENT.find((item) => item.id === 'cold-iron')!
+    const unarmed = {
+      ...game.player,
+      equippedEquipment: createEquipmentLoadout(),
+      martialLoadout: { inner1: null, inner2: null, outer1: null, outer2: null },
+      pillCombatBonuses: {},
+      pillCombatRates: { attack: 10 },
+    }
+    const equipped = equipPlayerEquipment(unarmed, 'weapon', coldIron)
+    const temple = { ...game.temple, ranks: { ...game.temple.ranks, breaker: 20 } }
+    const realm = getRealmBaseCombatStats(equipped)
+    const equipmentAttackRate = getEquipmentCombatRates(equipped, coldIron).attack ?? 0
+    const fixedAttack = getEquipmentCombatBonuses(equipped, coldIron).attack ?? 0
+
+    expect(getPlayerCombatStats(equipped, temple).attack).toBe(
+      Math.round(realm.attack * 1.2 * (1 + (equipmentAttackRate + 10) / 100)) + fixedAttack,
+    )
   })
 
   it('keeps equipment contribution proportional across realms and scales it with enhancement', () => {
@@ -588,6 +914,22 @@ describe('equipment loadout', () => {
     expect(loaded.player.equippedEquipment.ring2?.equipmentId).toBe('iron-ring')
   })
 
+  it('respects an explicit empty ring slot instead of falling back to the legacy ring field', () => {
+    const game = createInitialGame()
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({
+        ...game,
+        player: {
+          ...game.player,
+          equippedEquipment: { ...game.player.equippedEquipment, ring1: null, ring: { equipmentId: 'jade-ring', gems: [] } },
+        },
+      }),
+      setItem: () => undefined,
+    })
+
+    expect(loadGame().player.equippedEquipment.ring1).toBeNull()
+  })
+
   it('keeps the two ring slots independent while sharing the ring equipment category', () => {
     const game = createInitialGame()
     const unarmed = { ...game.player, equippedEquipment: createEquipmentLoadout() }
@@ -618,9 +960,118 @@ describe('equipment loadout', () => {
     expect(getPlayerCombatStats(enhanced!).attack).toBeGreaterThanOrEqual(beforeAttack)
     expect(getPlayerPower(enhanced!)).toBeGreaterThan(getPlayerPower(player))
   })
+
+  it('uses canonical equipment data instead of trusting a caller-supplied grade', () => {
+    const game = createInitialGame()
+    const weapon = EQUIPMENT.find((equipment) => equipment.id === 'green-edge')!
+    const forged = { ...weapon, gradeTone: 'red' as const }
+
+    expect(getEquipmentEnhancementCost(game.player, forged)).toBe(getEquipmentEnhancementCost(game.player, weapon))
+    expect(getEquipmentCombatBonuses(game.player, { ...weapon, combatBonuses: { attack: 999_999 } })).toEqual(getEquipmentCombatBonuses(game.player, weapon))
+  })
+
+  it('closes the equipment growth loop with gems, refinement and ascension', () => {
+    const game = createInitialGame()
+    const weapon = EQUIPMENT.find((equipment) => equipment.id === 'green-edge')!
+    const equipped = equipPlayerEquipment({ ...game.player, forge: 100_000, items: { 'equipment-essence': 10, 'equipment-reforge-stone': 2, 'gem-ruby': 1 } }, 'weapon', weapon)
+    const beforeGem = getPlayerCombatStats(equipped).attack
+    const socketed = socketEquipmentGem(equipped, 'weapon', 0, 'gem-ruby')!
+    expect(socketed.items['gem-ruby']).toBe(0)
+    expect(socketed.equippedEquipment.weapon?.gems[0]).toBe('gem-ruby')
+    expect(getPlayerCombatStats(socketed).attack).toBeGreaterThan(beforeGem)
+    const removed = removeEquipmentGem(socketed, 'weapon', 0)!
+    expect(removed.items['gem-ruby']).toBe(1)
+
+    expect(canRefineEquipment(removed, weapon)).toBe(true)
+    const refined = refineEquipment(removed, weapon, () => 0)!
+    expect(refined.player.items['equipment-reforge-stone']).toBe(1)
+    expect(getEquipmentRefinement(refined.player, weapon.id)).toEqual(refined.refinement)
+
+    const requirement = getEquipmentAscensionRequirement(refined.player, weapon)
+    expect(requirement.essence).toBe(1)
+    expect(canAscendEquipment(refined.player, { ...game.lottery, ownedEquipmentIds: [...game.lottery.ownedEquipmentIds, weapon.id] }, weapon)).toBe(true)
+    const ascended = ascendEquipment(refined.player, { ...game.lottery, ownedEquipmentIds: [...game.lottery.ownedEquipmentIds, weapon.id] }, weapon)!
+    expect(ascended.player.equipmentRanks[weapon.id]).toBe(1)
+    expect(ascended.player.items['equipment-essence']).toBe(9)
+    expect(getPlayerPower(ascended.player)).toBeGreaterThan(getPlayerPower(refined.player))
+  })
+
+  it('opens gem sockets for 400 langyu up to four and rejects unsupported slots', () => {
+    const game = createInitialGame()
+    const player = { ...game.player, langyu: 800 }
+    expect(canUnlockEquipmentGemSlot(player, 'weapon')).toBe(true)
+    const opened = unlockEquipmentGemSlot(player, 'weapon')!
+    expect(opened.langyu).toBe(400)
+    expect(opened.equippedEquipment.weapon?.gems).toHaveLength(3)
+    const fullyOpened = unlockEquipmentGemSlot(opened, 'weapon')!
+    expect(fullyOpened.langyu).toBe(0)
+    expect(fullyOpened.equippedEquipment.weapon?.gems).toHaveLength(4)
+    expect(unlockEquipmentGemSlot(fullyOpened, 'weapon')).toBeNull()
+    expect(unlockEquipmentGemSlot(fullyOpened, 'belt')).toBeNull()
+  })
+
+  it('allows only one gem family on an equipment item', () => {
+    const game = createInitialGame()
+    const weapon = EQUIPMENT.find((equipment) => equipment.id === 'green-edge')!
+    const player = equipPlayerEquipment({ ...game.player, items: { 'gem-ruby': 1, 'gem-azure-flare': 1, 'gem-jade': 1 } }, 'weapon', weapon)
+    const attackSocketed = socketEquipmentGem(player, 'weapon', 0, 'gem-ruby')!
+    expect(socketEquipmentGem(attackSocketed, 'weapon', 1, 'gem-azure-flare')).toBeNull()
+    expect(socketEquipmentGem(attackSocketed, 'weapon', 1, 'gem-jade')).not.toBeNull()
+  })
+
+  it('rejects invalid gem categories and out-of-range gem slots', () => {
+    const game = createInitialGame()
+    const weapon = EQUIPMENT.find((equipment) => equipment.id === 'green-edge')!
+    const player = equipPlayerEquipment({ ...game.player, items: { 'pill-condensing-qi': 1, 'gem-ruby': 1 } }, 'weapon', weapon)
+    expect(socketEquipmentGem(player, 'weapon', 0, 'pill-condensing-qi')).toBeNull()
+    expect(socketEquipmentGem(player, 'weapon', 99, 'gem-ruby')).toBeNull()
+    expect(removeEquipmentGem(player, 'weapon', -1)).toBeNull()
+    expect(removeEquipmentGem(player, 'weapon', 99)).toBeNull()
+  })
+
+  it('treats malformed equipped gem storage as empty during stat reads', () => {
+    const game = createInitialGame()
+    const malformed = {
+      ...game.player,
+      equippedEquipment: {
+        ...game.player.equippedEquipment,
+        weapon: { equipmentId: 'green-edge', gems: {} as never },
+      },
+    } as typeof game.player
+
+    expect(() => getPlayerCombatStats(malformed)).not.toThrow()
+    expect(getPlayerCombatStats(malformed)).toEqual(getPlayerCombatStats(game.player))
+  })
+
+  it('uses an equipment ascension item as a replacement for a duplicate', () => {
+    const game = createInitialGame()
+    const weapon = EQUIPMENT.find((equipment) => equipment.id === 'green-edge')!
+    const player = {
+      ...game.player,
+      forge: 100_000,
+      equipmentRanks: { [weapon.id]: 5 },
+      items: { [EQUIPMENT_ASCENSION_TOKEN_ID]: 1 },
+    }
+    expect(canAscendEquipment(player, game.lottery, weapon)).toBe(true)
+    const result = ascendEquipment(player, game.lottery, weapon)
+    expect(result?.player.equipmentRanks[weapon.id]).toBe(6)
+    expect(result?.player.items[EQUIPMENT_ASCENSION_TOKEN_ID]).toBe(0)
+  })
 })
 
 describe('martial art loadout and equipment sets', () => {
+  it('keeps inner and outer data responsibilities separate', () => {
+    for (const art of MARTIAL_ARTS) {
+      if (art.kind === 'inner') {
+        expect(art.activeSkill).toBeUndefined()
+      } else {
+        expect(art.activeSkill).toBeDefined()
+        expect(art.combatBonuses).toBeUndefined()
+        expect(art.passiveEffects).toBeUndefined()
+      }
+    }
+  })
+
   it('activates cumulative 3 / 4 / 5 / 6 piece set bonuses', () => {
     const game = createInitialGame()
     const setPieces = EQUIPMENT.filter((equipment) => equipment.setId === 'rimebound')
@@ -677,6 +1128,8 @@ describe('martial art loadout and equipment sets', () => {
     expect(mismatchedPlayer.martialLoadout.outer1).toBe(windSword.id)
     expect(hasMartialWeaponAffinity(mismatchedPlayer, windSword)).toBe(false)
     expect(getPlayerOuterSkills(mismatchedPlayer)).toEqual([expect.objectContaining({ id: windSword.activeSkill!.id, weaponAffinityActive: false })])
+    const noOuter = { ...matchedPlayer, martialLoadout: { ...matchedPlayer.martialLoadout, outer1: null } }
+    expect(getPlayerCombatStats(matchedPlayer)).toEqual(getPlayerCombatStats(noOuter))
   })
 })
 
@@ -760,6 +1213,37 @@ describe('combat', () => {
     const third = advanceEncounterAction(second.encounter)
     expect(third.action?.outcome).toBe('dodge')
     expect(third.encounter.playerEffects.guaranteedDodge).toBe(0)
+  })
+
+  it('does not grant受击 rage when an enemy attack is dodged', () => {
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ maxHealth: 1_000, attack: 1, speed: 1, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 10_000, attack: 100, speed: 200, hitRate: 100 }),
+      playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 0 }],
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+    encounter.playerEffects.guaranteedDodge = 1
+
+    const step = advanceEncounterAction(encounter)
+
+    expect(step.action?.outcome).toBe('dodge')
+    expect(step.encounter.playerRage).toBe(0)
+  })
+
+  it('grants受击 rage when an enemy attack is connected but immune', () => {
+    const encounter = createEncounter({
+      playerStats: createCombatStats({ maxHealth: 1_000, attack: 1, speed: 1, hitRate: 100 }),
+      enemyStats: createCombatStats({ maxHealth: 10_000, attack: 100, speed: 200, hitRate: 100 }),
+      playerPassives: [{ id: 'opening-rage', label: '先机', description: '', kind: 'battle-start-rage', value: 0 }, { id: 'guard', label: '护体', description: '', kind: 'damage-immunity-for-rounds', value: 1, duration: 1 }],
+      random: () => 0.5,
+    })
+    encounter.status = 'fighting'
+
+    const step = advanceEncounterAction(encounter)
+
+    expect(step.action?.outcome).toBe('immune')
+    expect(step.encounter.playerRage).toBe(25)
   })
 
   it('expires round-limited damage reduction after its configured rounds', () => {
@@ -1058,7 +1542,229 @@ describe('combat', () => {
   })
 })
 
+describe('gem synthesis', () => {
+  it('provides a complete six-tier gem ladder with configured success rates', () => {
+    const attackGem = INVENTORY_ITEMS.find((item) => item.id === 'gem-sand-attack')!
+    expect(getGemSynthesisTarget(attackGem)?.id).toBe('gem-ruby')
+    expect(getGemSynthesisSuccessRate(attackGem)).toBe(1)
+    expect(getGemSynthesisSuccessRate(INVENTORY_ITEMS.find((item) => item.id === 'gem-ruby')!)).toBe(0.9)
+    expect(getGemSynthesisSuccessRate(INVENTORY_ITEMS.find((item) => item.id === 'gem-legend-ember')!)).toBe(0.35)
+    expect(getGemSynthesisTarget(INVENTORY_ITEMS.find((item) => item.id === 'gem-mythic-sun')!)).toBeNull()
+  })
+
+  it('consumes three gems atomically and only grants the target on success', () => {
+    const game = createInitialGame()
+    const source = INVENTORY_ITEMS.find((item) => item.id === 'gem-sand-attack')!
+    const player = { ...game.player, items: { [source.id]: 6 } }
+    expect(canSynthesizeGem(player, source)).toBe(true)
+    const failed = synthesizeGem(player, source, () => 0.99)!
+    expect(failed.success).toBe(true)
+    expect(failed.player.items[source.id]).toBe(3)
+    expect(failed.player.items['gem-ruby']).toBe(1)
+
+    const sourceGreen = INVENTORY_ITEMS.find((item) => item.id === 'gem-ruby')!
+    const failedUpgrade = synthesizeGem({ ...failed.player, items: { 'gem-ruby': 3 } }, sourceGreen, () => 0.95)!
+    expect(failedUpgrade.success).toBe(false)
+    expect(failedUpgrade.player.items['gem-ruby']).toBe(0)
+    expect(failedUpgrade.player.items['gem-azure-flare']).toBeUndefined()
+  })
+})
+
+describe('dungeon progression and pills', () => {
+  it('defines layered, themed dungeon pools with only excellent-or-better pill rewards', () => {
+    const itemById = new Map(INVENTORY_ITEMS.map((item) => [item.id, item]))
+    expect(DUNGEONS).toHaveLength(3)
+    for (const dungeon of DUNGEONS) {
+      expect(dungeon.dailyAttempts).toBeGreaterThan(0)
+      expect(dungeon.layers).toHaveLength(8)
+      for (const [index, layer] of dungeon.layers.entries()) {
+        expect(layer.layer).toBe(index + 1)
+        expect(layer.drops.length).toBeGreaterThan(0)
+        expect(layer.enemyStats.maxHealth).toBeGreaterThan(0)
+        for (const drop of layer.drops) {
+          if (drop.kind !== 'item') continue
+          const item = itemById.get(drop.itemId)
+          expect(item).toBeDefined()
+          expect(['pill', 'material', 'gem']).toContain(item?.category)
+          expect(['green', 'blue', 'purple', 'orange', 'red']).toContain(item?.gradeTone)
+        }
+      }
+    }
+    expect(getDungeonEnemies('bamboo-realm', 6)).toHaveLength(2)
+  })
+
+  it('gates layers and resets limited dungeon attempts on the next local day', () => {
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    expect(canEnterDungeon(game.dungeons, 'sword-gate', 1, now)).toBe(true)
+    expect(canEnterDungeon(game.dungeons, 'sword-gate', 2, now)).toBe(false)
+
+    let state = enterDungeon(game.dungeons, 'sword-gate', 1, now)!
+    expect(getDungeonAttemptsRemaining(state, 'sword-gate', now)).toBe(2)
+    state = cancelDungeonChallenge(state, 'sword-gate', 1)
+    state = { ...state, highestCleared: { 'sword-gate': 1 } }
+    expect(canEnterDungeon(state, 'sword-gate', 2, now)).toBe(true)
+    state = enterDungeon(state, 'sword-gate', 2, now)!
+    state = cancelDungeonChallenge(state, 'sword-gate', 2)
+    state = enterDungeon(state, 'sword-gate', 1, now)!
+    expect(getDungeonAttemptsRemaining(state, 'sword-gate', now)).toBe(0)
+    expect(canEnterDungeon(state, 'sword-gate', 1, now)).toBe(false)
+    expect(getDungeonAttemptsRemaining(state, 'sword-gate', new Date(2026, 7, 20).getTime())).toBe(3)
+  })
+
+  it('normalizes invalid dungeon timestamps at the domain boundary', () => {
+    const game = createInitialGame()
+    const entered = enterDungeon(game.dungeons, 'sword-gate', 1, Number.NaN)
+    expect(entered?.activeChallenge?.enteredAt).toBeTypeOf('number')
+    expect(Number.isFinite(entered?.activeChallenge?.enteredAt)).toBe(true)
+  })
+
+  it('awards a selected dungeon drop and grants first-clear resources exactly once', () => {
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    const entered = enterDungeon(game.dungeons, 'bamboo-realm', 1, now)!
+    const first = resolveDungeonReward(game.player, game.lottery, entered, 'bamboo-realm', 1, () => 0, now)!
+    expect(first.reward.firstClear).toBe(true)
+    expect(first.reward.drops[0]).toMatchObject({ kind: 'item', itemId: 'pill-condensing-qi', quantity: 1 })
+    expect(first.player.items['pill-condensing-qi']).toBe(1)
+    expect(first.player.silver).toBeGreaterThan(game.player.silver)
+
+    const replayState = enterDungeon(first.dungeons, 'bamboo-realm', 1, now)!
+    const replay = resolveDungeonReward(first.player, first.lottery, replayState!, 'bamboo-realm', 1, () => 0, now)!
+    expect(replay.reward.firstClear).toBe(false)
+    expect(replay.reward.silver).toBe(0)
+    expect(replay.reward.forge).toBe(0)
+    expect(replay.player.items['pill-condensing-qi']).toBe(2)
+    expect(getDungeonHighestCleared(replay.dungeons, 'bamboo-realm')).toBe(1)
+  })
+
+  it('requires an active dungeon challenge and settles it only once', () => {
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    expect(resolveDungeonReward(game.player, game.lottery, game.dungeons, 'sword-gate', 1, () => 0, now)).toBeNull()
+    const entered = enterDungeon(game.dungeons, 'sword-gate', 1, now)!
+    const settled = resolveDungeonReward(game.player, game.lottery, entered, 'sword-gate', 1, () => 0, now)!
+    expect(settled.dungeons.activeChallenge).toBeUndefined()
+    expect(resolveDungeonReward(settled.player, settled.lottery, settled.dungeons, 'sword-gate', 1, () => 0, now)).toBeNull()
+  })
+
+  it('does not let a malformed active challenge skip dungeon layers', () => {
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    const forgedState = {
+      ...game.dungeons,
+      date: '2026-08-19',
+      attempts: { 'sword-gate': 1 },
+      activeChallenge: { dungeonId: 'sword-gate', layer: 8, enteredAt: now },
+    }
+
+    expect(resolveDungeonReward(game.player, game.lottery, forgedState, 'sword-gate', 8, () => 0, now)).toBeNull()
+  })
+
+  it('keeps the dungeon reward contract layered and makes deeper layers more valuable', () => {
+    for (const dungeon of DUNGEONS) {
+      expect(dungeon.layers[0]!.guaranteedDrops?.length).toBeGreaterThan(0)
+      expect(dungeon.layers.at(-1)!.dropQualityBonus).toBeGreaterThan(dungeon.layers[0]!.dropQualityBonus ?? 0)
+    }
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    const entered = enterDungeon(game.dungeons, 'sword-gate', 1, now)!
+    const result = resolveDungeonReward(game.player, game.lottery, entered, 'sword-gate', 1, () => 0.99, now)!
+    expect(result.reward.drops.length).toBeGreaterThanOrEqual(2)
+    expect(result.reward.drops[0]!.kind).toBe('item')
+    expect(result.reward.drops.at(-1)).toMatchObject({ kind: 'resource', resource: 'silver', quantity: 240 })
+  })
+
+  it('sweeps a cleared layer through the same reward path and consumes one attempt', () => {
+    const game = createInitialGame()
+    const now = new Date(2026, 7, 19, 9).getTime()
+    const state = { ...game.dungeons, date: '2026-08-19', highestCleared: { 'sword-gate': 1 } }
+    const result = sweepDungeon(game.player, game.lottery, state, 'sword-gate', 1, now, () => 0.5)!
+    expect(result.reward.firstClear).toBe(false)
+    expect(getDungeonAttemptsRemaining(result.dungeons, 'sword-gate', now)).toBe(2)
+    expect(result.reward.drops.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('unlocks daily wash stones and weekly equipment essence from dungeon wins', () => {
+    const game = createInitialGame()
+    const monday = new Date(2026, 7, 17, 9).getTime()
+    let bounty = game.materialBounties
+    expect(canClaimDailyMaterialBounty(bounty, monday)).toBe(false)
+    expect(canClaimWeeklyMaterialBounty(bounty, monday)).toBe(false)
+
+    bounty = recordDungeonMaterialBountyWin(bounty, monday)
+    expect(canClaimDailyMaterialBounty(bounty, monday)).toBe(true)
+    expect(canClaimWeeklyMaterialBounty(bounty, monday)).toBe(false)
+    const daily = claimDailyMaterialBounty(game.player, bounty, monday)!
+    expect(daily.player.items['equipment-reforge-stone']).toBe(1)
+    expect(claimDailyMaterialBounty(daily.player, daily.materialBounties, monday)).toBeNull()
+
+    for (let index = 1; index < 5; index += 1) bounty = recordDungeonMaterialBountyWin(bounty, monday)
+    expect(canClaimWeeklyMaterialBounty(bounty, monday)).toBe(true)
+    const weekly = claimWeeklyMaterialBounty(game.player, bounty, monday)!
+    expect(weekly.player.items['equipment-essence']).toBe(3)
+    expect(claimWeeklyMaterialBounty(weekly.player, weekly.materialBounties, monday)).toBeNull()
+
+    const nextWeek = new Date(2026, 7, 24, 9).getTime()
+    expect(canClaimDailyMaterialBounty(weekly.materialBounties, nextWeek)).toBe(false)
+    expect(canClaimWeeklyMaterialBounty(weekly.materialBounties, nextWeek)).toBe(false)
+    const reset = recordDungeonMaterialBountyWin(weekly.materialBounties, nextWeek)
+    expect(canClaimDailyMaterialBounty(reset, nextWeek)).toBe(true)
+  })
+
+  it('consumes pills once and applies their permanent cultivation and combat growth', () => {
+    const game = createInitialGame()
+    const baselineRate = getInnerForceRate(game.player)
+    const baselineStats = getPlayerCombatStats(game.player)
+    const player = { ...game.player, items: { 'pill-nine-turns': 1 } }
+    const result = useInventoryItem(player, 'pill-nine-turns')!
+
+    expect(result.player.items['pill-nine-turns']).toBe(0)
+    expect(result.player.pillInnerForceRateBonus).toBe(5)
+    expect(getInnerForceRate(result.player)).toBe(baselineRate + 5)
+    expect(getPlayerCombatStats(result.player).maxHealth).toBe(baselineStats.maxHealth + 80)
+    expect(getPlayerPower(result.player)).toBeGreaterThan(getPlayerPower(game.player))
+    expect(useInventoryItem(result.player, 'pill-nine-turns')).toBeNull()
+  })
+
+  it('migrates saves without dungeon or pill fields to a valid empty dungeon state', () => {
+    const game = createInitialGame()
+    const { dungeons: _dungeons, materialBounties: _materialBounties, ...legacyGame } = game
+    const { pillInnerForceRateBonus: _rate, pillCombatBonuses: _bonuses, pillCombatRates: _rates, ...legacyPlayer } = game.player
+    vi.stubGlobal('localStorage', {
+      getItem: () => JSON.stringify({ ...legacyGame, player: legacyPlayer }),
+      setItem: () => undefined,
+    })
+    const loaded = loadGame()
+    expect(loaded.dungeons).toEqual({ date: null, attempts: {}, highestCleared: {} })
+    expect(loaded.materialBounties).toEqual({ dailyDate: null, dailyDungeonWins: 0, dailyClaimed: false, weeklyKey: null, weeklyDungeonWins: 0, weeklyClaimed: false })
+    expect(loaded.player.pillInnerForceRateBonus).toBe(0)
+    expect(loaded.player.pillCombatBonuses).toEqual({})
+  })
+})
+
 describe('main story progression', () => {
+  it('settles first-clear progression and reward atomically', () => {
+    const game = createInitialGame()
+    const stage = getCurrentMainStage(game.journey)!
+    const result = resolveMainStageVictory(game.player, game.journey, stage, false)
+
+    expect(result?.journey.currentStage).toBe(2)
+    expect(result?.player.silver).toBe(game.player.silver + stage.reward.silver)
+    expect(resolveMainStageVictory(result!.player, result!.journey, stage, false)).toBeNull()
+  })
+
+  it('only permits replay rewards after the stage is already cleared', () => {
+    const game = createInitialGame()
+    const stage = getMainStage(1, 1)!
+    expect(resolveMainStageVictory(game.player, game.journey, stage, true)).toBeNull()
+
+    const clearedJourney = { ...game.journey, currentStage: 2 }
+    const result = resolveMainStageVictory(game.player, clearedJourney, stage, true, () => 0.5)
+    expect(result?.journey).toEqual(clearedJourney)
+    expect(result?.reward.langyu).toBe(0)
+  })
+
   it('scales forge material and insight rewards together every three chapters', () => {
     expect(getMainStage(1, 1)!.reward.forge).toBe(5)
     expect(getMainStage(1, 1)!.reward.insight).toBe(1)

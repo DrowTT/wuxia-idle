@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { X } from '@lucide/vue'
-import { getEquipmentCombatBonuses, getEquipmentCombatRates, getEquippedEquipment, getEquippedMartialArts, getRealm, getRealmBaseCombatStats } from '../domain/game'
+import { getEquipmentCombatBonuses, getEquipmentCombatRates, getEquippedEquipment, getEquippedInnerArts, getMartialCombatBonuses, getRealm, getRealmBaseCombatStats } from '../domain/game'
 import type { CombatStats, PlayerState } from '../domain/types'
 
 type StatKey = keyof CombatStats
@@ -56,11 +56,11 @@ const realm = computed(() => getRealm(props.player.realmId))
 const statSources = computed(() => {
   const realmStats = getRealmBaseCombatStats(props.player)
   const equipment = getEquippedEquipment(props.player)
-  const arts = getEquippedMartialArts(props.player)
+  const arts = getEquippedInnerArts(props.player)
   return [
     { name: `${realm.value?.label ?? '当前境界'} 第${props.player.realmLevel}重`, bonuses: realmStats, rates: undefined, base: true },
     ...equipment.map((item) => ({ name: item.name, bonuses: getEquipmentCombatBonuses(props.player, item), rates: getEquipmentCombatRates(props.player, item), base: false })),
-    ...arts.map((art) => ({ name: art.name, bonuses: art.combatBonuses, rates: undefined, base: false })),
+    ...arts.map((art) => ({ name: art.name, bonuses: getMartialCombatBonuses(props.player, art), rates: undefined, base: false })),
   ]
 })
 

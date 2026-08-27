@@ -9,14 +9,40 @@ export const INITIAL_PLAYER_PROFILE = {
   langyu: 1600,
   forge: 68,
   insight: 22,
+  incense: 0,
   fame: 135,
+  pillInnerForceRateBonus: 0,
+  pillCombatBonuses: {},
+  pillCombatRates: {},
   equipmentEnhancements: {},
+  equipmentRanks: {},
+  equipmentRefinements: {},
   mastery: { 'wind-sword': 58, 'inner-breath': 36, 'snow-step': 18 },
+  martialRanks: {},
+  items: {},
   martialLoadout: { inner1: 'inner-breath', inner2: null, outer1: 'wind-sword', outer2: 'snow-step' },
 } as const
 
 export const INITIAL_DAILY_CHECK_IN = {
   lastClaimedDate: null,
+} as const
+
+export const INITIAL_MATERIAL_BOUNTIES = {
+  dailyDate: null,
+  dailyDungeonWins: 0,
+  dailyClaimed: false,
+  weeklyKey: null,
+  weeklyDungeonWins: 0,
+  weeklyClaimed: false,
+} as const
+
+export const INITIAL_SHOP_STATE = {
+  purchaseDate: null,
+  purchaseCounts: {},
+} as const
+
+export const INITIAL_TEMPLE_STATE = {
+  ranks: { mountain: 0, breaker: 0, aegis: 0, gale: 0, breath: 0 },
 } as const
 
 export const INITIAL_EQUIPMENT_LOADOUT: Readonly<Record<EquipmentSlot, string | null>> = {

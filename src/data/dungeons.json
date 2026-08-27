@@ -1,0 +1,2676 @@
+{
+  "dungeons": [
+    {
+      "id": "sword-gate",
+      "name": "百门试剑",
+      "description": "守门傀儡一层强过一层，适合检验攻击与速度构筑。",
+      "strategy": "高攻击外功可以快速结束战斗；后两层会同时面对两名守门傀儡。",
+      "tone": "vermilion",
+      "mechanic": {
+        "id": "counter-stance",
+        "name": "守门反击",
+        "description": "守门傀儡架势严密，反击率提高。优先用高命中或破防招式压住节奏。"
+      },
+      "themeDropLabel": "锻体与兵器丹药",
+      "dailyAttempts": 3,
+      "layers": [
+        {
+          "layer": 1,
+          "name": "第1层 · 青铜试剑傀儡",
+          "enemyName": "青铜试剑傀儡",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 1995,
+            "attack": 158,
+            "defense": 95,
+            "speed": 95,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 120,
+            "forge": 2,
+            "insight": 1
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0
+        },
+        {
+          "layer": 2,
+          "name": "第2层 · 断刃试剑傀儡",
+          "enemyName": "断刃试剑傀儡",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2434,
+            "attack": 192,
+            "defense": 115,
+            "speed": 110,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 240,
+            "forge": 2,
+            "insight": 1
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.08
+        },
+        {
+          "layer": 3,
+          "name": "第3层 · 赤纹试剑傀儡",
+          "enemyName": "赤纹试剑傀儡",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2969,
+            "attack": 234,
+            "defense": 141,
+            "speed": 127,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 360,
+            "forge": 3,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.16
+        },
+        {
+          "layer": 4,
+          "name": "第4层 · 鸣雷试剑傀儡",
+          "enemyName": "鸣雷试剑傀儡",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 3623,
+            "attack": 286,
+            "defense": 172,
+            "speed": 146,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 480,
+            "forge": 3,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.24
+        },
+        {
+          "layer": 5,
+          "name": "第5层 · 百门执剑傀儡",
+          "enemyName": "百门执剑傀儡",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 4420,
+            "attack": 349,
+            "defense": 209,
+            "speed": 169,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 600,
+            "forge": 4,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.32
+        },
+        {
+          "layer": 6,
+          "name": "第6层 · 双生执剑傀儡",
+          "enemyName": "双生执剑傀儡",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 5392,
+            "attack": 426,
+            "defense": 255,
+            "speed": 195,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 720,
+            "forge": 4,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.4
+        },
+        {
+          "layer": 7,
+          "name": "第7层 · 无极剑傀",
+          "enemyName": "无极剑傀",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 6578,
+            "attack": 519,
+            "defense": 312,
+            "speed": 225,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 840,
+            "forge": 5,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.48
+        },
+        {
+          "layer": 8,
+          "name": "第8层 · 百门剑魁",
+          "enemyName": "百门剑魁",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 8025,
+            "attack": 634,
+            "defense": 380,
+            "speed": 260,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 960,
+            "forge": 5,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 28,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 19,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 5,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "green-edge",
+              "weight": 9
+            },
+            {
+              "kind": "equipment",
+              "itemId": "dragon-roam-sword",
+              "weight": 3
+            },
+            {
+              "kind": "martial",
+              "itemId": "wind-sword",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "seven-star-sword",
+              "weight": 2
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 3,
+              "weight": 18
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 240,
+              "weight": 14
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.56
+        }
+      ]
+    },
+    {
+      "id": "bamboo-realm",
+      "name": "幽篁药谷",
+      "description": "灵草与毒雾共生的秘谷，丹药产出最稳定。",
+      "strategy": "毒雾会在每回合开始损耗生命；高生命、回复和吸血构筑更容易熬过持久战。",
+      "tone": "jade",
+      "mechanic": {
+        "id": "poison-mist",
+        "name": "幽篁毒雾",
+        "description": "每回合开始都会受到少量毒雾损耗，吸血、回复与高生命构筑更适合深入。"
+      },
+      "themeDropLabel": "吐纳与气血丹药",
+      "dailyAttempts": 3,
+      "layers": [
+        {
+          "layer": 1,
+          "name": "第1层 · 青竹药童",
+          "enemyName": "青竹药童",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2128,
+            "attack": 168,
+            "defense": 101,
+            "speed": 100,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 135,
+            "forge": 1,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0
+        },
+        {
+          "layer": 2,
+          "name": "第2层 · 雾隐采药人",
+          "enemyName": "雾隐采药人",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2596,
+            "attack": 205,
+            "defense": 123,
+            "speed": 115,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 270,
+            "forge": 1,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.08
+        },
+        {
+          "layer": 3,
+          "name": "第3层 · 紫藤守谷者",
+          "enemyName": "紫藤守谷者",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 3167,
+            "attack": 250,
+            "defense": 150,
+            "speed": 133,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 405,
+            "forge": 2,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.16
+        },
+        {
+          "layer": 4,
+          "name": "第4层 · 百草毒师",
+          "enemyName": "百草毒师",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 3864,
+            "attack": 305,
+            "defense": 183,
+            "speed": 153,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 540,
+            "forge": 2,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.24
+        },
+        {
+          "layer": 5,
+          "name": "第5层 · 幽篁长老",
+          "enemyName": "幽篁长老",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 4714,
+            "attack": 372,
+            "defense": 223,
+            "speed": 177,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 675,
+            "forge": 3,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.32
+        },
+        {
+          "layer": 6,
+          "name": "第6层 · 双生药傀",
+          "enemyName": "双生药傀",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 5751,
+            "attack": 454,
+            "defense": 272,
+            "speed": 204,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 810,
+            "forge": 3,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.4
+        },
+        {
+          "layer": 7,
+          "name": "第7层 · 万毒谷主",
+          "enemyName": "万毒谷主",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 7017,
+            "attack": 554,
+            "defense": 332,
+            "speed": 236,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 945,
+            "forge": 4,
+            "insight": 5
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.48
+        },
+        {
+          "layer": 8,
+          "name": "第8层 · 青冥药王",
+          "enemyName": "青冥药王",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 8560,
+            "attack": 676,
+            "defense": 405,
+            "speed": 272,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 1080,
+            "forge": 4,
+            "insight": 5
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 18,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 25,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 14,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-forged-body",
+              "weight": 22,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 9,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 3,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-heavenly-rebirth",
+              "weight": 1,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-jade",
+              "weight": 7,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-azure",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "martial",
+              "itemId": "greenwood-meridian",
+              "weight": 7
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 3
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 3,
+              "weight": 16
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 260,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-condensing-qi",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.56
+        }
+      ]
+    },
+    {
+      "id": "jianghu-board",
+      "name": "江湖悬榜",
+      "description": "悬榜客携带各路奇物，掉落最为驳杂，也最考验临场构筑。",
+      "strategy": "敌人会在层数与编制之间切换攻击、速度偏向，综合属性和应对型功法比单一面板更重要。",
+      "tone": "gold",
+      "mechanic": {
+        "id": "changing-styles",
+        "name": "悬榜变招",
+        "description": "不同层与不同敌人会偏向攻击或速度，不能只堆单一防御属性。"
+      },
+      "themeDropLabel": "全属性丹药",
+      "dailyAttempts": 3,
+      "layers": [
+        {
+          "layer": 1,
+          "name": "第1层 · 黑榜刀客",
+          "enemyName": "黑榜刀客",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2280,
+            "attack": 180,
+            "defense": 108,
+            "speed": 105,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 180,
+            "forge": 2,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0
+        },
+        {
+          "layer": 2,
+          "name": "第2层 · 无常拳师",
+          "enemyName": "无常拳师",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 2782,
+            "attack": 220,
+            "defense": 132,
+            "speed": 121,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 360,
+            "forge": 2,
+            "insight": 2
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.08
+        },
+        {
+          "layer": 3,
+          "name": "第3层 · 飞檐追命客",
+          "enemyName": "飞檐追命客",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 3394,
+            "attack": 268,
+            "defense": 161,
+            "speed": 140,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 540,
+            "forge": 3,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.16
+        },
+        {
+          "layer": 4,
+          "name": "第4层 · 金面判官",
+          "enemyName": "金面判官",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 4140,
+            "attack": 327,
+            "defense": 196,
+            "speed": 161,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 720,
+            "forge": 3,
+            "insight": 3
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.24
+        },
+        {
+          "layer": 5,
+          "name": "第5层 · 悬榜护法",
+          "enemyName": "悬榜护法",
+          "enemyCount": 1,
+          "enemyStats": {
+            "maxHealth": 5051,
+            "attack": 399,
+            "defense": 239,
+            "speed": 186,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 900,
+            "forge": 4,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.32
+        },
+        {
+          "layer": 6,
+          "name": "第6层 · 双煞追魂使",
+          "enemyName": "双煞追魂使",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 6162,
+            "attack": 486,
+            "defense": 292,
+            "speed": 215,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 1080,
+            "forge": 4,
+            "insight": 4
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.4
+        },
+        {
+          "layer": 7,
+          "name": "第7层 · 榜首恶客",
+          "enemyName": "榜首恶客",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 7518,
+            "attack": 594,
+            "defense": 356,
+            "speed": 248,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 1260,
+            "forge": 5,
+            "insight": 5
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.48
+        },
+        {
+          "layer": 8,
+          "name": "第8层 · 天字号悬榜主",
+          "enemyName": "天字号悬榜主",
+          "enemyCount": 2,
+          "enemyStats": {
+            "maxHealth": 9172,
+            "attack": 724,
+            "defense": 434,
+            "speed": 286,
+            "hitRate": 92,
+            "dodgeRate": 4,
+            "critRate": 8
+          },
+          "firstClear": {
+            "silver": 1440,
+            "forge": 5,
+            "insight": 5
+          },
+          "drops": [
+            {
+              "kind": "item",
+              "itemId": "pill-gathering-origin",
+              "weight": 16,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 13,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-dragon-bone",
+              "weight": 12,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-iron-vein",
+              "weight": 10,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "pill-void-nourish",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-essence",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "equipment-reforge-stone",
+              "weight": 8,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-wind",
+              "weight": 6,
+              "quantity": 1
+            },
+            {
+              "kind": "item",
+              "itemId": "gem-ruby",
+              "weight": 4,
+              "quantity": 1
+            },
+            {
+              "kind": "equipment",
+              "itemId": "cloud-vest",
+              "weight": 5
+            },
+            {
+              "kind": "equipment",
+              "itemId": "mountain-armor",
+              "weight": 2
+            },
+            {
+              "kind": "martial",
+              "itemId": "returning-breath",
+              "weight": 6
+            },
+            {
+              "kind": "martial",
+              "itemId": "army-breaker",
+              "weight": 4
+            },
+            {
+              "kind": "martial",
+              "itemId": "nirvana-heart",
+              "weight": 1
+            },
+            {
+              "kind": "resource",
+              "resource": "forge",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "insight",
+              "amount": 5,
+              "weight": 14
+            },
+            {
+              "kind": "resource",
+              "resource": "silver",
+              "amount": 500,
+              "weight": 12
+            }
+          ],
+          "guaranteedDrops": [
+            {
+              "kind": "item",
+              "itemId": "pill-nine-turns",
+              "weight": 1,
+              "quantity": 1
+            }
+          ],
+          "dropQualityBonus": 0.56
+        }
+      ]
+    }
+  ]
+}

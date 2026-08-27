@@ -1,20 +1,28 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { BookOpen, CircleDot, Crown, Hammer, Hand, Shield, Shirt, Sparkles, Swords, Trophy } from '@lucide/vue'
-import { EQUIPMENT_ENHANCEMENT_MAX_LEVEL } from '../data'
-import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_SETS, EQUIPMENT_SLOTS, MARTIAL_ARTS, canEnhanceEquipment, canEnhanceMartialArt, canEquipEquipmentInSlot, getEquipmentCombatBonuses, getEquipmentCombatRates, getEquipmentEnhancementCost, getEquipmentEnhancementLevel, getEquipmentForSlot, getEquipmentSetActivations, getEquippedMartialArts, getMartialEnhancementCost, getMartialMastery, isMartialArtEnhanceable } from '../domain/game'
+import { EQUIPMENT_ENHANCEMENT_MAX_LEVEL, EQUIPMENT_ESSENCE_ID, EQUIPMENT_GEM_SOCKET_COST, INVENTORY_ITEMS } from '../data'
+import { EQUIPMENT, EQUIPMENT_CATEGORIES, EQUIPMENT_SETS, EQUIPMENT_SLOTS, MARTIAL_ARTS, canAscendEquipment, canAscendMartialArt, canEnhanceEquipment, canEnhanceMartialArt, canEquipEquipmentInSlot, canRefineEquipment, canUnlockEquipmentGemSlot, getEquipmentAscensionRequirement, getEquipmentAscensionTokenCount, getEquipmentCombatBonuses, getEquipmentCombatRates, getEquipmentDuplicateCount, getEquipmentEnhancementCost, getEquipmentEnhancementLevel, getEquipmentForSlot, getEquipmentGemSocketLimit, getEquipmentRefinement, getEquipmentRefinementCost, getEquipmentRefinementStatLabel, getEquipmentRank, getEquipmentSetActivations, getEquippedMartialArts, getGemSynthesisSuccessRate, getGemSynthesisTarget, getMartialAscensionDuplicateCount, getMartialAscensionRequirement, getMartialAscensionRank, getMartialAscensionTokenCount, getMartialEnhancementCost, getMartialMastery, isMartialArtEnhanceable } from '../domain/game'
 import { compareEquipmentInventory, compareMartialArtInventory } from '../data/inventory-sorting'
 import MartialArtTooltip from './MartialArtTooltip.vue'
-import type { CombatStats, Equipment, EquipmentCategory, EquipmentSlot, GameState, MartialArt, MartialArtSlot } from '../domain/types'
+import type { CombatStats, Equipment, EquipmentCategory, EquipmentSlot, GameState, InventoryItem, MartialArt, MartialArtSlot } from '../domain/types'
 
 const props = defineProps<{ game: GameState }>()
 const emit = defineEmits<{
   'equip-equipment': [slot: EquipmentSlot, equipment: Equipment]
   'unequip-equipment': [slot: EquipmentSlot]
   'enhance-equipment': [equipment: Equipment]
+  'ascend-equipment': [equipment: Equipment]
+  'refine-equipment': [equipment: Equipment]
+  'socket-gem': [slot: EquipmentSlot, gemIndex: number, gemId: string]
+  'remove-gem': [slot: EquipmentSlot, gemIndex: number]
+  'unlock-gem-slot': [slot: EquipmentSlot]
   'equip-martial': [slot: MartialArtSlot, art: MartialArt]
   'unequip-martial': [slot: MartialArtSlot]
   'enhance-art': [art: MartialArt]
+  'ascend-art': [art: MartialArt]
+  'use-item': [itemId: string]
+  'synthesize-gem': [gem: InventoryItem]
 }>()
 
 type SlotMeta = { label: string; icon: typeof Swords }
@@ -67,7 +75,8 @@ const selectedEquipmentSlot = ref<EquipmentSlot | null>(null)
 const selectedMartialSlot = ref<MartialArtSlot | null>(null)
 const equippedCount = computed(() => EQUIPMENT_SLOTS.filter((slot) => props.game.player.equippedEquipment[slot]).length)
 const equipmentSetActivations = computed(() => getEquipmentSetActivations(props.game.player))
-const emptyItemSlotCount = MIN_ITEM_SLOTS
+const ownedItems = computed(() => INVENTORY_ITEMS.filter((item) => item.category !== 'gem' && (props.game.player.items?.[item.id] ?? 0) > 0))
+const emptyItemSlotCount = computed(() => Math.max(0, MIN_ITEM_SLOTS - ownedItems.value.length))
 const filteredEquipment = computed(() => EQUIPMENT
   .filter((equipment) => (
     (activeFilter.value === 'all' || equipment.categoryId === activeFilter.value)
@@ -82,6 +91,15 @@ const filteredMartialArts = computed(() => MARTIAL_ARTS
     && !equippedMartialIds.value.has(art.id)
   ))
   .sort(compareMartialArtInventory))
+const ownedGems = computed(() => INVENTORY_ITEMS.filter((item) => item.category === 'gem' && (props.game.player.items?.[item.id] ?? 0) > 0))
+const gemInventory = computed(() => [...ownedGems.value].sort((a, b) => (b.gemTier ?? 0) - (a.gemTier ?? 0) || a.name.localeCompare(b.name, 'zh-CN')))
+const selectedSynthesisGemId = ref<string | null>(null)
+const synthesisSlots = ref<Array<string | null>>([null, null, null])
+const selectedSynthesisGem = computed(() => {
+  const selected = gemInventory.value.find((gem) => gem.id === selectedSynthesisGemId.value)
+  return selected ?? null
+})
+const selectedSynthesisFilledCount = computed(() => synthesisSlots.value.filter((gemId) => gemId === selectedSynthesisGemId.value).length)
 
 function equipmentAt(slot: EquipmentSlot): Equipment | null {
   const equipped = props.game.player.equippedEquipment[slot]
@@ -175,6 +193,71 @@ function equipmentEnhancementCost(equipment: Equipment): number {
   return getEquipmentEnhancementCost(props.game.player, equipment)
 }
 
+function equipmentRank(equipment: Equipment): number { return getEquipmentRank(props.game.player, equipment.id) }
+function equipmentAscensionRequirement(equipment: Equipment): ReturnType<typeof getEquipmentAscensionRequirement> { return getEquipmentAscensionRequirement(props.game.player, equipment) }
+function equipmentDuplicateCount(equipment: Equipment): number { return getEquipmentDuplicateCount(props.game.player, props.game.lottery, equipment) }
+function equipmentAscensionTokenCount(): number { return getEquipmentAscensionTokenCount(props.game.player) }
+function canAscendEquipmentItem(equipment: Equipment): boolean { return canAscendEquipment(props.game.player, props.game.lottery, equipment) }
+function equipmentRefinement(equipment: Equipment) { return getEquipmentRefinement(props.game.player, equipment.id) }
+function canRefineEquipmentItem(equipment: Equipment): boolean { return canRefineEquipment(props.game.player, equipment) }
+function equipmentRefinementLabel(equipment: Equipment): string {
+  const refinement = equipmentRefinement(equipment)
+  return refinement ? `${getEquipmentRefinementStatLabel(refinement.stat)} +${refinement.amount}` : '尚未洗炼'
+}
+function equippedGem(slot: EquipmentSlot, index: number): string | null { return props.game.player.equippedEquipment?.[slot]?.gems?.[index] ?? null }
+function gemName(gemId: string | null): string { return gemId ? INVENTORY_ITEMS.find((item) => item.id === gemId)?.name ?? '未知宝石' : '空宝石孔' }
+function openedGemSlotCount(slot: EquipmentSlot): number { return props.game.player.equippedEquipment?.[slot]?.gems?.length ?? 0 }
+function gemSocketLimit(equipment: Equipment): number { return getEquipmentGemSocketLimit(equipment) }
+function canUnlockGemSlot(slot: EquipmentSlot): boolean { return canUnlockEquipmentGemSlot(props.game.player, slot) }
+function availableGemsForSlot(slot: EquipmentSlot): InventoryItem[] {
+  const usedFamilies = new Set(
+    (props.game.player.equippedEquipment?.[slot]?.gems ?? [])
+      .map((gemId) => INVENTORY_ITEMS.find((item) => item.id === gemId)?.gemFamily)
+      .filter((family): family is NonNullable<InventoryItem['gemFamily']> => Boolean(family)),
+  )
+  return ownedGems.value.filter((gem) => !gem.gemFamily || !usedFamilies.has(gem.gemFamily))
+}
+
+function gemTarget(gem: InventoryItem): InventoryItem | null {
+  return getGemSynthesisTarget(gem)
+}
+
+function gemSuccessRate(gem: InventoryItem): number {
+  return Math.round(getGemSynthesisSuccessRate(gem) * 100)
+}
+
+function canSynthesizeGemItem(gem: InventoryItem): boolean {
+  return Boolean(gemTarget(gem))
+    && (props.game.player.items?.[gem.id] ?? 0) >= 3
+    && selectedSynthesisFilledCount.value === 3
+    && synthesisSlots.value.every((gemId) => gemId === gem.id)
+}
+
+function selectSynthesisGem(gem: InventoryItem): void {
+  selectedSynthesisGemId.value = gem.id
+  const count = Math.min(3, props.game.player.items?.[gem.id] ?? 0)
+  synthesisSlots.value = [0, 1, 2].map((index) => index < count ? gem.id : null)
+}
+
+function synthesisSlotGem(slotIndex: number): InventoryItem | null {
+  const gemId = synthesisSlots.value[slotIndex]
+  return gemId ? INVENTORY_ITEMS.find((item) => item.id === gemId) ?? null : null
+}
+
+function removeSynthesisGemSlot(slotIndex: number): void {
+  if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex >= synthesisSlots.value.length || !synthesisSlots.value[slotIndex]) return
+  const nextSlots = [...synthesisSlots.value]
+  nextSlots[slotIndex] = null
+  synthesisSlots.value = nextSlots
+}
+
+function synthesizeSelectedGem(): void {
+  const gem = selectedSynthesisGem.value
+  if (!gem || !canSynthesizeGemItem(gem)) return
+  emit('synthesize-gem', gem)
+  synthesisSlots.value = [null, null, null]
+}
+
 function canEnhanceEquipmentItem(equipment: Equipment): boolean {
   return canEnhanceEquipment(props.game.player, equipment)
 }
@@ -233,6 +316,11 @@ function artEnhancementCost(art: MartialArt): number { return getMartialEnhancem
 function artMastery(art: MartialArt): number { return getMartialMastery(props.game.player, art.id) }
 function canEnhanceMartial(art: MartialArt): boolean { return canEnhanceMartialArt(props.game.player, art) }
 function martialEnhancementLabel(art: MartialArt): string { return artMastery(art) >= 100 ? '已强化至满级' : `强化 ${artEnhancementCost(art)} 心得` }
+function martialAscensionRank(art: MartialArt): number { return getMartialAscensionRank(props.game.player, art) }
+function martialAscensionRequirement(art: MartialArt): ReturnType<typeof getMartialAscensionRequirement> { return getMartialAscensionRequirement(props.game.player, art) }
+function canAscendMartial(art: MartialArt): boolean { return canAscendMartialArt(props.game.player, art, props.game.lottery.ownedMartialArtIds) }
+function martialDuplicateCount(art: MartialArt): number { return getMartialAscensionDuplicateCount(props.game.player, art, props.game.lottery.ownedMartialArtIds) }
+function martialTokenCount(): number { return getMartialAscensionTokenCount(props.game.player) }
 function martialCount(kind: 'inner' | 'outer'): number {
   return getEquippedMartialArts(props.game.player).filter((art) => art.kind === kind).length
 }
@@ -268,7 +356,7 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                     <div class="tooltip-copy tooltip-effect"><small>装备效果</small><p>{{ equipmentEffectDescription(equipmentAt(slot)!, true) }}</p></div>
                     <dl><div v-for="stat in equipmentStats(equipmentAt(slot)!, true)" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl>
                     <section v-if="equipmentAt(slot)?.setId" class="equipment-set-tooltip"><b>{{ equipmentSetName(equipmentAt(slot)!) }} · {{ equipmentSetPieceCount(equipmentAt(slot)!) }} / 6</b><span v-for="bonus in equipmentSetBonuses(equipmentAt(slot)!)" :key="bonus.pieces" :class="{ active: equipmentSetPieceCount(equipmentAt(slot)!) >= bonus.pieces }">{{ bonus.pieces }} 件：{{ bonus.description }}</span></section>
-                    <div v-if="equipmentAt(slot)?.gemSlots" class="tooltip-gems"><span>宝石孔</span><i v-for="index in equipmentAt(slot)?.gemSlots" :key="index" /></div>
+                    <div v-if="equipmentAt(slot) && gemSocketLimit(equipmentAt(slot)!)" class="tooltip-gems"><span>宝石孔 {{ openedGemSlotCount(slot) }} / {{ gemSocketLimit(equipmentAt(slot)!) }}</span><i v-for="index in openedGemSlotCount(slot)" :key="index" :class="{ filled: Boolean(equippedGem(slot, index - 1)) }" /></div>
                   </section>
                   <section v-else class="equipment-tooltip empty-tooltip"><b>{{ slotMeta[slot].label }}</b><p>未装备</p></section>
                 </el-popover>
@@ -309,7 +397,7 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                       <div class="tooltip-copy tooltip-effect"><small>装备效果</small><p>{{ equipmentEffectDescription(equipment) }}</p></div>
                       <dl><div v-for="stat in equipmentStats(equipment)" :key="stat.label"><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd></div></dl>
                       <section v-if="equipment.setId" class="equipment-set-tooltip"><b>{{ equipmentSetName(equipment) }} · {{ equipmentSetPieceCount(equipment) }} / 6</b><span v-for="bonus in equipmentSetBonuses(equipment)" :key="bonus.pieces" :class="{ active: equipmentSetPieceCount(equipment) >= bonus.pieces }">{{ bonus.pieces }} 件：{{ bonus.description }}</span></section>
-                      <div v-if="equipment.gemSlots" class="tooltip-gems"><span>宝石孔</span><i v-for="index in equipment.gemSlots" :key="index" /></div>
+                      <div v-if="gemSocketLimit(equipment)" class="tooltip-gems"><span>宝石孔上限 {{ gemSocketLimit(equipment) }}（装备后开启 2 孔）</span><i v-for="index in 2" :key="index" /></div>
                     </section>
                   </el-popover>
                 </div>
@@ -329,9 +417,46 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                       <small v-else-if="!canEnhanceEquipmentItem(selectedEquipment.equipment)" class="growth-limit-hint">铸材不足，暂时无法强化</small>
                     </div>
                   </el-tab-pane>
-                  <el-tab-pane label="镶嵌宝石" name="gems" disabled />
-                  <el-tab-pane label="洗炼" name="reforge" disabled />
-                  <el-tab-pane label="升阶" name="ascend" disabled />
+                  <el-tab-pane label="镶嵌宝石" name="gems">
+                    <div class="growth-operation-content equipment-gem-operation">
+                      <div class="growth-level-line"><span>宝石孔</span><b v-if="gemSocketLimit(selectedEquipment.equipment)">{{ openedGemSlotCount(selectedEquipment.slot) }} / {{ gemSocketLimit(selectedEquipment.equipment) }} 个</b><b v-else>不支持镶嵌</b></div>
+                      <div v-if="openedGemSlotCount(selectedEquipment.slot)" class="equipment-gem-slots">
+                        <div v-for="index in openedGemSlotCount(selectedEquipment.slot)" :key="index" class="equipment-gem-row">
+                          <span class="equipment-gem-slot"><i :class="{ filled: equippedGem(selectedEquipment.slot, index - 1) }" />{{ gemName(equippedGem(selectedEquipment.slot, index - 1)) }}</span>
+                          <el-button v-if="equippedGem(selectedEquipment.slot, index - 1)" size="small" @click="$emit('remove-gem', selectedEquipment.slot, index - 1)">取下</el-button>
+                          <el-dropdown v-else-if="availableGemsForSlot(selectedEquipment.slot).length" trigger="click" @command="$emit('socket-gem', selectedEquipment.slot, index - 1, $event)">
+                            <el-button size="small" type="primary">选择宝石</el-button>
+                            <template #dropdown><el-dropdown-menu><el-dropdown-item v-for="gem in availableGemsForSlot(selectedEquipment.slot)" :key="gem.id" :command="gem.id">{{ gem.name }} · 数量 {{ game.player.items?.[gem.id] ?? 0 }}</el-dropdown-item></el-dropdown-menu></template>
+                          </el-dropdown>
+                          <small v-else class="equipment-gem-unavailable">暂无可用的不同属性宝石</small>
+                        </div>
+                      </div>
+                      <div v-if="gemSocketLimit(selectedEquipment.equipment) && openedGemSlotCount(selectedEquipment.slot) < gemSocketLimit(selectedEquipment.equipment)" class="equipment-gem-unlock">
+                        <span>开启下一个宝石孔</span><small>消耗 {{ EQUIPMENT_GEM_SOCKET_COST }} 琅玉</small>
+                        <el-button type="primary" size="small" :disabled="!canUnlockGemSlot(selectedEquipment.slot)" @click="$emit('unlock-gem-slot', selectedEquipment.slot)">开孔</el-button>
+                      </div>
+                      <small v-else-if="!gemSocketLimit(selectedEquipment.equipment)" class="growth-limit-hint">这件装备没有宝石孔。</small>
+                      <small v-else class="growth-limit-hint">宝石孔已全部开启。</small>
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane label="洗炼" name="reforge">
+                    <div class="growth-operation-content">
+                      <div class="growth-level-line"><span>当前词条</span><b>{{ equipmentRefinementLabel(selectedEquipment.equipment) }}</b></div>
+                      <p class="growth-material-hint">洗炼会随机替换一条装备属性，消耗 {{ getEquipmentRefinementCost(game.player) }} 个洗炼石。</p>
+                      <el-button type="primary" class="growth-action-button" :disabled="!canRefineEquipmentItem(selectedEquipment.equipment)" @click="$emit('refine-equipment', selectedEquipment.equipment)"><Sparkles :size="15" />重新洗炼</el-button>
+                      <small v-if="!canRefineEquipmentItem(selectedEquipment.equipment)" class="growth-limit-hint">洗炼石不足</small>
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane label="升阶" name="ascend">
+                    <div class="growth-operation-content">
+                      <div class="growth-level-line"><span>装备阶位</span><b>{{ equipmentRank(selectedEquipment.equipment) }} <small>/ {{ equipmentAscensionRequirement(selectedEquipment.equipment).maxRank }}</small></b></div>
+                      <div class="growth-cost-line"><span>本次消耗</span><b>{{ equipmentAscensionRequirement(selectedEquipment.equipment).forge }} 铸材<span v-if="equipmentAscensionRequirement(selectedEquipment.equipment).essence"> · {{ equipmentAscensionRequirement(selectedEquipment.equipment).essence }} 装备精魄</span><span v-if="equipmentAscensionRequirement(selectedEquipment.equipment).duplicates"> · {{ equipmentAscensionRequirement(selectedEquipment.equipment).duplicates }} 件同名装备或名器残印</span></b></div>
+                      <div class="growth-material-hint">同名装备可用 {{ equipmentDuplicateCount(selectedEquipment.equipment) }} · 名器残印 {{ equipmentAscensionTokenCount() }} · 装备精魄 {{ game.player.items?.[EQUIPMENT_ESSENCE_ID] ?? 0 }}</div>
+                      <el-button type="primary" class="growth-action-button" :disabled="!canAscendEquipmentItem(selectedEquipment.equipment)" @click="$emit('ascend-equipment', selectedEquipment.equipment)"><Sparkles :size="15" />升阶</el-button>
+                      <small v-if="equipmentRank(selectedEquipment.equipment) >= equipmentAscensionRequirement(selectedEquipment.equipment).maxRank" class="growth-limit-hint">已达到升阶上限</small>
+                      <small v-else-if="!canAscendEquipmentItem(selectedEquipment.equipment)" class="growth-limit-hint">材料不足，暂时无法升阶</small>
+                    </div>
+                  </el-tab-pane>
                 </el-tabs>
               </section>
               <section v-else class="growth-detail-content growth-empty-state" aria-label="装备养成提示"><Hammer :size="30" /><h2>暂无可养成装备</h2><p>先装备一件装备</p></section>
@@ -344,11 +469,67 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
         <section class="inventory-page item-inventory-page" aria-label="道具背包">
           <section class="inventory-panel item-inventory-panel">
             <div class="item-grid">
+              <div v-for="item in ownedItems" :key="item.id" class="item-card" :class="item.gradeTone">
+                <span class="item-glyph"><Sparkles :size="28" /></span>
+                <div><b>{{ item.name }}</b><small>数量：{{ game.player.items?.[item.id] ?? 0 }}</small><small>{{ item.description }}</small><el-button v-if="item.usable" type="primary" size="small" @click="$emit('use-item', item.id)">使用</el-button></div>
+              </div>
               <div v-for="index in emptyItemSlotCount" :key="`empty-item-${index}`" class="item-card item-empty" aria-hidden="true">
                 <span class="item-glyph item-placeholder-glyph" />
               </div>
             </div>
           </section>
+        </section>
+      </el-tab-pane>
+
+      <el-tab-pane label="宝石" name="gems">
+        <section class="inventory-page gem-inventory-page" aria-label="宝石背包与合成">
+          <header class="equipment-heading">
+            <div><span class="kicker">镶嵌与淬炼</span><h1>宝石</h1></div>
+            <span class="equipped-count">三枚同级宝石可合成更高一级</span>
+          </header>
+          <section class="gem-workbench">
+            <article class="gem-synthesis-panel" aria-label="宝石合成面板">
+              <header class="gem-panel-heading">
+                <div><span class="kicker">合成台</span><h2>宝石合成</h2></div>
+                <span class="gem-recipe-badge">同属性 · 同等级</span>
+              </header>
+              <div class="gem-recipe" aria-label="三个同级宝石合成一个高级宝石">
+                <span>3 枚</span><b>同级宝石</b><span class="gem-recipe-arrow">→</span><span>1 枚</span><b>高级宝石</b>
+              </div>
+              <div class="gem-triangle" aria-label="合成材料槽位">
+                <button v-for="index in 3" :key="index" type="button" class="gem-triangle-slot" :class="{ filled: Boolean(synthesisSlotGem(index - 1)), [synthesisSlotGem(index - 1)?.gradeTone ?? 'empty']: Boolean(synthesisSlotGem(index - 1)) }" :aria-label="synthesisSlotGem(index - 1) ? `卸下${synthesisSlotGem(index - 1)?.name}` : '空宝石槽位'" @click="removeSynthesisGemSlot(index - 1)">
+                  <template v-if="synthesisSlotGem(index - 1)">
+                    <Sparkles :size="22" /><small>{{ synthesisSlotGem(index - 1)?.name }}</small>
+                  </template>
+                  <template v-else><span>+</span></template>
+                </button>
+              </div>
+              <div class="gem-synthesis-summary" v-if="selectedSynthesisGem">
+                <div><span>当前材料</span><b>{{ selectedSynthesisFilledCount }} / 3</b></div>
+                <div><span>合成目标</span><b>{{ gemTarget(selectedSynthesisGem)?.name ?? '已达最高等级' }}</b></div>
+                <div v-if="gemTarget(selectedSynthesisGem)"><span>成功率</span><b>{{ gemSuccessRate(selectedSynthesisGem) }}%</b></div>
+              </div>
+              <div v-else class="gem-synthesis-empty"><Sparkles :size="27" /><b>选择一种宝石开始合成</b><small>需要 3 枚同属性、同等级宝石</small></div>
+              <el-button v-if="selectedSynthesisGem" type="primary" class="gem-synthesize-button" :disabled="!canSynthesizeGemItem(selectedSynthesisGem)" @click="synthesizeSelectedGem">合成高级宝石</el-button>
+              <small v-if="selectedSynthesisGem && !gemTarget(selectedSynthesisGem)" class="gem-synthesis-disabled-hint">已达到最高等级，无法继续合成</small>
+              <small v-else-if="selectedSynthesisGem && !canSynthesizeGemItem(selectedSynthesisGem)" class="gem-synthesis-disabled-hint">材料不足，需要集齐 3 枚后才能合成</small>
+            </article>
+            <section class="gem-library-panel" aria-label="宝石列表">
+              <header class="gem-panel-heading">
+                <div><span class="kicker">材料库</span><h2>我的宝石</h2></div>
+                <span>{{ gemInventory.length }} 种</span>
+              </header>
+              <div v-if="gemInventory.length" class="gem-library-grid">
+                <button v-for="gem in gemInventory" :key="gem.id" type="button" class="gem-choice" :class="[gem.gradeTone, { selected: selectedSynthesisGem?.id === gem.id }]" :aria-label="`选择${gem.name}，数量${game.player.items?.[gem.id] ?? 0}`" @click="selectSynthesisGem(gem)">
+                  <span class="gem-choice-icon"><Sparkles :size="22" /></span>
+                  <span class="gem-choice-copy"><b>{{ gem.name }}</b><small>{{ gem.grade }} · {{ gem.description }}</small></span>
+                  <strong>数量：{{ game.player.items?.[gem.id] ?? 0 }}</strong>
+                </button>
+              </div>
+              <div v-else class="gem-empty-state"><Sparkles :size="30" /><b>尚未获得宝石</b><small>秘境和商会会提供基础宝石</small></div>
+            </section>
+          </section>
+          <p class="gem-synthesis-note"><Sparkles :size="14" />白色宝石合成必定成功；等级越高，成功率越低。合成失败仍会消耗 3 枚材料。</p>
         </section>
       </el-tab-pane>
 
@@ -375,7 +556,7 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                   </el-popover>
                 </div></div>
               </div>
-              <div class="rage-note"><Swords :size="15" /><span>外功规则：攻击获得50怒气，受击获得25怒气；怒气超过100时，招式按当前怒气倍率增强。</span></div>
+              <div class="rage-note"><Swords :size="15" /><span>外功规则：普通攻击获得50怒气，受击获得25怒气；怒气达到100后施放主动招式。</span></div>
             </section>
             <section class="inventory-panel martial-library-panel martial-side-panel" :aria-label="martialMode === 'growth' ? '功法养成' : '背包功法'">
               <header class="inventory-panel-heading side-panel-heading">
@@ -405,7 +586,17 @@ function selectMartialFilter(filter: MartialFilter): void { activeMartialFilter.
                       <small v-else-if="!canEnhanceMartial(selectedMartial.art)" class="growth-limit-hint">心得不足，暂时无法强化</small>
                     </div>
                   </el-tab-pane>
-                  <el-tab-pane label="升阶" name="ascend" disabled />
+                  <el-tab-pane label="升阶" name="ascend">
+                    <div class="growth-operation-content">
+                      <div class="growth-level-line"><span>功法阶位</span><b>{{ martialAscensionRank(selectedMartial.art) }} <small>/ {{ martialAscensionRequirement(selectedMartial.art).maxRank }}</small></b></div>
+                      <div v-if="martialAscensionRequirement(selectedMartial.art).insight" class="growth-cost-line"><span>本次消耗</span><b><Sparkles :size="15" /> {{ martialAscensionRequirement(selectedMartial.art).insight }} 心得</b></div>
+                      <div v-else-if="martialAscensionRequirement(selectedMartial.art).duplicates" class="growth-cost-line"><span>本次消耗</span><b>{{ martialAscensionRequirement(selectedMartial.art).duplicates }} 份同名功法或心法残印</b></div>
+                      <div v-if="martialAscensionRequirement(selectedMartial.art).duplicates" class="growth-material-hint">同名功法 {{ martialDuplicateCount(selectedMartial.art) }} · 心法残印 {{ martialTokenCount() }}</div>
+                      <el-button type="primary" class="growth-action-button" :disabled="!canAscendMartial(selectedMartial.art)" @click="$emit('ascend-art', selectedMartial.art)"><Sparkles :size="15" />升阶</el-button>
+                      <small v-if="martialAscensionRank(selectedMartial.art) >= martialAscensionRequirement(selectedMartial.art).maxRank" class="growth-limit-hint">已达到升阶上限</small>
+                      <small v-else-if="!canAscendMartial(selectedMartial.art)" class="growth-limit-hint">升阶材料不足</small>
+                    </div>
+                  </el-tab-pane>
                 </el-tabs>
               </section>
               <section v-else class="growth-detail-content growth-empty-state" aria-label="功法养成提示"><BookOpen :size="30" /><h2>暂无可养成功法</h2><p>先装配一本功法</p></section>

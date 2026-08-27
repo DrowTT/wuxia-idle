@@ -1,44 +1,51 @@
 import {
-  COMBAT_SPEED_GROWTH_EXPONENT,
-  COMBAT_BALANCE,
-  COMBAT_STAT_LEVEL_GROWTH,
-  COMBAT_STAT_REALM_BREAKTHROUGH_BONUS,
   DEFAULT_COMBAT_STATS,
   EQUIPMENT,
-  EQUIPMENT_SETS,
+  EQUIPMENT_GEM_SOCKET_COST,
+  EQUIPMENT_GEM_SOCKET_CATEGORIES,
+  EQUIPMENT_SET_SLOTS,
   EQUIPMENT_SLOTS,
   GRADE_ORDER,
-  INNER_FORCE_PER_SECOND,
   LOTTERY_DRAW_COST,
-  LOTTERY_DRAW_COUNTS,
-  LOTTERY_DUPLICATE_REWARDS,
   LOTTERY_EQUIPMENT_PRIZE_IDS,
   LOTTERY_GRADE_NAMES,
-  LOTTERY_GRADE_RATES,
-  LOTTERY_HIGH_GRADE_PITY_MYTHIC_RATE,
-  LOTTERY_MARTIAL_PRIZE_IDS,
   MAIN_STORY_CHAPTERS,
   MARTIAL_ARTS,
   MAX_CULTIVATION_OFFLINE_MS,
-  MAX_DODGE_RATE,
+  INITIAL_EQUIPMENT_GEM_SLOTS,
+  MAX_EQUIPMENT_GEM_SLOTS,
+  MARTIAL_ASCENSION_MAX_STAT_MULTIPLIER,
   MARTIAL_ENHANCEMENT_STEP,
-  PRACTICE_FULL_LEVEL_BASE_COST,
   PRACTICE_PROGRESS_MAX,
   PRACTICE_PROGRESS_PER_ACTION,
-  PRACTICE_REALM_COST_MULTIPLIER,
-  REALMS,
-  REALM_INNER_FORCE_RATE_MULTIPLIER,
-  SMALL_REALM_COST_GROWTH,
-  SMALL_REALM_INNER_FORCE_RATE_MULTIPLIER,
   STARTER_EQUIPMENT_IDS,
   STARTER_MARTIAL_ART_IDS,
   INITIAL_EQUIPMENT_LOADOUT,
   INITIAL_DAILY_CHECK_IN,
+  INITIAL_MATERIAL_BOUNTIES,
+  INITIAL_SHOP_STATE,
+  INITIAL_TEMPLE_STATE,
+  IDOL_CONFIGS,
+  IDOL_IDS,
+  getIdolConfig,
   DAILY_CHECK_IN_REWARD,
+  SILVER_SHOP_PRODUCTS,
+  getSilverShopProduct,
   EQUIPMENT_ENHANCEMENT_MAX_LEVEL,
   EQUIPMENT_ENHANCEMENT_STAT_GROWTH,
   INITIAL_GAME_LOGS,
   INITIAL_PLAYER_PROFILE,
+  MARTIAL_ASCENSION_TOKEN_ID,
+  EQUIPMENT_ASCENSION_TOKEN_ID,
+  EQUIPMENT_ESSENCE_ID,
+  REFORGE_STONE_ID,
+  GEM_SYNTHESIS_SUCCESS_RATES,
+  INVENTORY_ITEMS,
+  getInventoryItemById,
+  DUNGEONS,
+  getEquipmentById as getEquipmentConfigById,
+  getEquipmentSetById as getEquipmentSetConfigById,
+  getMartialArtById as getMartialArtConfigById,
 } from '../data'
 import {
   COMMON_ENEMY_NAMES,
@@ -51,6 +58,7 @@ import {
 } from '../data/main-story'
 import type {
   CultivationState,
+  BattleReward,
   CombatStats,
   Equipment,
   EquipmentCategory,
@@ -65,14 +73,10 @@ import type {
   MainStageEnemy,
   MainStageReplayReward,
   MainStageReward,
-  LotteryDrawCount,
-  LotteryDrawResult,
   LotteryPoolId,
   LotteryPity,
   LotteryReward,
   LotteryState,
-  Realm,
-  RealmId,
   JourneyState,
   CombatPassiveEffect,
   CombatRateBonuses,
@@ -83,15 +87,92 @@ import type {
   MartialArtSlot,
   WeaponStyle,
   CoreCombatStat,
+  EquipmentRefinement,
+  ShopState,
+  SilverShopOffer,
+  DungeonState,
+  DungeonReward,
+  DungeonRewardDrop,
+  DungeonDrop,
+  DungeonMechanicId,
+  InventoryItem,
+  MaterialBountyState,
+  IdolId,
+  TempleState,
 } from './types'
+import { formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber } from './number-format'
+import { createCombatStats, normalizeCombatStats } from './combat-stats'
+import { getCombatPower } from './combat-power'
+import { dateKey, normalizeDateKey, weekKey } from './time'
+import {
+  canEnterDungeon,
+  cancelDungeonChallenge,
+  enterDungeon,
+  getDungeonAttemptCount,
+  getDungeonAttemptsRemaining,
+  getDungeonConfig,
+  getDungeonEnemies,
+  getDungeonHighestCleared,
+  getDungeonLayer,
+  getDungeonStamina,
+  getDungeonStaminaCap,
+  getDungeonStaminaCost,
+  getDungeonStaminaRecoveryRemainingMs,
+  normalizeDungeonStateForDate,
+  normalizeDungeonState,
+} from './dungeon-system'
+import { drawLottery, getLotteryCost, getLotteryPity } from './lottery-system'
+import {
+  getNextRealmId,
+  getPracticeCost,
+  getRealm,
+  getRealmBaseCombatStats,
+  getRealmInnerForceRate,
+  getRealmInnerForceRateBonus,
+  normalizeRealmId,
+} from './realm-system'
+
+export { formatCompactIntegerNumber, formatCompactNumber, formatIntegerNumber } from './number-format'
+export { createCombatStats, normalizeCombatStats } from './combat-stats'
+export { getCombatPower } from './combat-power'
+export { dateKey, normalizeDateKey, weekKey } from './time'
+export {
+  canEnterDungeon,
+  cancelDungeonChallenge,
+  enterDungeon,
+  getDungeonAttemptCount,
+  getDungeonAttemptsRemaining,
+  getDungeonConfig,
+  getDungeonEnemies,
+  getDungeonHighestCleared,
+  getDungeonLayer,
+  getDungeonStamina,
+  getDungeonStaminaCap,
+  getDungeonStaminaCost,
+  getDungeonStaminaRecoveryRemainingMs,
+  normalizeDungeonStateForDate,
+  normalizeDungeonState,
+} from './dungeon-system'
+export { drawLottery, getLotteryCost, getLotteryPity } from './lottery-system'
+export {
+  getNextRealmId,
+  getPracticeCost,
+  getRealm,
+  getRealmBaseCombatStats,
+  getRealmInnerForceRate,
+  getRealmInnerForceRateBonus,
+  normalizeRealmId,
+} from './realm-system'
 
 export * from '../data'
 
 const SAVE_KEY = 'shanhe-wuwen-save'
-const CURRENT_GAME_VERSION = 15
+const SAVE_RECOVERY_KEY = `${SAVE_KEY}-recovery`
+const CURRENT_GAME_VERSION = 21
 const LANGYU_CURRENCY_VERSION = 11
 const LEGACY_LANGYU_DRAW_COST = 1
-const PRACTICE_ACTIONS_PER_LEVEL = Math.ceil(PRACTICE_PROGRESS_MAX / PRACTICE_PROGRESS_PER_ACTION)
+const EQUIPMENT_ASCENSION_MAX_RANK = 10
+const EQUIPMENT_REFINEMENT_STATS: readonly CoreCombatStat[] = ['maxHealth', 'attack', 'defense', 'speed']
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
@@ -105,62 +186,26 @@ function nonNegativeInteger(value: unknown, fallback = 0): number {
   return Math.max(0, Math.floor(finiteNumber(value, fallback)))
 }
 
+function addCappedInteger(current: unknown, amount: unknown): number {
+  return Math.min(
+    Number.MAX_SAFE_INTEGER,
+    nonNegativeInteger(current, 0) + nonNegativeInteger(amount, 0),
+  )
+}
+
 function migrateLangyuBalance(value: unknown, savedVersion: number, fallback: number): number {
+  // A missing currency field is not a zero-balance legacy save. Keep the
+  // current default instead of multiplying it during version migration.
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback
   const balance = nonNegativeInteger(value, fallback)
   if (savedVersion >= LANGYU_CURRENCY_VERSION) return balance
   return Math.min(Number.MAX_SAFE_INTEGER, balance * (LOTTERY_DRAW_COST / LEGACY_LANGYU_DRAW_COST))
-}
-
-function dateKey(timestamp = Date.now()): string {
-  const date = new Date(timestamp)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function normalizeDateKey(value: unknown): string | null {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null
-  const [year = 0, month = 0, day = 0] = value.split('-').map(Number)
-  const date = new Date(year, month - 1, day)
-  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? value : null
 }
 
 function boundedText(value: unknown, fallback: string, maxLength: number): string {
   if (typeof value !== 'string') return fallback
   const text = value.trim()
   return text ? text.slice(0, maxLength) : fallback
-}
-
-export function normalizeCombatStats(stats: Partial<CombatStats> | undefined): CombatStats {
-  const source = stats ?? {}
-  return {
-    maxHealth: Math.max(1, Math.round(finiteNumber(source.maxHealth, DEFAULT_COMBAT_STATS.maxHealth))),
-    attack: Math.max(1, Math.round(finiteNumber(source.attack, DEFAULT_COMBAT_STATS.attack))),
-    defense: Math.max(0, Math.round(finiteNumber(source.defense, DEFAULT_COMBAT_STATS.defense))),
-    speed: Math.max(1, Math.round(finiteNumber(source.speed, DEFAULT_COMBAT_STATS.speed))),
-    hitRate: clamp(finiteNumber(source.hitRate, DEFAULT_COMBAT_STATS.hitRate), 0, 100),
-    dodgeRate: clamp(finiteNumber(source.dodgeRate, DEFAULT_COMBAT_STATS.dodgeRate), 0, MAX_DODGE_RATE),
-    critRate: clamp(finiteNumber(source.critRate, DEFAULT_COMBAT_STATS.critRate), 0, 100),
-    critDamage: Math.max(100, finiteNumber(source.critDamage, DEFAULT_COMBAT_STATS.critDamage)),
-    comboRate: clamp(finiteNumber(source.comboRate, DEFAULT_COMBAT_STATS.comboRate), 0, 100),
-    counterRate: clamp(finiteNumber(source.counterRate, DEFAULT_COMBAT_STATS.counterRate), 0, 100),
-    stunRate: clamp(finiteNumber(source.stunRate, DEFAULT_COMBAT_STATS.stunRate), 0, 100),
-    lifestealRate: clamp(finiteNumber(source.lifestealRate, DEFAULT_COMBAT_STATS.lifestealRate), 0, 100),
-    critResist: clamp(finiteNumber(source.critResist, DEFAULT_COMBAT_STATS.critResist), 0, 100),
-    comboResist: clamp(finiteNumber(source.comboResist, DEFAULT_COMBAT_STATS.comboResist), 0, 100),
-    counterResist: clamp(finiteNumber(source.counterResist, DEFAULT_COMBAT_STATS.counterResist), 0, 100),
-    stunResist: clamp(finiteNumber(source.stunResist, DEFAULT_COMBAT_STATS.stunResist), 0, 100),
-    lifestealResist: clamp(finiteNumber(source.lifestealResist, DEFAULT_COMBAT_STATS.lifestealResist), 0, 100),
-    healingBonus: Math.max(-100, finiteNumber(source.healingBonus, DEFAULT_COMBAT_STATS.healingBonus)),
-    critDamageReduction: clamp(finiteNumber(source.critDamageReduction, DEFAULT_COMBAT_STATS.critDamageReduction), 0, 100),
-    damageBonus: Math.max(-100, finiteNumber(source.damageBonus, DEFAULT_COMBAT_STATS.damageBonus)),
-    damageReduction: clamp(finiteNumber(source.damageReduction, DEFAULT_COMBAT_STATS.damageReduction), 0, 100),
-  }
-}
-
-export function createCombatStats(overrides: Partial<CombatStats> = {}): CombatStats {
-  return normalizeCombatStats({ ...DEFAULT_COMBAT_STATS, ...overrides })
 }
 
 function addCombatBonuses(stats: CombatStats, bonuses: Partial<CombatStats> | undefined): CombatStats {
@@ -182,7 +227,9 @@ function addCombatRates(stats: CombatStats, rates: CombatRateBonuses | undefined
     const rate = rates[stat]
     if (typeof rate === 'number' && Number.isFinite(rate)) next[stat] *= 1 + rate / 100
   }
-  return normalizeCombatStats(next)
+  // Preserve precision across independent rate zones. The complete panel is
+  // normalized once after all flat bonuses have been applied.
+  return next
 }
 
 function sumCombatRates(rateSources: readonly CombatRateBonuses[]): CombatRateBonuses {
@@ -201,32 +248,8 @@ function normalizePracticeProgress(value: unknown): number {
   return Math.min(PRACTICE_PROGRESS_MAX, Math.max(0, value))
 }
 
-export function formatCompactNumber(value: number): string {
-  const absolute = Math.abs(value)
-  if (absolute >= 100_000_000) return `${formatCompactDecimal(value / 100_000_000)}亿`
-  if (absolute >= 100_000) return `${formatCompactDecimal(value / 10_000)}万`
-  if (absolute < 10_000 && !Number.isInteger(value)) return value.toLocaleString('zh-CN', { maximumFractionDigits: 1 })
-  return Math.floor(value).toLocaleString('zh-CN')
-}
-
-export function formatIntegerNumber(value: number): string {
-  return Math.floor(value).toLocaleString('zh-CN')
-}
-
-export function formatCompactIntegerNumber(value: number): string {
-  const absolute = Math.abs(value)
-  if (absolute >= 100_000_000) return `${Math.floor(value / 100_000_000)}亿`
-  if (absolute >= 100_000) return `${Math.floor(value / 10_000)}万`
-  return formatIntegerNumber(value)
-}
-
-function formatCompactDecimal(value: number): string {
-  const digits = Math.abs(value) >= 100 ? 0 : 1
-  return value.toFixed(digits).replace(/\.0$/, '')
-}
-
 function getEquipmentById(id: string): Equipment | undefined {
-  return EQUIPMENT.find((item) => item.id === id)
+  return getEquipmentConfigById(id)
 }
 
 export function getEquippedWeaponStyle(player: GameState['player']): WeaponStyle | null {
@@ -247,11 +270,25 @@ export function canEquipEquipmentInSlot(equipment: Equipment, slot: EquipmentSlo
   return equipment.categoryId === getEquipmentCategoryForSlot(slot)
 }
 
+export function getEquipmentGemSocketLimit(equipment: Equipment): number {
+  return EQUIPMENT_GEM_SOCKET_CATEGORIES.includes(equipment.categoryId)
+    ? Math.min(MAX_EQUIPMENT_GEM_SLOTS, Math.max(0, Math.floor(equipment.gemSlots)))
+    : 0
+}
+
 function createEquippedEquipment(equipment: Equipment, gems: unknown = []): EquippedEquipment {
   const savedGems = Array.isArray(gems) ? gems : []
+  const socketLimit = getEquipmentGemSocketLimit(equipment)
+  const openedSlots = socketLimit > 0
+    ? Math.min(socketLimit, Math.max(INITIAL_EQUIPMENT_GEM_SLOTS, savedGems.length))
+    : 0
   return {
     equipmentId: equipment.id,
-    gems: Array.from({ length: equipment.gemSlots }, (_, index) => typeof savedGems[index] === 'string' ? savedGems[index] : null),
+    gems: Array.from({ length: openedSlots }, (_, index) => {
+      const gemId = savedGems[index]
+      const gem = typeof gemId === 'string' ? getInventoryItemById(gemId) : undefined
+      return gem?.category === 'gem' ? gem.id : null
+    }),
   }
 }
 
@@ -283,15 +320,134 @@ export function getEquipmentEnhancementLevel(player: GameState['player'], equipm
   return clamp(Math.floor(finiteNumber(value, 0)), 0, EQUIPMENT_ENHANCEMENT_MAX_LEVEL)
 }
 
+export function getEquipmentRank(player: GameState['player'], equipmentId: string): number {
+  const value = player.equipmentRanks && typeof player.equipmentRanks === 'object'
+    ? player.equipmentRanks[equipmentId]
+    : undefined
+  return clamp(Math.floor(finiteNumber(value, 0)), 0, EQUIPMENT_ASCENSION_MAX_RANK)
+}
+
+export function getEquipmentRefinement(player: GameState['player'], equipmentId: string): EquipmentRefinement | null {
+  const value = player.equipmentRefinements?.[equipmentId]
+  if (!value || !EQUIPMENT_REFINEMENT_STATS.includes(value.stat) || !Number.isFinite(value.amount) || value.amount <= 0) return null
+  return { stat: value.stat, amount: Math.floor(value.amount) }
+}
+
+export interface EquipmentAscensionRequirement {
+  rank: number
+  maxRank: number
+  forge: number
+  essence: number
+  duplicates: number
+  replacementTokens: number
+}
+
+export function getEquipmentAscensionRequirement(player: GameState['player'], equipment: Equipment): EquipmentAscensionRequirement {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return { rank: 0, maxRank: 0, forge: 0, essence: 0, duplicates: 0, replacementTokens: 0 }
+  const rank = getEquipmentRank(player, knownEquipment.id)
+  if (rank >= EQUIPMENT_ASCENSION_MAX_RANK) return { rank, maxRank: EQUIPMENT_ASCENSION_MAX_RANK, forge: 0, essence: 0, duplicates: 0, replacementTokens: 0 }
+  const duplicates = rank >= 5 ? (rank === 9 ? 2 : 1) : 0
+  return {
+    rank,
+    maxRank: EQUIPMENT_ASCENSION_MAX_RANK,
+    forge: Math.ceil((24 + rank * 18) * (1 + GRADE_ORDER.indexOf(knownEquipment.gradeTone) * 0.35)),
+    essence: rank < 5 ? rank + 1 : 0,
+    duplicates,
+    replacementTokens: duplicates,
+  }
+}
+
+export function getEquipmentDuplicateCount(player: GameState['player'], lottery: LotteryState, equipment: Equipment): number {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return 0
+  const owned = Array.isArray(lottery.ownedEquipmentIds) ? lottery.ownedEquipmentIds.filter((id) => id === knownEquipment.id).length : 0
+  const equipped = EQUIPMENT_SLOTS.filter((slot) => player.equippedEquipment?.[slot]?.equipmentId === knownEquipment.id).length
+  return Math.max(0, owned - equipped)
+}
+
+export function getEquipmentAscensionTokenCount(player: GameState['player']): number {
+  return Math.max(0, Math.floor(finiteNumber(player.items?.[EQUIPMENT_ASCENSION_TOKEN_ID], 0)))
+}
+
+export function canAscendEquipment(player: GameState['player'], lottery: LotteryState, equipment: Equipment): boolean {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return false
+  const requirement = getEquipmentAscensionRequirement(player, knownEquipment)
+  return requirement.rank < requirement.maxRank
+    && isEquipmentEquipped(player, knownEquipment.id)
+    && player.forge >= requirement.forge
+    && (player.items?.[EQUIPMENT_ESSENCE_ID] ?? 0) >= requirement.essence
+    && getEquipmentDuplicateCount(player, lottery, knownEquipment) + getEquipmentAscensionTokenCount(player) >= requirement.duplicates
+}
+
+export function ascendEquipment(player: GameState['player'], lottery: LotteryState, equipment: Equipment): { player: GameState['player']; lottery: LotteryState; requirement: EquipmentAscensionRequirement } | null {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment || !canAscendEquipment(player, lottery, knownEquipment)) return null
+  const requirement = getEquipmentAscensionRequirement(player, knownEquipment)
+  const items = { ...(player.items ?? {}) }
+  if (requirement.essence) items[EQUIPMENT_ESSENCE_ID] = Math.max(0, (items[EQUIPMENT_ESSENCE_ID] ?? 0) - requirement.essence)
+  const availableDuplicates = getEquipmentDuplicateCount(player, lottery, knownEquipment)
+  const consumedDuplicates = Math.min(availableDuplicates, requirement.duplicates)
+  const consumedTokens = requirement.duplicates - consumedDuplicates
+  if (consumedTokens) items[EQUIPMENT_ASCENSION_TOKEN_ID] = Math.max(0, getEquipmentAscensionTokenCount(player) - consumedTokens)
+  let remainingDuplicates = consumedDuplicates
+  const ownedEquipmentIds = (Array.isArray(lottery.ownedEquipmentIds) ? lottery.ownedEquipmentIds : []).flatMap((id) => {
+    if (id === knownEquipment.id && remainingDuplicates > 0) {
+      remainingDuplicates -= 1
+      return []
+    }
+    return [id]
+  })
+  return {
+    player: syncPlayerPower({
+      ...player,
+      forge: player.forge - requirement.forge,
+      items,
+      equipmentRanks: { ...(player.equipmentRanks ?? {}), [knownEquipment.id]: requirement.rank + 1 },
+    }),
+    lottery: { ...lottery, ownedEquipmentIds },
+    requirement,
+  }
+}
+
+export function getEquipmentRefinementStatLabel(stat: CoreCombatStat): string {
+  return stat === 'maxHealth' ? '生命' : stat === 'attack' ? '攻击' : stat === 'defense' ? '防御' : '速度'
+}
+
+export function getEquipmentRefinementCost(player: GameState['player']): number {
+  return 1
+}
+
+export function canRefineEquipment(player: GameState['player'], equipment: Equipment): boolean {
+  return Boolean(getEquipmentById(equipment.id))
+    && isEquipmentEquipped(player, equipment.id)
+    && nonNegativeInteger(player.items?.[REFORGE_STONE_ID], 0) >= getEquipmentRefinementCost(player)
+}
+
+export function refineEquipment(player: GameState['player'], equipment: Equipment, random: () => number = Math.random): { player: GameState['player']; refinement: EquipmentRefinement } | null {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment || !canRefineEquipment(player, knownEquipment)) return null
+  const gradeIndex = GRADE_ORDER.indexOf(knownEquipment.gradeTone)
+  const stat = EQUIPMENT_REFINEMENT_STATS[Math.floor(getRandomValue(random) * EQUIPMENT_REFINEMENT_STATS.length)]!
+  const baseAmount = stat === 'maxHealth' ? 70 : stat === 'attack' ? 14 : stat === 'defense' ? 10 : 4
+  const amount = Math.max(1, Math.round(baseAmount * (1 + gradeIndex * 0.25) * (0.85 + getRandomValue(random) * 0.3)))
+  const items = { ...(player.items ?? {}), [REFORGE_STONE_ID]: Math.max(0, (player.items?.[REFORGE_STONE_ID] ?? 0) - getEquipmentRefinementCost(player)) }
+  const refinement = { stat, amount }
+  return { player: syncPlayerPower({ ...player, items, equipmentRefinements: { ...(player.equipmentRefinements ?? {}), [equipment.id]: refinement } }), refinement }
+}
+
 function isPercentageCombatStat(stat: keyof CombatStats): boolean {
   return !['maxHealth', 'attack', 'defense', 'speed'].includes(stat)
 }
 
 export function getEquipmentCombatBonuses(player: GameState['player'], equipment: Equipment): Partial<CombatStats> {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return {}
   const level = getEquipmentEnhancementLevel(player, equipment.id)
-  if (!level) return { ...equipment.combatBonuses }
-  const multiplier = 1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH
-  return Object.fromEntries(Object.entries(equipment.combatBonuses ?? {}).flatMap(([key, value]) => {
+  const rank = getEquipmentRank(player, equipment.id)
+  const multiplier = (1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH) * (1 + rank * 0.06)
+  const bonuses = Object.fromEntries(Object.entries(knownEquipment.combatBonuses ?? {}).flatMap(([key, value]) => {
     if (typeof value !== 'number') return []
     const stat = key as keyof CombatStats
     const enhanced = isPercentageCombatStat(stat)
@@ -299,17 +455,130 @@ export function getEquipmentCombatBonuses(player: GameState['player'], equipment
       : Math.round(value * multiplier)
     return [[stat, enhanced]]
   })) as Partial<CombatStats>
+  const refinement = getEquipmentRefinement(player, equipment.id)
+  if (refinement) bonuses[refinement.stat] = (bonuses[refinement.stat] ?? 0) + refinement.amount
+  return bonuses
 }
 
 /** Core-stat multipliers scale with equipment enhancement and the realm panel. */
 export function getEquipmentCombatRates(player: GameState['player'], equipment: Equipment): CombatRateBonuses {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return {}
   const level = getEquipmentEnhancementLevel(player, equipment.id)
-  const multiplier = 1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH
+  const rank = getEquipmentRank(player, equipment.id)
+  const multiplier = (1 + level * EQUIPMENT_ENHANCEMENT_STAT_GROWTH) * (1 + rank * 0.06)
   return Object.fromEntries(CORE_COMBAT_STATS.flatMap((stat) => {
-    const rate = equipment.combatRates?.[stat]
+    const rate = knownEquipment.combatRates?.[stat]
     if (typeof rate !== 'number' || !Number.isFinite(rate)) return []
     return [[stat, Math.round(rate * multiplier * 100) / 100]]
   })) as CombatRateBonuses
+}
+
+export function getEquipmentGemBonuses(equipped: EquippedEquipment | null | undefined): { bonuses: Partial<CombatStats>; rates: CombatRateBonuses } {
+  const bonuses: Partial<CombatStats> = {}
+  const rates: CombatRateBonuses = {}
+  const gems = equipped && Array.isArray(equipped.gems) ? equipped.gems : []
+  for (const gemId of gems) {
+    if (typeof gemId !== 'string') continue
+    const gem = getInventoryItemById(gemId)
+    for (const effect of gem?.gemEffects ?? []) {
+      if (effect.kind === 'combatBonus') bonuses[effect.stat] = (bonuses[effect.stat] ?? 0) + effect.amount
+      else rates[effect.stat] = (rates[effect.stat] ?? 0) + effect.amount
+    }
+  }
+  return { bonuses, rates }
+}
+
+export function canUnlockEquipmentGemSlot(player: GameState['player'], slot: EquipmentSlot): boolean {
+  const equipped = player.equippedEquipment?.[slot]
+  const equipment = equipped ? getEquipmentById(equipped.equipmentId) : undefined
+  const socketLimit = equipment ? getEquipmentGemSocketLimit(equipment) : 0
+  return Boolean(
+    equipped
+      && Array.isArray(equipped.gems)
+      && socketLimit > 0
+      && equipped.gems.length < socketLimit
+      && nonNegativeInteger(player.langyu) >= EQUIPMENT_GEM_SOCKET_COST,
+  )
+}
+
+export function unlockEquipmentGemSlot(player: GameState['player'], slot: EquipmentSlot): GameState['player'] | null {
+  const equipped = player.equippedEquipment?.[slot]
+  const equipment = equipped ? getEquipmentById(equipped.equipmentId) : undefined
+  const socketLimit = equipment ? getEquipmentGemSocketLimit(equipment) : 0
+  if (!equipped || !Array.isArray(equipped.gems) || !socketLimit || equipped.gems.length >= socketLimit || nonNegativeInteger(player.langyu) < EQUIPMENT_GEM_SOCKET_COST) return null
+  return syncPlayerPower({
+    ...player,
+    langyu: nonNegativeInteger(player.langyu) - EQUIPMENT_GEM_SOCKET_COST,
+    equippedEquipment: {
+      ...player.equippedEquipment,
+      [slot]: { ...equipped, gems: [...equipped.gems, null] },
+    },
+  })
+}
+
+export interface GemSynthesisResult {
+  player: GameState['player']
+  source: InventoryItem
+  target: InventoryItem
+  success: boolean
+  successRate: number
+}
+
+export function getGemSynthesisTarget(gem: InventoryItem): InventoryItem | null {
+  const tier = typeof gem.gemTier === 'number' && Number.isInteger(gem.gemTier) ? gem.gemTier : null
+  if (gem.category !== 'gem' || !gem.gemFamily || tier === null || tier >= 5) return null
+  return INVENTORY_ITEMS.find((item) => item.category === 'gem' && item.gemFamily === gem.gemFamily && item.gemTier === tier + 1) ?? null
+}
+
+export function getGemSynthesisSuccessRate(gem: InventoryItem): number {
+  const tier = typeof gem.gemTier === 'number' && Number.isInteger(gem.gemTier) ? gem.gemTier : null
+  if (gem.category !== 'gem' || tier === null || tier < 0 || tier >= GEM_SYNTHESIS_SUCCESS_RATES.length) return 0
+  return GEM_SYNTHESIS_SUCCESS_RATES[tier] ?? 0
+}
+
+export function canSynthesizeGem(player: GameState['player'], gem: InventoryItem): boolean {
+  return gem.category === 'gem' && getGemSynthesisTarget(gem) !== null && nonNegativeInteger(player.items?.[gem.id], 0) >= 3
+}
+
+export function synthesizeGem(player: GameState['player'], gem: InventoryItem, random: () => number = Math.random): GemSynthesisResult | null {
+  const target = getGemSynthesisTarget(gem)
+  const successRate = getGemSynthesisSuccessRate(gem)
+  if (!target || !canSynthesizeGem(player, gem)) return null
+  const items = { ...(player.items ?? {}), [gem.id]: nonNegativeInteger(player.items?.[gem.id], 0) - 3 }
+  const success = getRandomValue(random) < successRate
+  if (success) items[target.id] = addCappedInteger(items[target.id], 1)
+  return { player: syncPlayerPower({ ...player, items }), source: gem, target, success, successRate }
+}
+
+export function socketEquipmentGem(player: GameState['player'], slot: EquipmentSlot, gemIndex: number, gemId: string): GameState['player'] | null {
+  const equipped = player.equippedEquipment?.[slot]
+  const equipment = equipped ? getEquipmentById(equipped.equipmentId) : undefined
+  const gem = getInventoryItemById(gemId)
+  const gemCount = nonNegativeInteger(player.items?.[gemId], 0)
+  const socketLimit = equipment ? getEquipmentGemSocketLimit(equipment) : 0
+  const alreadySocketedFamily = Boolean(
+    gem?.gemFamily
+      && equipped
+      && Array.isArray(equipped.gems)
+      && equipped.gems.some((existingGemId) => getInventoryItemById(existingGemId ?? '')?.gemFamily === gem.gemFamily),
+  )
+  if (!equipped || !Array.isArray(equipped.gems) || !socketLimit || equipped.gems.length > socketLimit || !gem || gem.category !== 'gem' || !gem.gemEffects?.length || !Number.isInteger(gemIndex) || gemIndex < 0 || gemIndex >= equipped.gems.length || equipped.gems[gemIndex] !== null || gemCount < 1 || alreadySocketedFamily) return null
+  const items = { ...(player.items ?? {}), [gemId]: gemCount - 1 }
+  const gems = [...equipped.gems]
+  gems[gemIndex] = gemId
+  return syncPlayerPower({ ...player, items, equippedEquipment: { ...player.equippedEquipment, [slot]: { ...equipped, gems } } })
+}
+
+export function removeEquipmentGem(player: GameState['player'], slot: EquipmentSlot, gemIndex: number): GameState['player'] | null {
+  const equipped = player.equippedEquipment?.[slot]
+  if (!equipped || !Array.isArray(equipped.gems) || !Number.isInteger(gemIndex) || gemIndex < 0 || gemIndex >= equipped.gems.length) return null
+  const gemId = equipped?.gems?.[gemIndex]
+  if (typeof gemId !== 'string' || getInventoryItemById(gemId)?.category !== 'gem') return null
+  const gems = [...equipped.gems]
+  gems[gemIndex] = null
+  const items = { ...(player.items ?? {}), [gemId]: addCappedInteger(player.items?.[gemId], 1) }
+  return syncPlayerPower({ ...player, items, equippedEquipment: { ...player.equippedEquipment, [slot]: { ...equipped, gems } } })
 }
 
 const EQUIPMENT_ENHANCEMENT_GRADE_COST: Record<GradeTone, number> = {
@@ -322,12 +591,15 @@ const EQUIPMENT_ENHANCEMENT_GRADE_COST: Record<GradeTone, number> = {
 }
 
 export function getEquipmentEnhancementCost(player: GameState['player'], equipment: Equipment): number {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment) return Number.POSITIVE_INFINITY
   const level = getEquipmentEnhancementLevel(player, equipment.id)
-  return Math.max(1, Math.ceil((6 + level * 2) * EQUIPMENT_ENHANCEMENT_GRADE_COST[equipment.gradeTone]))
+  return Math.max(1, Math.ceil((6 + level * 2) * EQUIPMENT_ENHANCEMENT_GRADE_COST[knownEquipment.gradeTone]))
 }
 
 export function canEnhanceEquipment(player: GameState['player'], equipment: Equipment): boolean {
-  return isEquipmentEquipped(player, equipment.id)
+  return Boolean(getEquipmentById(equipment.id))
+    && isEquipmentEquipped(player, equipment.id)
     && getEquipmentEnhancementLevel(player, equipment.id) < EQUIPMENT_ENHANCEMENT_MAX_LEVEL
     && player.forge >= getEquipmentEnhancementCost(player, equipment)
 }
@@ -347,13 +619,13 @@ export function enhanceEquipment(player: GameState['player'], equipment: Equipme
 }
 
 function getEquipmentSetById(id: string): EquipmentSet | undefined {
-  return EQUIPMENT_SETS.find((set) => set.id === id)
+  return getEquipmentSetConfigById(id)
 }
 
 export function getEquipmentSetActivations(player: GameState['player']): Array<{ set: EquipmentSet; count: number; activeBonuses: EquipmentSet['bonuses'] }> {
   const counts = new Map<string, number>()
   for (const equipment of getEquippedEquipment(player)) {
-    if (equipment.setId && ['weapon', 'helmet', 'chest', 'mount', 'cloak', 'belt'].includes(equipment.categoryId)) {
+    if (equipment.setId && EQUIPMENT_SET_SLOTS.has(equipment.categoryId)) {
       counts.set(equipment.setId, (counts.get(equipment.setId) ?? 0) + 1)
     }
   }
@@ -407,18 +679,26 @@ export function hasMartialWeaponAffinity(player: GameState['player'], art: Marti
 
 export function getPlayerCombatPassives(player: GameState['player']): CombatPassiveEffect[] {
   const setPassives = getEquipmentSetActivations(player).flatMap(({ activeBonuses }) => activeBonuses.flatMap((bonus) => bonus.passiveEffects ?? []))
-  const innerPassives = getEquippedInnerArts(player).flatMap((art) => art.passiveEffects ?? [])
-  return [...setPassives, ...innerPassives].map((effect) => ({ ...effect }))
+  const martialPassives = getEquippedInnerArts(player).flatMap((art) => getMartialPassiveEffects(player, art))
+  return [...setPassives, ...martialPassives].map((effect) => ({ ...effect }))
 }
 
 export function getPlayerOuterSkills(player: GameState['player']): MartialActiveSkill[] {
-  return getEquippedOuterArts(player).flatMap((art) => art.activeSkill
-    ? [{ ...art.activeSkill, weaponAffinityActive: hasMartialWeaponAffinity(player, art) }]
-    : [])
+  return getEquippedOuterArts(player).flatMap((art) => {
+    const skill = getMartialActiveSkill(player, art)
+    return skill ? [{ ...skill, weaponAffinityActive: hasMartialWeaponAffinity(player, art) }] : []
+  })
 }
 
-export function equipPlayerMartialArt(player: GameState['player'], slot: MartialArtSlot, art: MartialArt): GameState['player'] {
-  if (art.kind !== getMartialArtSlotKind(slot)) return player
+export function equipPlayerMartialArt(
+  player: GameState['player'],
+  slot: MartialArtSlot,
+  art: MartialArt,
+  ownedMartialArtIds?: readonly string[],
+): GameState['player'] {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt || knownArt.kind !== getMartialArtSlotKind(slot)) return player
+  if (ownedMartialArtIds && !ownedMartialArtIds.includes(knownArt.id)) return player
   const loadout = createMartialLoadout(player.martialLoadout)
   for (const candidate of Object.keys(loadout) as MartialArtSlot[]) {
     if (loadout[candidate] === art.id) loadout[candidate] = null
@@ -431,13 +711,26 @@ export function unequipPlayerMartialArt(player: GameState['player'], slot: Marti
   return syncPlayerPower({ ...player, martialLoadout: { ...createMartialLoadout(player.martialLoadout), [slot]: null } })
 }
 
-export function equipPlayerEquipment(player: GameState['player'], slot: EquipmentSlot, equipment: Equipment): GameState['player'] {
-  if (!canEquipEquipmentInSlot(equipment, slot)) return player
+export function equipPlayerEquipment(
+  player: GameState['player'],
+  slot: EquipmentSlot,
+  equipment: Equipment,
+  ownedEquipmentIds?: readonly string[],
+): GameState['player'] {
+  const knownEquipment = getEquipmentById(equipment.id)
+  if (!knownEquipment || !canEquipEquipmentInSlot(knownEquipment, slot)) return player
+  if (ownedEquipmentIds) {
+    const ownedCopies = ownedEquipmentIds.filter((id) => id === knownEquipment.id).length
+    const equippedCopies = EQUIPMENT_SLOTS.filter((candidate) => (
+      candidate !== slot && player.equippedEquipment?.[candidate]?.equipmentId === knownEquipment.id
+    )).length
+    if (ownedCopies <= equippedCopies) return player
+  }
   return syncPlayerPower({
     ...player,
     equippedEquipment: {
       ...player.equippedEquipment,
-      [slot]: createEquippedEquipment(equipment),
+      [slot]: createEquippedEquipment(knownEquipment),
     },
   })
 }
@@ -465,121 +758,21 @@ function createInitialLottery(): LotteryState {
   }
 }
 
+function createInitialDungeonState(): DungeonState {
+  return { date: null, attempts: {}, stamina: 24, staminaUpdatedAt: Date.now(), highestCleared: {} }
+}
+
+function createInitialTempleState(): TempleState {
+  return { ranks: { ...INITIAL_TEMPLE_STATE.ranks } }
+}
+
 function getMartialArtById(id: string): MartialArt | undefined {
-  return MARTIAL_ARTS.find((art) => art.id === id)
+  return getMartialArtConfigById(id)
 }
 
 function getRandomValue(random: () => number): number {
   const value = random()
   return Number.isFinite(value) ? Math.min(.999999999, Math.max(0, value)) : 0
-}
-
-function pickGradeTone(random: () => number): GradeTone {
-  let progress = 0
-  const value = getRandomValue(random) * 100
-  for (const tone of GRADE_ORDER) {
-    progress += LOTTERY_GRADE_RATES[tone]
-    if (value < progress) return tone
-  }
-  return 'red'
-}
-
-function pickHighGradePityTone(random: () => number): Extract<GradeTone, 'orange' | 'red'> {
-  return getRandomValue(random) < LOTTERY_HIGH_GRADE_PITY_MYTHIC_RATE / 100 ? 'red' : 'orange'
-}
-
-function pickPrizeId(ids: readonly string[], random: () => number): string {
-  return ids[Math.min(ids.length - 1, Math.floor(getRandomValue(random) * ids.length))]!
-}
-
-function duplicateInsightReward(tone: GradeTone): number {
-  return LOTTERY_DUPLICATE_REWARDS[tone]
-}
-
-function isPurpleOrBetter(tone: GradeTone): boolean {
-  return GRADE_ORDER.indexOf(tone) >= GRADE_ORDER.indexOf('purple')
-}
-
-function isOrangeOrBetter(tone: GradeTone): boolean {
-  return GRADE_ORDER.indexOf(tone) >= GRADE_ORDER.indexOf('orange')
-}
-
-export function getLotteryCost(count: LotteryDrawCount): number {
-  return count * LOTTERY_DRAW_COST
-}
-
-export function getLotteryPity(lottery: LotteryState, pool: LotteryPoolId): LotteryPity {
-  const pity = lottery?.pity?.[pool]
-  return {
-    noPurpleDraws: typeof pity?.noPurpleDraws === 'number' && Number.isFinite(pity.noPurpleDraws) ? clamp(Math.floor(pity.noPurpleDraws), 0, 9) : 0,
-    noOrangeDraws: typeof pity?.noOrangeDraws === 'number' && Number.isFinite(pity.noOrangeDraws) ? clamp(Math.floor(pity.noOrangeDraws), 0, 49) : 0,
-  }
-}
-
-export function drawLottery(
-  player: GameState['player'],
-  lottery: LotteryState,
-  pool: LotteryPoolId,
-  count: LotteryDrawCount,
-  random: () => number = Math.random,
-  now = Date.now(),
-): { player: GameState['player']; lottery: LotteryState; result: LotteryDrawResult } | null {
-  if (
-    (pool !== 'equipment' && pool !== 'martial')
-    || !LOTTERY_DRAW_COUNTS.includes(count)
-    || !Number.isFinite(player.langyu)
-    || player.langyu < getLotteryCost(count)
-  ) return null
-
-  let nextPlayer = { ...player, langyu: player.langyu - getLotteryCost(count) }
-  let nextLottery: LotteryState = {
-    ...lottery,
-    pity: {
-      equipment: { ...getLotteryPity(lottery, 'equipment') },
-      martial: { ...getLotteryPity(lottery, 'martial') },
-    },
-    ownedEquipmentIds: Array.isArray(lottery.ownedEquipmentIds) ? [...lottery.ownedEquipmentIds] : [],
-    ownedMartialArtIds: Array.isArray(lottery.ownedMartialArtIds) ? [...lottery.ownedMartialArtIds] : [],
-  }
-  const rewards: LotteryReward[] = []
-
-  for (let index = 0; index < count; index += 1) {
-    const pity = nextLottery.pity[pool]
-    const tone = pity.noOrangeDraws >= 49 ? pickHighGradePityTone(random) : pity.noPurpleDraws >= 9 ? 'purple' : pickGradeTone(random)
-    nextLottery.pity[pool] = {
-      noPurpleDraws: isPurpleOrBetter(tone) ? 0 : pity.noPurpleDraws + 1,
-      noOrangeDraws: isOrangeOrBetter(tone) ? 0 : pity.noOrangeDraws + 1,
-    }
-    const id = pool === 'equipment'
-      ? pickPrizeId(LOTTERY_EQUIPMENT_PRIZE_IDS[tone], random)
-      : pickPrizeId(LOTTERY_MARTIAL_PRIZE_IDS[tone], random)
-    const source = pool === 'equipment' ? getEquipmentById(id) : getMartialArtById(id)
-    if (!source) continue
-
-    const rewardId = `${now}-${pool}-${nextLottery.history.length + index}`
-    if (pool === 'martial' && nextLottery.ownedMartialArtIds.includes(id)) {
-      const quantity = duplicateInsightReward(tone)
-      nextPlayer = { ...nextPlayer, insight: nextPlayer.insight + quantity }
-      rewards.push({
-        id: rewardId,
-        pool,
-        kind: 'insight',
-        name: '功法心得',
-        grade: source.grade,
-        gradeTone: tone,
-        quantity,
-      })
-      continue
-    }
-
-    if (pool === 'equipment') nextLottery.ownedEquipmentIds.push(id)
-    else nextLottery.ownedMartialArtIds.push(id)
-    rewards.push({ id: rewardId, pool, kind: pool, itemId: id, name: source.name, grade: source.grade, gradeTone: tone, quantity: 1 })
-  }
-
-  const history = [...rewards.slice().reverse(), ...nextLottery.history].slice(0, 24)
-  nextLottery = { ...nextLottery, history }
-  return { player: nextPlayer, lottery: nextLottery, result: { id: now, pool, count, cost: getLotteryCost(count), rewards } }
 }
 
 export function getStagesPerChapter(chapter: number): number {
@@ -641,13 +834,13 @@ function getMainStageReward(ordinal: number, chapter: number, stage: number, isE
 }
 
 function scaleReplayReward(amount: number, random: () => number): number {
-  const scaled = amount * MAIN_STAGE_REWARDS.replayRate
+  const scaled = Math.max(0, finiteNumber(amount, 0)) * MAIN_STAGE_REWARDS.replayRate
   const whole = Math.floor(scaled)
-  return whole + (random() < scaled - whole ? 1 : 0)
+  return whole + (getRandomValue(random) < scaled - whole ? 1 : 0)
 }
 
 export function getMainStageReplayReward(stage: MainStage, random: () => number = Math.random): MainStageReplayReward {
-  const eliteBonus = stage.isElite && random() < MAIN_STAGE_REWARDS.eliteReplayBonusChance
+  const eliteBonus = stage.isElite && getRandomValue(random) < MAIN_STAGE_REWARDS.eliteReplayBonusChance
   return {
     silver: scaleReplayReward(stage.reward.silver, random),
     langyu: 0,
@@ -655,6 +848,57 @@ export function getMainStageReplayReward(stage: MainStage, random: () => number 
     insight: scaleReplayReward(stage.reward.insight, random) + (eliteBonus ? 1 : 0),
     fame: scaleReplayReward(stage.reward.fame, random),
     eliteBonus,
+  }
+}
+
+/** Applies a main-story reward as one bounded domain operation. */
+export function applyMainStageReward(player: GameState['player'], reward: MainStageReward): GameState['player'] {
+  return {
+    ...player,
+    silver: addCappedInteger(player.silver, reward.silver),
+    langyu: addCappedInteger(player.langyu, reward.langyu),
+    forge: addCappedInteger(player.forge, reward.forge),
+    insight: addCappedInteger(player.insight, reward.insight),
+    fame: addCappedInteger(player.fame, reward.fame),
+  }
+}
+
+/**
+ * Resolves a main-story victory as one domain transaction. A first-clear
+ * victory advances the journey and grants its reward atomically; a replay
+ * requires the stage to have already been cleared and only grants replay
+ * rewards. The UI can therefore render the result without owning progression
+ * rules or risking a partial update.
+ */
+export function resolveMainStageVictory(
+  player: GameState['player'],
+  journey: JourneyState,
+  stage: MainStage,
+  isReplay: boolean,
+  random: () => number = Math.random,
+): { player: GameState['player']; journey: JourneyState; reward: BattleReward } | null {
+  const canonicalStage = getMainStageByOrdinal(stage.ordinal)
+  if (
+    !canonicalStage
+    || canonicalStage.chapter !== stage.chapter
+    || canonicalStage.stage !== stage.stage
+  ) return null
+  stage = canonicalStage
+
+  if (isReplay) {
+    if (!hasClearedMainStage(journey, stage)) return null
+    const reward = getMainStageReplayReward(stage, random)
+    return { player: applyMainStageReward(player, reward), journey, reward }
+  }
+
+  const currentStage = getCurrentMainStage(journey)
+  if (!currentStage || currentStage.ordinal !== stage.ordinal) return null
+  const nextJourney = advanceMainJourney(journey, stage)
+  if (!nextJourney) return null
+  return {
+    player: applyMainStageReward(player, stage.reward),
+    journey: nextJourney,
+    reward: { ...stage.reward, eliteBonus: false },
   }
 }
 
@@ -726,64 +970,84 @@ export function advanceMainJourney(journey: JourneyState, clearedStage: MainStag
   return { ...journey, completed: true }
 }
 
-export function getRealmBaseCombatStats(player: GameState['player']): CombatStats {
-  const realmIndex = Math.max(0, REALMS.findIndex((realm) => realm.id === player.realmId))
-  const realmLevel = clamp(Math.floor(finiteNumber(player.realmLevel, 1)), 1, 9)
-  const growthStep = realmIndex * 9 + realmLevel - 1
-  const growth = Math.pow(COMBAT_STAT_LEVEL_GROWTH, growthStep) * Math.pow(COMBAT_STAT_REALM_BREAKTHROUGH_BONUS, realmIndex)
-  const speedGrowth = Math.pow(growth, COMBAT_SPEED_GROWTH_EXPONENT)
-
-  return createCombatStats({
-    maxHealth: DEFAULT_COMBAT_STATS.maxHealth * growth,
-    attack: DEFAULT_COMBAT_STATS.attack * growth,
-    defense: DEFAULT_COMBAT_STATS.defense * growth,
-    speed: DEFAULT_COMBAT_STATS.speed * speedGrowth,
-  })
+export function getTempleRank(temple: TempleState | undefined, idolId: IdolId): number {
+  const config = getIdolConfig(idolId)
+  if (!config) return 0
+  return clamp(Math.floor(finiteNumber(temple?.ranks?.[idolId], 0)), 0, config.maxRank)
 }
 
-export function getPlayerCombatStats(player: GameState['player']): CombatStats {
+export function getTempleIdolEffect(temple: TempleState | undefined, idolId: IdolId): number {
+  const config = getIdolConfig(idolId)
+  return config ? Math.round(getTempleRank(temple, idolId) * config.ratePerRank * 100) / 100 : 0
+}
+
+export function getTempleOfferingCost(temple: TempleState | undefined, idolId: IdolId): number {
+  const config = getIdolConfig(idolId)
+  if (!config) return 0
+  const rank = getTempleRank(temple, idolId)
+  if (rank >= config.maxRank) return 0
+  return Math.ceil(50 * Math.pow(1.18, rank))
+}
+
+export function canOfferToIdol(player: GameState['player'], temple: TempleState | undefined, idolId: IdolId): boolean {
+  const config = getIdolConfig(idolId)
+  const cost = getTempleOfferingCost(temple, idolId)
+  return Boolean(config && cost > 0 && player.incense >= cost)
+}
+
+export function offerToIdol(player: GameState['player'], temple: TempleState, idolId: IdolId): { player: GameState['player']; temple: TempleState; idol: IdolId; rank: number; effect: number } | null {
+  if (!canOfferToIdol(player, temple, idolId)) return null
+  const cost = getTempleOfferingCost(temple, idolId)
+  const rank = getTempleRank(temple, idolId) + 1
+  const nextTemple = { ranks: { ...temple.ranks, [idolId]: rank } }
+  return { player: { ...player, incense: Math.max(0, player.incense - cost) }, temple: nextTemple, idol: idolId, rank, effect: getTempleIdolEffect(nextTemple, idolId) }
+}
+
+function getTempleCombatRates(temple: TempleState | undefined): CombatRateBonuses {
+  const rates: CombatRateBonuses = {}
+  for (const config of IDOL_CONFIGS) {
+    if (config.stat === 'innerForceRate') continue
+    const effect = getTempleIdolEffect(temple, config.id)
+    if (effect > 0) rates[config.stat] = effect
+  }
+  return rates
+}
+
+export function getPlayerCombatStats(player: GameState['player'], temple?: TempleState): CombatStats {
   const equipment = getEquippedEquipment(player)
+  const equipmentSetActivations = getEquipmentSetActivations(player)
+  const activeSetBonuses = equipmentSetActivations.flatMap(({ activeBonuses }) => activeBonuses.flatMap((bonus) => bonus.combatBonuses ? [bonus.combatBonuses] : []))
+  const activeSetRates = equipmentSetActivations.flatMap(({ activeBonuses }) => activeBonuses.flatMap((bonus) => bonus.combatRates ? [bonus.combatRates] : []))
+  const gemBonuses = EQUIPMENT_SLOTS.map((slot) => getEquipmentGemBonuses(player.equippedEquipment?.[slot]))
   let stats = getRealmBaseCombatStats(player)
 
-  // Rates intentionally scale only the realm panel. Fixed bonuses remain
-  // additive, so a later flat stat cannot recursively inflate equipment.
+  // The temple is its own multiplier zone: it grows the realm foundation
+  // before equipment, set, and gem percentages are applied.
+  stats = addCombatRates(stats, getTempleCombatRates(temple))
   stats = addCombatRates(stats, sumCombatRates([
     ...equipment.map((item) => getEquipmentCombatRates(player, item)),
-    ...getActiveEquipmentSetRates(player),
+    ...activeSetRates,
+    ...gemBonuses.map((gems) => gems.rates),
+    player.pillCombatRates,
   ]))
 
+  // Fixed bonuses stay outside the two foundation multiplier zones.
   for (const item of equipment) {
     stats = addCombatBonuses(stats, getEquipmentCombatBonuses(player, item))
   }
-  for (const bonuses of getActiveEquipmentSetBonuses(player)) stats = addCombatBonuses(stats, bonuses)
-  for (const art of getEquippedMartialArts(player)) stats = addCombatBonuses(stats, art.combatBonuses)
+  for (const gems of gemBonuses) stats = addCombatBonuses(stats, gems.bonuses)
+  for (const bonuses of activeSetBonuses) stats = addCombatBonuses(stats, bonuses)
+  for (const art of getEquippedInnerArts(player)) stats = addCombatBonuses(stats, getMartialCombatBonuses(player, art))
+  stats = addCombatBonuses(stats, player.pillCombatBonuses)
   return normalizeCombatStats(stats)
 }
 
-export function getCombatPower(stats: CombatStats): number {
-  const safeStats = normalizeCombatStats(stats)
-  const expectedDamage = safeStats.attack
-    * (safeStats.hitRate / 100)
-    * (1 + (safeStats.critRate / 100) * ((safeStats.critDamage - 100) / 100))
-    * (1 + (safeStats.comboRate / 100) * 0.45)
-    * (1 + safeStats.damageBonus / 100)
-  const effectiveHealth = safeStats.maxHealth
-    * (1 + safeStats.defense / COMBAT_BALANCE.powerDefenseDivisor)
-    * (1 + safeStats.dodgeRate / 100)
-    * (1 + safeStats.damageReduction / 100)
-  return Math.max(1, Math.round(
-    expectedDamage * COMBAT_BALANCE.powerExpectedDamageWeight
-    + effectiveHealth * COMBAT_BALANCE.powerEffectiveHealthWeight
-    + safeStats.speed * COMBAT_BALANCE.powerSpeedWeight,
-  ))
+export function getPlayerPower(player: GameState['player'], temple?: TempleState): number {
+  return getCombatPower(getPlayerCombatStats(player, temple))
 }
 
-export function getPlayerPower(player: GameState['player']): number {
-  return getCombatPower(getPlayerCombatStats(player))
-}
-
-export function syncPlayerPower(player: GameState['player']): GameState['player'] {
-  return { ...player, power: getPlayerPower(player) }
+export function syncPlayerPower(player: GameState['player'], temple?: TempleState): GameState['player'] {
+  return { ...player, power: getPlayerPower(player, temple) }
 }
 
 export function createInitialGame(): GameState {
@@ -792,7 +1056,13 @@ export function createInitialGame(): GameState {
     ...INITIAL_PLAYER_PROFILE,
     power: 0,
     equipmentEnhancements: { ...INITIAL_PLAYER_PROFILE.equipmentEnhancements },
+    equipmentRanks: { ...INITIAL_PLAYER_PROFILE.equipmentRanks },
+    equipmentRefinements: { ...INITIAL_PLAYER_PROFILE.equipmentRefinements },
+    pillCombatBonuses: { ...INITIAL_PLAYER_PROFILE.pillCombatBonuses },
+    pillCombatRates: { ...INITIAL_PLAYER_PROFILE.pillCombatRates },
     mastery: { ...INITIAL_PLAYER_PROFILE.mastery },
+    martialRanks: { ...INITIAL_PLAYER_PROFILE.martialRanks },
+    items: { ...INITIAL_PLAYER_PROFILE.items },
     equippedEquipment: createEquipmentLoadout(INITIAL_EQUIPMENT_LOADOUT),
     martialLoadout: createMartialLoadout(INITIAL_PLAYER_PROFILE.martialLoadout),
   }
@@ -801,6 +1071,10 @@ export function createInitialGame(): GameState {
     player: syncPlayerPower(player),
     cultivation: { amount: 0, practiceProgress: 0, lastAccruedAt: now, autoPractice: false },
     dailyCheckIn: { ...INITIAL_DAILY_CHECK_IN },
+    materialBounties: { ...INITIAL_MATERIAL_BOUNTIES },
+    shop: { purchaseDate: INITIAL_SHOP_STATE.purchaseDate, purchaseCounts: { ...INITIAL_SHOP_STATE.purchaseCounts } },
+    dungeons: createInitialDungeonState(),
+    temple: createInitialTempleState(),
     journey: { currentChapter: 1, currentStage: 1, completed: false },
     lottery: createInitialLottery(),
     logs: INITIAL_GAME_LOGS.map((log) => ({ ...log })),
@@ -818,81 +1092,517 @@ export function claimDailyCheckIn(
 ): { player: GameState['player']; dailyCheckIn: GameState['dailyCheckIn'] } | null {
   if (!canClaimDailyCheckIn(state, now)) return null
   return {
-    player: { ...player, langyu: Math.min(Number.MAX_SAFE_INTEGER, player.langyu + DAILY_CHECK_IN_REWARD) },
+    player: { ...player, langyu: addCappedInteger(player.langyu, DAILY_CHECK_IN_REWARD) },
     dailyCheckIn: { lastClaimedDate: dateKey(now) },
   }
 }
 
-export function getRealm(id: RealmId): Realm | undefined {
-  return REALMS.find((realm) => realm.id === id)
+export const DAILY_MATERIAL_BOUNTY_WINS = 1
+export const DAILY_MATERIAL_BOUNTY_REWARD = 1
+export const WEEKLY_MATERIAL_BOUNTY_WINS = 5
+export const WEEKLY_MATERIAL_BOUNTY_REWARD = 3
+
+export function normalizeMaterialBountyState(state: MaterialBountyState, now = Date.now()): MaterialBountyState {
+  const today = dateKey(now)
+  const currentWeek = weekKey(now)
+  const dailyDate = normalizeDateKey(state.dailyDate)
+  const weeklyKey = normalizeDateKey(state.weeklyKey)
+  return {
+    dailyDate: today,
+    dailyDungeonWins: dailyDate === today ? nonNegativeInteger(state.dailyDungeonWins) : 0,
+    dailyClaimed: dailyDate === today && state.dailyClaimed === true,
+    weeklyKey: currentWeek,
+    weeklyDungeonWins: weeklyKey === currentWeek ? nonNegativeInteger(state.weeklyDungeonWins) : 0,
+    weeklyClaimed: weeklyKey === currentWeek && state.weeklyClaimed === true,
+  }
 }
 
-export function normalizeRealmId(value: unknown): RealmId {
-  if (value === 'celestial') return 'returning'
-  return REALMS.find((realm) => realm.id === value)?.id ?? 'body-tempering'
+export function recordDungeonMaterialBountyWin(state: MaterialBountyState, now = Date.now()): MaterialBountyState {
+  const current = normalizeMaterialBountyState(state, now)
+  return {
+    ...current,
+    dailyDungeonWins: current.dailyDungeonWins + 1,
+    weeklyDungeonWins: current.weeklyDungeonWins + 1,
+  }
 }
 
-export function getPracticeCost(realmId: RealmId, realmLevel: number): number {
-  const realmIndex = Math.max(0, REALMS.findIndex((realm) => realm.id === realmId))
-  const level = clamp(Math.floor(finiteNumber(realmLevel, 1)), 1, 9)
-  const fullLevelCost = PRACTICE_FULL_LEVEL_BASE_COST
-    * Math.pow(PRACTICE_REALM_COST_MULTIPLIER, realmIndex)
-    * Math.pow(SMALL_REALM_COST_GROWTH, level - 1)
-  return Math.max(1, Math.round(fullLevelCost / PRACTICE_ACTIONS_PER_LEVEL))
+export function canClaimDailyMaterialBounty(state: MaterialBountyState, now = Date.now()): boolean {
+  const current = normalizeMaterialBountyState(state, now)
+  return !current.dailyClaimed && current.dailyDungeonWins >= DAILY_MATERIAL_BOUNTY_WINS
 }
 
-export function getNextRealmId(realmId: RealmId): RealmId | null {
-  const index = REALMS.findIndex((realm) => realm.id === realmId)
-  return REALMS[index + 1]?.id ?? null
+export function claimDailyMaterialBounty(
+  player: GameState['player'],
+  state: MaterialBountyState,
+  now = Date.now(),
+): { player: GameState['player']; materialBounties: MaterialBountyState } | null {
+  const current = normalizeMaterialBountyState(state, now)
+  if (!canClaimDailyMaterialBounty(current, now)) return null
+  return {
+    player: { ...player, items: { ...(player.items ?? {}), [REFORGE_STONE_ID]: addCappedInteger(player.items?.[REFORGE_STONE_ID], DAILY_MATERIAL_BOUNTY_REWARD) } },
+    materialBounties: { ...current, dailyClaimed: true },
+  }
+}
+
+export function canClaimWeeklyMaterialBounty(state: MaterialBountyState, now = Date.now()): boolean {
+  const current = normalizeMaterialBountyState(state, now)
+  return !current.weeklyClaimed && current.weeklyDungeonWins >= WEEKLY_MATERIAL_BOUNTY_WINS
+}
+
+export function claimWeeklyMaterialBounty(
+  player: GameState['player'],
+  state: MaterialBountyState,
+  now = Date.now(),
+): { player: GameState['player']; materialBounties: MaterialBountyState } | null {
+  const current = normalizeMaterialBountyState(state, now)
+  if (!canClaimWeeklyMaterialBounty(current, now)) return null
+  return {
+    player: { ...player, items: { ...(player.items ?? {}), [EQUIPMENT_ESSENCE_ID]: addCappedInteger(player.items?.[EQUIPMENT_ESSENCE_ID], WEEKLY_MATERIAL_BOUNTY_REWARD) } },
+    materialBounties: { ...current, weeklyClaimed: true },
+  }
+}
+
+function getShopProgressChapter(journey: JourneyState): number {
+  if (journey.completed) return MAIN_STORY_CHAPTERS
+  return clamp(Math.floor(finiteNumber(journey.currentChapter, 1)), 1, MAIN_STORY_CHAPTERS)
+}
+
+/** Resolves a data-defined shop offer at the player's current main-story chapter. */
+export function getSilverShopOffer(journey: JourneyState, productId: string): SilverShopOffer | null {
+  const product = getSilverShopProduct(productId)
+  if (!product) return null
+  const progressBands = Math.floor((getShopProgressChapter(journey) - 1) / product.growthEveryChapters)
+  const price = Math.max(1, Math.round(product.basePrice * Math.pow(1 + product.priceGrowthRate, progressBands)))
+  const rewards = product.rewards.map((reward) => ({
+    type: reward.type,
+    amount: Math.max(1, Math.floor(reward.amount * Math.pow(1 + product.rewardGrowthRate, progressBands))),
+    itemId: reward.itemId,
+  }))
+  return { productId: product.id, price, rewards }
+}
+
+export function getSilverShopPurchaseCount(shop: ShopState, productId: string, now = Date.now()): number {
+  if (!getSilverShopProduct(productId) || shop.purchaseDate !== dateKey(now)) return 0
+  return nonNegativeInteger(shop.purchaseCounts?.[productId], 0)
+}
+
+export function getSilverShopPurchaseRemaining(shop: ShopState, productId: string, now = Date.now()): number {
+  const product = getSilverShopProduct(productId)
+  if (!product) return 0
+  return Math.max(0, product.dailyLimit - getSilverShopPurchaseCount(shop, productId, now))
+}
+
+/**
+ * Performs the complete silver-store transaction. UI code cannot grant an
+ * item or deduct silver independently, which keeps balance checks atomic.
+ */
+export function purchaseSilverShopProduct(
+  player: GameState['player'],
+  cultivation: CultivationState,
+  journey: JourneyState,
+  shop: ShopState,
+  productId: string,
+  now = Date.now(),
+): { player: GameState['player']; cultivation: CultivationState; shop: ShopState; offer: SilverShopOffer } | null {
+  const product = getSilverShopProduct(productId)
+  const offer = getSilverShopOffer(journey, productId)
+  const silver = nonNegativeInteger(player.silver)
+  if (!product || !offer || silver < offer.price || getSilverShopPurchaseRemaining(shop, productId, now) < 1) return null
+
+  let nextPlayer: GameState['player'] = { ...player, silver: silver - offer.price }
+  let nextCultivation: CultivationState = {
+    ...cultivation,
+    amount: Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, finiteNumber(cultivation.amount, 0))),
+  }
+  for (const reward of offer.rewards) {
+    if (reward.type === 'innerForce') {
+      nextCultivation = { ...nextCultivation, amount: Math.min(Number.MAX_SAFE_INTEGER, nextCultivation.amount + reward.amount) }
+    } else if (reward.type === 'item' && reward.itemId && getInventoryItemById(reward.itemId)) {
+      nextPlayer = { ...nextPlayer, items: { ...(nextPlayer.items ?? {}), [reward.itemId]: addCappedInteger(nextPlayer.items?.[reward.itemId], reward.amount) } }
+    } else if (reward.type === 'item') {
+      continue
+    } else {
+      nextPlayer = {
+        ...nextPlayer,
+        [reward.type]: addCappedInteger(nextPlayer[reward.type], reward.amount),
+      }
+    }
+  }
+  const today = dateKey(now)
+  const currentCount = getSilverShopPurchaseCount(shop, productId, now)
+  const purchaseCounts = shop.purchaseDate === today ? { ...shop.purchaseCounts } : {}
+  purchaseCounts[productId] = currentCount + 1
+  return { player: nextPlayer, cultivation: nextCultivation, shop: { purchaseDate: today, purchaseCounts }, offer }
 }
 
 export function getMartialMastery(player: GameState['player'], artId: string): number {
-  const art = MARTIAL_ARTS.find((item) => item.id === artId)
+  const art = getMartialArtConfigById(artId)
   const savedMastery = player.mastery && typeof player.mastery === 'object' ? player.mastery[artId] : undefined
   const fallback = art?.mastery ?? 0
   return clamp(Math.floor(finiteNumber(savedMastery, fallback)), 0, 100)
 }
 
+const MARTIAL_ASCENSION_INSIGHT_BASE_COST = 50
+const MARTIAL_ASCENSION_INSIGHT_STEP = 25
+const MARTIAL_ASCENSION_MAX_RANK = 10
+
+export function getMartialAscensionRank(player: GameState['player'], art: MartialArt): number {
+  const maxRank = Math.max(1, Math.floor(art.ascension?.maxRank ?? MARTIAL_ASCENSION_MAX_RANK))
+  return clamp(Math.floor(finiteNumber(player.martialRanks?.[art.id], 0)), 0, maxRank)
+}
+
+export function getMartialAscensionRequirement(player: GameState['player'], art: MartialArt): { rank: number; maxRank: number; insight: number; duplicates: number } {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt) return { rank: 0, maxRank: 0, insight: 0, duplicates: 0 }
+  const maxRank = Math.max(1, Math.floor(knownArt.ascension?.maxRank ?? MARTIAL_ASCENSION_MAX_RANK))
+  const rank = getMartialAscensionRank(player, knownArt)
+  if (rank >= maxRank) return { rank, maxRank, insight: 0, duplicates: 0 }
+  if (rank < 5) return { rank, maxRank, insight: MARTIAL_ASCENSION_INSIGHT_BASE_COST + rank * MARTIAL_ASCENSION_INSIGHT_STEP, duplicates: 0 }
+  return { rank, maxRank, insight: 0, duplicates: rank === maxRank - 1 ? 2 : 1 }
+}
+
+export function getMartialAscensionDuplicateCount(player: GameState['player'], art: MartialArt, ownedMartialArtIds: readonly string[]): number {
+  const equippedCopies = Object.values(player.martialLoadout ?? {}).filter((id) => id === art.id).length
+  return Math.max(0, ownedMartialArtIds.filter((id) => id === art.id).length - equippedCopies)
+}
+
+export function getMartialAscensionTokenCount(player: GameState['player']): number {
+  return Math.max(0, Math.floor(finiteNumber(player.items?.[MARTIAL_ASCENSION_TOKEN_ID], 0)))
+}
+
+export function canAscendMartialArt(player: GameState['player'], art: MartialArt, ownedMartialArtIds: readonly string[] = []): boolean {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt) return false
+  const requirement = getMartialAscensionRequirement(player, knownArt)
+  if (requirement.rank >= requirement.maxRank) return false
+  if (requirement.insight > 0) return player.insight >= requirement.insight
+  return getMartialAscensionDuplicateCount(player, art, ownedMartialArtIds) + getMartialAscensionTokenCount(player) >= requirement.duplicates
+}
+
+export function ascendMartialArt(player: GameState['player'], art: MartialArt, ownedMartialArtIds: readonly string[] = []): { player: GameState['player']; ownedMartialArtIds: string[]; consumedDuplicates: number; consumedTokens: number } | null {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt || !canAscendMartialArt(player, knownArt, ownedMartialArtIds)) return null
+  const requirement = getMartialAscensionRequirement(player, knownArt)
+  let consumedDuplicates = 0
+  let consumedTokens = 0
+  let nextPlayer = player
+  let nextOwnedIds = [...ownedMartialArtIds]
+  if (requirement.insight > 0) {
+    nextPlayer = { ...nextPlayer, insight: nextPlayer.insight - requirement.insight }
+  } else {
+    const availableDuplicates = getMartialAscensionDuplicateCount(player, art, ownedMartialArtIds)
+    consumedDuplicates = Math.min(availableDuplicates, requirement.duplicates)
+    consumedTokens = requirement.duplicates - consumedDuplicates
+    let equippedCopies = Object.values(player.martialLoadout ?? {}).filter((id) => id === art.id).length
+    nextOwnedIds = ownedMartialArtIds.filter((id) => {
+      if (id !== art.id) return true
+      if (equippedCopies > 0) { equippedCopies -= 1; return true }
+      if (consumedDuplicates > 0) { consumedDuplicates -= 1; return false }
+      return true
+    })
+    consumedDuplicates = requirement.duplicates - consumedTokens
+    const items = { ...(nextPlayer.items ?? {}) }
+    items[MARTIAL_ASCENSION_TOKEN_ID] = getMartialAscensionTokenCount(nextPlayer) - consumedTokens
+    nextPlayer = { ...nextPlayer, items }
+  }
+  const currentRank = requirement.rank
+  const martialRanks = { ...(nextPlayer.martialRanks ?? {}), [art.id]: currentRank + 1 }
+  return { player: syncPlayerPower({ ...nextPlayer, martialRanks }), ownedMartialArtIds: nextOwnedIds, consumedDuplicates, consumedTokens }
+}
+
+function ascensionProgress(player: GameState['player'], art: MartialArt): number {
+  const maxRank = Math.max(1, Math.floor(art.ascension?.maxRank ?? MARTIAL_ASCENSION_MAX_RANK))
+  return getMartialAscensionRank(player, art) / maxRank
+}
+
+export function getMartialAscensionStatMultiplier(player: GameState['player'], art: MartialArt): number {
+  const knownArt = getMartialArtById(art.id)
+  return knownArt ? 1 + ascensionProgress(player, knownArt) * (MARTIAL_ASCENSION_MAX_STAT_MULTIPLIER - 1) : 1
+}
+
+function interpolateAscensionValue(player: GameState['player'], art: MartialArt, values: { base: number; max: number }): number {
+  return Math.round((values.base + (values.max - values.base) * ascensionProgress(player, art)) * 100) / 100
+}
+
+export function getMartialPassiveEffects(player: GameState['player'], art: MartialArt): CombatPassiveEffect[] {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt || knownArt.kind !== 'inner') return []
+  art = knownArt
+  const ascensionMultiplier = getMartialAscensionStatMultiplier(player, art)
+  const defaultEffects: CombatPassiveEffect[] = []
+  if (art.gradeTone === 'purple') {
+    defaultEffects.push({ id: `default-${art.id}-skill-rage`, label: '紫气回流', description: '每次释放主动技能后，返还25怒气。', kind: 'skill-rage-refund', value: 25 })
+  }
+  if (art.gradeTone === 'orange') {
+    defaultEffects.push(
+      { id: `default-${art.id}-opening-rage`, label: '橙阶先机', description: '开局获得50怒气。', kind: 'battle-start-rage', value: 50 },
+      { id: `default-${art.id}-skill-rage`, label: '橙阶回气', description: '每次释放主动技能后，返还50怒气。', kind: 'skill-rage-refund', value: 50 },
+    )
+  }
+  if (art.gradeTone === 'red') {
+    defaultEffects.push(
+      { id: `default-${art.id}-opening-rage`, label: '赤阶先机', description: '开局获得150怒气。', kind: 'battle-start-rage', value: 150 },
+      { id: `default-${art.id}-skill-rage`, label: '赤阶回气', description: '每次释放主动技能后，返还75怒气。', kind: 'skill-rage-refund', value: 75 },
+    )
+  }
+  return [...defaultEffects, ...(art.passiveEffects ?? [])].map((effect) => {
+    let value = effect.value
+    let description = effect.description
+    const isDefaultRageEffect = effect.id.startsWith(`default-${art.id}-`)
+    if (effect.kind === 'battle-start-rage' && art.ascension?.rageAtBattleStart) {
+      value = interpolateAscensionValue(player, art, art.ascension.rageAtBattleStart)
+      description = `开战时获得${value}怒气。`
+    } else if (isDefaultRageEffect && (effect.kind === 'battle-start-rage' || effect.kind === 'skill-rage-refund')) {
+      value = Math.max(0, Math.round(effect.value * ascensionMultiplier))
+      description = effect.kind === 'battle-start-rage'
+        ? `开战时获得${value}怒气。`
+        : `每次释放主动技能后，返还${value}怒气。`
+    }
+    return { ...effect, value, description }
+  })
+}
+
+export function getMartialCombatBonuses(player: GameState['player'], art: MartialArt): Partial<CombatStats> | undefined {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt || knownArt.kind !== 'inner' || !knownArt.combatBonuses) return undefined
+  const multiplier = getMartialAscensionStatMultiplier(player, knownArt)
+  return Object.fromEntries(Object.entries(knownArt.combatBonuses).map(([key, value]) => [key, Math.round((value as number) * multiplier)])) as Partial<CombatStats>
+}
+
+export function getMartialActiveSkill(player: GameState['player'], art: MartialArt): MartialActiveSkill | undefined {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt || knownArt.kind !== 'outer' || !knownArt.activeSkill) return undefined
+  const masteryMultiplier = 1 + getMartialMastery(player, knownArt.id) * 0.001
+  const ascensionMultiplier = getMartialAscensionStatMultiplier(player, knownArt)
+  const multiplier = masteryMultiplier * ascensionMultiplier
+  const skill = { ...knownArt.activeSkill, damageMultiplier: Math.round(knownArt.activeSkill.damageMultiplier * multiplier * 1000) / 1000 }
+  for (const key of ['bonusCritRate', 'defensePierceRate', 'stunRate'] as const) {
+    if (skill[key] !== undefined) skill[key] = Math.round(skill[key]! * multiplier * 100) / 100
+  }
+  if (skill.grantDodge !== undefined) skill.grantDodge = Math.max(0, Math.round(skill.grantDodge * multiplier))
+  return skill
+}
+
 export function getInnerForceRateBonus(player: GameState['player']): number {
+  const equippedInnerIds = new Set(getEquippedInnerArts(player).map((art) => art.id))
   return Math.round(MARTIAL_ARTS.reduce((total, art) => {
-    if (art.kind !== 'inner' || !getEquippedInnerArts(player).some((equipped) => equipped.id === art.id) || art.innerForceRateBase === undefined || art.innerForceRatePerMastery === undefined) return total
-    return total + art.innerForceRateBase + getMartialMastery(player, art.id) * art.innerForceRatePerMastery
-  }, 0) * 100) / 100
+    if (art.kind !== 'inner' || !equippedInnerIds.has(art.id) || art.innerForceRateBase === undefined || art.innerForceRatePerMastery === undefined) return total
+    return total + (art.innerForceRateBase + getMartialMastery(player, art.id) * art.innerForceRatePerMastery) * getMartialAscensionStatMultiplier(player, art)
+  }, 0) * 100) / 100 + Math.max(0, finiteNumber(player.pillInnerForceRateBonus, 0))
 }
 
 export function getInnerForceRateMultiplierBonus(player: GameState['player']): number {
+  const equippedInnerIds = new Set(getEquippedInnerArts(player).map((art) => art.id))
   return Math.round(MARTIAL_ARTS.reduce((total, art) => {
-    if (art.kind !== 'inner' || !getEquippedInnerArts(player).some((equipped) => equipped.id === art.id) || art.innerForceRateMultiplierBase === undefined || art.innerForceRateMultiplierPerMastery === undefined) return total
-    return total + art.innerForceRateMultiplierBase + getMartialMastery(player, art.id) * art.innerForceRateMultiplierPerMastery
+    if (art.kind !== 'inner' || !equippedInnerIds.has(art.id) || art.innerForceRateMultiplierBase === undefined || art.innerForceRateMultiplierPerMastery === undefined) return total
+    return total + (art.innerForceRateMultiplierBase + getMartialMastery(player, art.id) * art.innerForceRateMultiplierPerMastery) * getMartialAscensionStatMultiplier(player, art)
   }, 0) * 10_000) / 10_000
 }
 
-export function getRealmInnerForceRate(player: GameState['player']): number {
-  const realmIndex = Math.max(0, REALMS.findIndex((realm) => realm.id === player.realmId))
-  const level = clamp(Math.floor(finiteNumber(player.realmLevel, 1)), 1, 9)
-  return Math.round((
-    INNER_FORCE_PER_SECOND
-    * Math.pow(REALM_INNER_FORCE_RATE_MULTIPLIER, realmIndex)
-    * Math.pow(SMALL_REALM_INNER_FORCE_RATE_MULTIPLIER, level - 1)
-  ) * 100) / 100
-}
-
-export function getRealmInnerForceRateBonus(player: GameState['player']): number {
-  return Math.round((getRealmInnerForceRate(player) - INNER_FORCE_PER_SECOND) * 100) / 100
-}
-
-export function getInnerForceRate(player: GameState['player']): number {
+export function getInnerForceRate(player: GameState['player'], temple?: TempleState): number {
+  const templeBonus = getTempleIdolEffect(temple, 'breath')
   return Math.round((
     getRealmInnerForceRate(player) * (1 + getInnerForceRateMultiplierBonus(player))
     + getInnerForceRateBonus(player)
+    + templeBonus
   ) * 100) / 100
 }
 
+function dungeonDropGradeTone(drop: DungeonDrop): GradeTone | null {
+  if (drop.kind === 'item') return getInventoryItemById(drop.itemId)?.gradeTone ?? null
+  if (drop.kind === 'equipment') return getEquipmentConfigById(drop.itemId)?.gradeTone ?? null
+  if (drop.kind === 'martial') return getMartialArtConfigById(drop.itemId)?.gradeTone ?? null
+  return null
+}
+
+function chooseDungeonDrop(drops: readonly DungeonDrop[], random: () => number, qualityBonus = 0): DungeonDrop | null {
+  const valid = drops.filter((drop) => Number.isFinite(drop.weight) && drop.weight > 0)
+  const total = valid.reduce((sum, drop) => {
+    const tone = dungeonDropGradeTone(drop)
+    const rank = tone ? GRADE_ORDER.indexOf(tone) : -1
+    const qualityMultiplier = rank < 0 ? 1 : 1 + Math.max(0, qualityBonus) * Math.max(0, rank)
+    return sum + drop.weight * qualityMultiplier
+  }, 0)
+  if (!total) return null
+  let cursor = getRandomValue(random) * total
+  for (const drop of valid) {
+    const tone = dungeonDropGradeTone(drop)
+    const rank = tone ? GRADE_ORDER.indexOf(tone) : -1
+    const qualityMultiplier = rank < 0 ? 1 : 1 + Math.max(0, qualityBonus) * Math.max(0, rank)
+    cursor -= drop.weight * qualityMultiplier
+    if (cursor < 0) return drop
+  }
+  return valid.at(-1) ?? null
+}
+
+function getDungeonDropResult(drop: DungeonDrop, quantity: number): DungeonRewardDrop | null {
+  const safeQuantity = clamp(Math.floor(finiteNumber(quantity, 1)), 1, Number.MAX_SAFE_INTEGER)
+  if (drop.kind === 'resource') {
+    const amount = finiteNumber(drop.amount, 1) * safeQuantity
+    return {
+      kind: 'resource',
+      resource: drop.resource,
+      name: drop.resource === 'forge' ? '铸材' : drop.resource === 'insight' ? '心得' : drop.resource === 'incense' ? '香火' : '银两',
+      quantity: clamp(Math.floor(finiteNumber(amount, 1)), 1, Number.MAX_SAFE_INTEGER),
+    }
+  }
+  if (drop.kind === 'item') {
+    const item = getInventoryItemById(drop.itemId)
+    const quantityMultiplier = item?.category === 'gem' && (item.gemTier ?? 0) <= 1 ? 2 : 1
+    return item ? { kind: 'item', itemId: item.id, name: item.name, grade: item.grade, gradeTone: item.gradeTone, quantity: Math.min(Number.MAX_SAFE_INTEGER, safeQuantity * quantityMultiplier) } : null
+  }
+  if (drop.kind === 'equipment') {
+    const equipment = getEquipmentById(drop.itemId)
+    return equipment ? { kind: 'equipment', itemId: equipment.id, name: equipment.name, grade: equipment.grade, gradeTone: equipment.gradeTone, quantity: 1 } : null
+  }
+  const art = getMartialArtById(drop.itemId)
+  return art ? { kind: 'martial', itemId: art.id, name: art.name, grade: art.grade, gradeTone: art.gradeTone, quantity: 1 } : null
+}
+
+/**
+ * Only concrete collection drops can collide with a guaranteed drop. Resource
+ * rewards are intentionally allowed to appear in both guaranteed and bonus
+ * rolls, so they must not share a synthetic empty key.
+ */
+function getDungeonDropKey(drop: DungeonDrop): string | null {
+  if (drop.kind === 'item' || drop.kind === 'equipment' || drop.kind === 'martial') {
+    return `${drop.kind}:${drop.itemId}`
+  }
+  return null
+}
+
+export function resolveDungeonReward(
+  player: GameState['player'],
+  lottery: LotteryState,
+  dungeonState: DungeonState,
+  dungeonId: string,
+  layerNumber: number,
+  random: () => number = Math.random,
+  now = Date.now(),
+): { player: GameState['player']; lottery: LotteryState; dungeons: DungeonState; reward: DungeonReward } | null {
+  const dungeon = getDungeonConfig(dungeonId)
+  const layer = getDungeonLayer(dungeonId, layerNumber)
+  if (!dungeon || !layer) return null
+  const currentDungeonState = normalizeDungeonStateForDate(dungeonState, now)
+  const active = currentDungeonState.activeChallenge
+  if (!active || active.dungeonId !== dungeonId || active.layer !== layerNumber) return null
+  const previousHighest = getDungeonHighestCleared(currentDungeonState, dungeonId)
+  // The active marker is persisted separately from the runtime encounter. Do
+  // not trust it to bypass the normal sequential layer gate.
+  if (layerNumber > previousHighest + 1) return null
+  const firstClear = layerNumber > previousHighest
+  const { activeChallenge: _activeChallenge, ...stateWithoutChallenge } = currentDungeonState
+  const currentState = { ...stateWithoutChallenge, highestCleared: { ...currentDungeonState.highestCleared } }
+  currentState.highestCleared[dungeonId] = Math.max(previousHighest, layerNumber)
+  const drops: DungeonRewardDrop[] = []
+  for (const guaranteed of layer.guaranteedDrops ?? []) {
+    const result = getDungeonDropResult(guaranteed, guaranteed.kind === 'item' ? (guaranteed.quantity ?? 1) : 1)
+    if (result) drops.push(result)
+  }
+  const guaranteedKeys = new Set(
+    (layer.guaranteedDrops ?? [])
+      .map(getDungeonDropKey)
+      .filter((key): key is string => key !== null),
+  )
+  const bonusPool = layer.drops.filter((drop) => {
+    const key = getDungeonDropKey(drop)
+    return key === null || !guaranteedKeys.has(key)
+  })
+  const selected = chooseDungeonDrop(bonusPool, random, layer.dropQualityBonus ?? 0)
+  if (selected) {
+    const quantity = selected.kind === 'item' ? (selected.quantity ?? 1) : 1
+    const result = getDungeonDropResult(selected, quantity)
+    if (result) drops.push(result)
+  }
+  let nextPlayer = {
+    ...player,
+    silver: nonNegativeInteger(player.silver),
+    langyu: nonNegativeInteger(player.langyu),
+    forge: nonNegativeInteger(player.forge),
+    insight: nonNegativeInteger(player.insight),
+    fame: nonNegativeInteger(player.fame),
+    items: { ...(player.items ?? {}) },
+  }
+  let nextLottery = {
+    ...lottery,
+    ownedEquipmentIds: Array.isArray(lottery.ownedEquipmentIds) ? [...lottery.ownedEquipmentIds] : [],
+    ownedMartialArtIds: Array.isArray(lottery.ownedMartialArtIds) ? [...lottery.ownedMartialArtIds] : [],
+  }
+  const reward: DungeonReward = {
+    silver: nonNegativeInteger(layer.firstClear?.silver),
+    langyu: nonNegativeInteger(layer.firstClear?.langyu),
+    forge: nonNegativeInteger(layer.firstClear?.forge),
+    insight: nonNegativeInteger(layer.firstClear?.insight),
+    incense: 12 + Math.max(0, layerNumber - 1) * 4 + (firstClear ? 30 + layerNumber * 10 + nonNegativeInteger(layer.firstClear?.incense) : 0),
+    fame: 0,
+    eliteBonus: false,
+    firstClear,
+    drops,
+  }
+  if (!firstClear) { reward.silver = 0; reward.langyu = 0; reward.forge = 0; reward.insight = 0 }
+  nextPlayer.silver = addCappedInteger(nextPlayer.silver, reward.silver)
+  nextPlayer.langyu = addCappedInteger(nextPlayer.langyu, reward.langyu)
+  nextPlayer.forge = addCappedInteger(nextPlayer.forge, reward.forge)
+  nextPlayer.insight = addCappedInteger(nextPlayer.insight, reward.insight)
+  nextPlayer.incense = addCappedInteger(nextPlayer.incense, reward.incense)
+  for (const drop of drops) {
+    if (drop.kind === 'item' && drop.itemId) nextPlayer.items[drop.itemId] = addCappedInteger(nextPlayer.items[drop.itemId], drop.quantity)
+    if (drop.kind === 'equipment' && drop.itemId) nextLottery.ownedEquipmentIds.push(drop.itemId)
+    if (drop.kind === 'martial' && drop.itemId) nextLottery.ownedMartialArtIds.push(drop.itemId)
+    if (drop.kind === 'resource' && drop.resource) nextPlayer[drop.resource] = addCappedInteger(nextPlayer[drop.resource], drop.quantity)
+  }
+  return { player: syncPlayerPower(nextPlayer), lottery: nextLottery, dungeons: currentState, reward }
+}
+
+/** Resolve a cleared layer without opening the battle modal. It consumes stamina just like a battle. */
+export function sweepDungeon(
+  player: GameState['player'],
+  lottery: LotteryState,
+  dungeonState: DungeonState,
+  dungeonId: string,
+  layerNumber: number,
+  now = Date.now(),
+  random: () => number = Math.random,
+): { player: GameState['player']; lottery: LotteryState; dungeons: DungeonState; reward: DungeonReward } | null {
+  const dungeon = getDungeonConfig(dungeonId)
+  if (!dungeon || layerNumber < 1 || layerNumber > dungeon.layers.length || layerNumber > getDungeonHighestCleared(dungeonState, dungeonId)) return null
+  const entered = enterDungeon(dungeonState, dungeonId, layerNumber, player.realmId, now)
+  if (!entered) return null
+  return resolveDungeonReward(player, lottery, entered, dungeonId, layerNumber, random, now)
+}
+
+export function getDungeonMechanicId(dungeonId: string): DungeonMechanicId | undefined {
+  return getDungeonConfig(dungeonId)?.mechanic.id
+}
+
+export function getPlayerPillBonuses(player: GameState['player']): { innerForceRate: number; combatBonuses: Partial<Record<CoreCombatStat, number>>; combatRates: Partial<Record<CoreCombatStat, number>> } {
+  return { innerForceRate: Math.max(0, finiteNumber(player.pillInnerForceRateBonus, 0)), combatBonuses: { ...(player.pillCombatBonuses ?? {}) }, combatRates: { ...(player.pillCombatRates ?? {}) } }
+}
+
+export function useInventoryItem(player: GameState['player'], itemId: string): { player: GameState['player']; item: InventoryItem } | null {
+  const item = getInventoryItemById(itemId)
+  const count = nonNegativeInteger(player.items?.[itemId], 0)
+  if (!item || !item.usable || !count || item.category !== 'pill') return null
+  const nextItems = { ...(player.items ?? {}), [itemId]: count - 1 }
+  let nextPlayer = { ...player, items: nextItems }
+  for (const effect of item.pillEffects ?? []) {
+    if (effect.kind === 'innerForceRate') nextPlayer.pillInnerForceRateBonus = Math.min(Number.MAX_SAFE_INTEGER, Math.round((Math.max(0, finiteNumber(nextPlayer.pillInnerForceRateBonus, 0)) + effect.amount) * 100) / 100)
+    if (effect.kind === 'combatBonus') nextPlayer.pillCombatBonuses = { ...(nextPlayer.pillCombatBonuses ?? {}), [effect.stat]: Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, finiteNumber(nextPlayer.pillCombatBonuses?.[effect.stat], 0)) + effect.amount) }
+    if (effect.kind === 'combatRate') nextPlayer.pillCombatRates = { ...(nextPlayer.pillCombatRates ?? {}), [effect.stat]: Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, finiteNumber(nextPlayer.pillCombatRates?.[effect.stat], 0)) + effect.amount) }
+  }
+  return { player: syncPlayerPower(nextPlayer), item }
+}
+
 export function getMartialEnhancementCost(player: GameState['player'], art: MartialArt): number {
+  if (!getMartialArtById(art.id)) return Number.POSITIVE_INFINITY
   return 4 + Math.floor(getMartialMastery(player, art.id) / 10)
 }
 
 export function isMartialArtEnhanceable(art: MartialArt): boolean {
+  const knownArt = getMartialArtById(art.id)
+  if (!knownArt) return false
+  art = knownArt
+  if (art.kind === 'outer') return Boolean(art.activeSkill)
   const hasFlatBonus = art.innerForceRateBase !== undefined && art.innerForceRatePerMastery !== undefined
   const hasMultiplierBonus = art.innerForceRateMultiplierBase !== undefined && art.innerForceRateMultiplierPerMastery !== undefined
   return hasFlatBonus || hasMultiplierBonus
@@ -916,19 +1626,26 @@ export function enhanceMartialArt(player: GameState['player'], art: MartialArt):
   })
 }
 
-export function accrueInnerForce(cultivation: CultivationState, player: GameState['player'], now = Date.now()): CultivationState {
+export function accrueInnerForce(cultivation: CultivationState, player: GameState['player'], now = Date.now(), temple?: TempleState): CultivationState {
   const safeNow = finiteNumber(now, Date.now())
   const safeLastAccruedAt = finiteNumber(cultivation.lastAccruedAt, safeNow)
   const rawElapsed = Math.max(0, safeNow - safeLastAccruedAt)
   const elapsed = Math.min(rawElapsed, MAX_CULTIVATION_OFFLINE_MS)
   const wholeSeconds = Math.floor(elapsed / 1000)
   const amount = Math.max(0, finiteNumber(cultivation.amount, 0))
-  if (!wholeSeconds) return { ...cultivation, amount, lastAccruedAt: Math.min(safeNow, Math.max(0, safeLastAccruedAt)) }
+  if (safeNow < safeLastAccruedAt || !wholeSeconds) {
+    return { ...cultivation, amount, lastAccruedAt: safeNow < safeLastAccruedAt ? safeNow : Math.max(0, safeLastAccruedAt) }
+  }
   return {
     ...cultivation,
-    amount: amount + wholeSeconds * getInnerForceRate(player),
+    amount: Math.min(Number.MAX_SAFE_INTEGER, amount + wholeSeconds * getInnerForceRate(player, temple)),
     lastAccruedAt: rawElapsed > MAX_CULTIVATION_OFFLINE_MS ? safeNow : safeLastAccruedAt + wholeSeconds * 1000,
   }
+}
+
+/** Updates the automation flag without letting the UI mutate cultivation state directly. */
+export function setAutoPractice(cultivation: CultivationState, enabled: boolean): CultivationState {
+  return { ...cultivation, autoPractice: Boolean(enabled) }
 }
 
 export function isPracticeComplete(cultivation: CultivationState): boolean {
@@ -964,11 +1681,25 @@ export function breakThroughRealm(player: GameState['player'], cultivation: Cult
   return { player: syncPlayerPower({ ...player, realmId: nextRealmId, realmLevel: 1 }), cultivation: { ...cultivation, practiceProgress: 0 } }
 }
 
-export function saveGame(game: GameState): void {
+/** Persists the current state and reports whether the browser accepted it. */
+export function saveGame(game: GameState): boolean {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(game))
+    return true
   } catch {
     // Storage can be unavailable or full; gameplay state remains usable in memory.
+    return false
+  }
+}
+
+function preserveUnusableSave(raw: string | null): void {
+  if (!raw) return
+  try {
+    // Keep one recoverable copy. A timestamped key would eventually become a
+    // second unbounded save history and could recreate the quota problem.
+    localStorage.setItem(SAVE_RECOVERY_KEY, raw)
+  } catch {
+    // Recovery is best-effort; the caller still receives a valid new state.
   }
 }
 
@@ -986,7 +1717,7 @@ function loadCultivation(saved: Partial<GameState> & { player?: Partial<GameStat
   if (savedCultivation && Number.isFinite(savedCultivation.amount) && Number.isFinite(savedCultivation.lastAccruedAt)) {
     const now = Date.now()
     return {
-      amount: Math.max(0, savedCultivation.amount!),
+      amount: Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, savedCultivation.amount!)),
       practiceProgress: normalizePracticeProgress(savedCultivation.practiceProgress),
       lastAccruedAt: Math.min(now, Math.max(0, Math.floor(savedCultivation.lastAccruedAt!))),
       autoPractice: typeof savedCultivation.autoPractice === 'boolean' ? savedCultivation.autoPractice : Boolean(savedCultivation.autoAdvance),
@@ -1000,6 +1731,86 @@ function loadCultivation(saved: Partial<GameState> & { player?: Partial<GameStat
 function loadDailyCheckIn(saved: unknown, initial: GameState['dailyCheckIn']): GameState['dailyCheckIn'] {
   if (typeof saved !== 'object' || saved === null) return { ...initial }
   return { lastClaimedDate: normalizeDateKey((saved as Partial<GameState['dailyCheckIn']>).lastClaimedDate) }
+}
+
+function loadMaterialBounties(saved: unknown, initial: GameState['materialBounties']): GameState['materialBounties'] {
+  if (typeof saved !== 'object' || saved === null) return { ...initial }
+  const source = saved as Partial<MaterialBountyState>
+  return {
+    dailyDate: normalizeDateKey(source.dailyDate),
+    dailyDungeonWins: nonNegativeInteger(source.dailyDungeonWins),
+    dailyClaimed: source.dailyClaimed === true,
+    weeklyKey: normalizeDateKey(source.weeklyKey),
+    weeklyDungeonWins: nonNegativeInteger(source.weeklyDungeonWins),
+    weeklyClaimed: source.weeklyClaimed === true,
+  }
+}
+
+function loadShopState(saved: unknown, initial: GameState['shop']): GameState['shop'] {
+  if (typeof saved !== 'object' || saved === null) return { purchaseDate: initial.purchaseDate, purchaseCounts: { ...initial.purchaseCounts } }
+  const source = saved as Partial<ShopState>
+  const purchaseDate = normalizeDateKey(source.purchaseDate)
+  const rawCounts = typeof source.purchaseCounts === 'object' && source.purchaseCounts !== null
+    ? source.purchaseCounts as Record<string, unknown>
+    : {}
+  const purchaseCounts: Record<string, number> = {}
+  for (const product of SILVER_SHOP_PRODUCTS) {
+    const amount = rawCounts[product.id]
+    if (typeof amount === 'number' && Number.isFinite(amount) && amount > 0) {
+      purchaseCounts[product.id] = clamp(Math.floor(amount), 0, product.dailyLimit)
+    }
+  }
+  return { purchaseDate, purchaseCounts }
+}
+
+function loadPillBonuses(value: unknown, initial: Partial<Record<CoreCombatStat, number>>): Partial<Record<CoreCombatStat, number>> {
+  const source = typeof value === 'object' && value !== null ? value as Record<string, unknown> : {}
+  const result: Partial<Record<CoreCombatStat, number>> = {}
+  for (const stat of CORE_COMBAT_STATS) {
+    const amount = source[stat]
+    if (typeof amount === 'number' && Number.isFinite(amount) && amount > 0) result[stat] = Math.floor(amount)
+    else if (typeof initial[stat] === 'number') result[stat] = initial[stat]
+  }
+  return result
+}
+
+function loadDungeonState(value: unknown, initial: DungeonState, realmId: GameState['player']['realmId']): DungeonState {
+  if (typeof value !== 'object' || value === null) {
+    // Keep the legacy object shape enumerable for old diagnostics while still
+    // exposing the migrated values to the new domain API.
+    const legacy = { date: null, attempts: {}, highestCleared: {} } as DungeonState
+    Object.defineProperties(legacy, {
+      stamina: { value: getDungeonStaminaCap(realmId), enumerable: false, writable: true, configurable: true },
+      staminaUpdatedAt: { value: Date.now(), enumerable: false, writable: true, configurable: true },
+    })
+    return legacy
+  }
+  const saved = value as Partial<DungeonState>
+  const attempts: Record<string, number> = {}
+  const highestCleared: Record<string, number> = {}
+  for (const dungeon of DUNGEONS) {
+    const attempt = saved.attempts?.[dungeon.id]
+    const highest = saved.highestCleared?.[dungeon.id]
+    if (typeof attempt === 'number' && Number.isFinite(attempt) && attempt > 0) attempts[dungeon.id] = clamp(Math.floor(attempt), 0, dungeon.dailyAttempts ?? Number.MAX_SAFE_INTEGER)
+    if (typeof highest === 'number' && Number.isFinite(highest) && highest > 0) highestCleared[dungeon.id] = clamp(Math.floor(highest), 0, dungeon.layers.length)
+  }
+  const rawStamina = typeof saved.stamina === 'number' && Number.isFinite(saved.stamina) ? saved.stamina : getDungeonStaminaCap(realmId)
+  const rawUpdatedAt = typeof saved.staminaUpdatedAt === 'number' && Number.isFinite(saved.staminaUpdatedAt) ? saved.staminaUpdatedAt : Date.now()
+  // Battles are runtime-only. A saved active challenge has no corresponding
+  // encounter after reload, so discard the marker instead of soft-locking the dungeon.
+  return normalizeDungeonState({ date: normalizeDateKey(saved.date), attempts, stamina: rawStamina, staminaUpdatedAt: rawUpdatedAt, highestCleared }, realmId, Date.now())
+}
+
+function loadTempleState(value: unknown, initial: TempleState): TempleState {
+  const source = typeof value === 'object' && value !== null ? value as Partial<TempleState> : {}
+  const rawRanks = typeof source.ranks === 'object' && source.ranks !== null ? source.ranks as Record<string, unknown> : {}
+  const ranks = { ...initial.ranks }
+  for (const idolId of IDOL_IDS) {
+    const config = getIdolConfig(idolId)
+    const value = rawRanks[idolId]
+    if (config && typeof value === 'number' && Number.isFinite(value)) ranks[idolId] = clamp(Math.floor(value), 0, config.maxRank)
+  }
+  return { ranks }
 }
 
 function loadJourney(saved: Partial<GameState>, initial: GameState): JourneyState {
@@ -1043,12 +1854,26 @@ function loadLogs(value: unknown, fallback: GameLog[]): GameLog[] {
   return logs.length ? logs : fallback
 }
 
-function loadEquippedEquipment(value: unknown, legacyWeapon: unknown, fallback: EquipmentLoadout): EquipmentLoadout {
+function loadEquippedEquipment(value: unknown, legacyWeapon: unknown, fallback: EquipmentLoadout, ownedEquipmentIds: readonly string[]): EquipmentLoadout {
   const savedLoadout = typeof value === 'object' && value !== null
     ? value as Partial<Record<EquipmentSlot | 'ring', unknown>>
     : undefined
+  const ownedCounts = new Map<string, number>()
+  for (const id of ownedEquipmentIds) ownedCounts.set(id, (ownedCounts.get(id) ?? 0) + 1)
+  const equippedCounts = new Map<string, number>()
+  const claim = (equipment: Equipment, slot: EquipmentSlot, gems?: unknown): EquippedEquipment | null => {
+    if (!canEquipEquipmentInSlot(equipment, slot)) return null
+    const used = equippedCounts.get(equipment.id) ?? 0
+    if (used >= (ownedCounts.get(equipment.id) ?? 0)) return null
+    equippedCounts.set(equipment.id, used + 1)
+    return createEquippedEquipment(equipment, gems)
+  }
   return EQUIPMENT_SLOTS.reduce((loadout, slot) => {
-    const savedEntry = savedLoadout?.[slot] ?? (slot === 'ring1' ? savedLoadout?.ring : undefined)
+    const hasSavedSlot = Boolean(savedLoadout && Object.prototype.hasOwnProperty.call(savedLoadout, slot))
+    const hasLegacyRing = slot === 'ring1' && Boolean(savedLoadout && Object.prototype.hasOwnProperty.call(savedLoadout, 'ring'))
+    const savedEntry = hasSavedSlot
+      ? savedLoadout![slot]
+      : hasLegacyRing ? savedLoadout!.ring : undefined
     if (savedEntry === null) {
       loadout[slot] = null
       return loadout
@@ -1057,18 +1882,20 @@ function loadEquippedEquipment(value: unknown, legacyWeapon: unknown, fallback: 
       const entry = savedEntry as Partial<EquippedEquipment>
       const equipment = typeof entry.equipmentId === 'string' ? getEquipmentById(entry.equipmentId) : undefined
       if (equipment && canEquipEquipmentInSlot(equipment, slot)) {
-        loadout[slot] = createEquippedEquipment(equipment, entry.gems)
+        loadout[slot] = claim(equipment, slot, entry.gems)
         return loadout
       }
     }
     if (!savedLoadout && slot === 'weapon' && typeof legacyWeapon === 'string') {
       const legacyEquipment = getEquipmentById(legacyWeapon)
       if (legacyEquipment?.categoryId === 'weapon') {
-        loadout[slot] = createEquippedEquipment(legacyEquipment)
+        loadout[slot] = claim(legacyEquipment, slot)
         return loadout
       }
     }
-    loadout[slot] = fallback[slot]
+    const fallbackEntry = fallback[slot]
+    const fallbackEquipment = fallbackEntry ? getEquipmentById(fallbackEntry.equipmentId) : undefined
+    loadout[slot] = fallbackEquipment ? claim(fallbackEquipment, slot) : null
     return loadout
   }, {} as EquipmentLoadout)
 }
@@ -1097,11 +1924,11 @@ function loadLottery(value: unknown, initial: LotteryState): LotteryState {
     legacyFragmentEquipmentIds.has(id) && typeof amount === 'number' && Number.isFinite(amount) && amount > 0 ? [id] : []
   ))
   const savedEquipmentIds = Array.isArray(saved.ownedEquipmentIds)
-    ? saved.ownedEquipmentIds.filter((id): id is string => typeof id === 'string' && knownEquipment.has(id))
+    ? saved.ownedEquipmentIds.filter((id): id is string => typeof id === 'string' && knownEquipment.has(id)).slice(0, 10_000)
     : initial.ownedEquipmentIds
   const ownedEquipmentIds = [...savedEquipmentIds, ...migratedEquipmentIds]
   const ownedMartialArtIds = Array.isArray(saved.ownedMartialArtIds)
-    ? [...new Set(saved.ownedMartialArtIds.filter((id): id is string => typeof id === 'string' && knownMartialArts.has(id)))]
+    ? saved.ownedMartialArtIds.filter((id): id is string => typeof id === 'string' && knownMartialArts.has(id)).slice(0, 10_000)
     : initial.ownedMartialArtIds
   const history = Array.isArray(saved.history)
     ? saved.history.flatMap((entry): LotteryReward[] => {
@@ -1109,12 +1936,12 @@ function loadLottery(value: unknown, initial: LotteryState): LotteryState {
       const reward = entry as Omit<Partial<LotteryReward>, 'kind'> & { kind?: LotteryReward['kind'] | 'fragment' }
       const validPool = reward.pool === 'equipment' || reward.pool === 'martial'
       const kind = reward.kind === 'fragment' ? 'equipment' : reward.kind
-      const validKind = kind === 'equipment' || kind === 'martial' || kind === 'forge' || kind === 'insight'
+      const validKind = kind === 'equipment' || kind === 'martial' || kind === 'item' || kind === 'forge' || kind === 'insight'
       const validTone = GRADE_ORDER.includes(reward.gradeTone as GradeTone)
       const source = typeof reward.itemId === 'string'
-        ? (reward.pool === 'equipment' ? getEquipmentById(reward.itemId) : getMartialArtById(reward.itemId))
+        ? (kind === 'item' ? getInventoryItemById(reward.itemId) : reward.pool === 'equipment' ? getEquipmentById(reward.itemId) : getMartialArtById(reward.itemId))
         : undefined
-      const validItem = kind === 'equipment' || kind === 'martial' ? Boolean(source) : true
+      const validItem = kind === 'equipment' || kind === 'martial' || kind === 'item' ? Boolean(source) : true
       const validLegacyFragment = reward.kind !== 'fragment' || (reward.pool === 'equipment' && Boolean(source) && legacyFragmentEquipmentIds.has(reward.itemId ?? ''))
       if (!validPool || !validKind || !validTone || !validItem || !validLegacyFragment || typeof reward.id !== 'string' || typeof reward.name !== 'string' || typeof reward.grade !== 'string' || typeof reward.quantity !== 'number' || !Number.isFinite(reward.quantity)) return []
       return [{
@@ -1145,6 +1972,27 @@ function loadMastery(value: unknown, fallback: Record<string, number>): Record<s
   return mastery
 }
 
+function loadMartialRanks(value: unknown, fallback: Record<string, number>): Record<string, number> {
+  const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
+  const ranks = { ...fallback }
+  if (!saved) return ranks
+  for (const [id, amount] of Object.entries(saved)) {
+    const art = getMartialArtConfigById(id)
+    if (art && typeof amount === 'number' && Number.isFinite(amount)) ranks[id] = clamp(Math.floor(amount), 0, art.ascension?.maxRank ?? MARTIAL_ASCENSION_MAX_RANK)
+  }
+  return ranks
+}
+
+function loadInventoryItems(value: unknown, fallback: Record<string, number>): Record<string, number> {
+  const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
+  const items = { ...fallback }
+  if (!saved) return items
+  for (const [id, amount] of Object.entries(saved)) {
+    if (getInventoryItemById(id) && typeof amount === 'number' && Number.isFinite(amount)) items[id] = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.floor(amount)))
+  }
+  return items
+}
+
 function loadEquipmentEnhancements(value: unknown, fallback: Record<string, number>): Record<string, number> {
   const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
   const knownIds = new Set(EQUIPMENT.map((equipment) => equipment.id))
@@ -1156,6 +2004,32 @@ function loadEquipmentEnhancements(value: unknown, fallback: Record<string, numb
     }
   }
   return enhancements
+}
+
+function loadEquipmentRanks(value: unknown, fallback: Record<string, number>): Record<string, number> {
+  const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
+  const knownIds = new Set(EQUIPMENT.map((equipment) => equipment.id))
+  const ranks = { ...fallback }
+  if (!saved) return ranks
+  for (const [id, amount] of Object.entries(saved)) {
+    if (knownIds.has(id) && typeof amount === 'number' && Number.isFinite(amount)) ranks[id] = clamp(Math.floor(amount), 0, EQUIPMENT_ASCENSION_MAX_RANK)
+  }
+  return ranks
+}
+
+function loadEquipmentRefinements(value: unknown, fallback: Record<string, EquipmentRefinement>): Record<string, EquipmentRefinement> {
+  const saved = typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
+  const knownIds = new Set(EQUIPMENT.map((equipment) => equipment.id))
+  const refinements = { ...fallback }
+  if (!saved) return refinements
+  for (const [id, raw] of Object.entries(saved)) {
+    if (!knownIds.has(id) || typeof raw !== 'object' || raw === null) continue
+    const entry = raw as Partial<EquipmentRefinement>
+    if (typeof entry.stat === 'string' && EQUIPMENT_REFINEMENT_STATS.includes(entry.stat as CoreCombatStat) && typeof entry.amount === 'number' && Number.isFinite(entry.amount) && entry.amount > 0) {
+      refinements[id] = { stat: entry.stat as CoreCombatStat, amount: Math.floor(entry.amount) }
+    }
+  }
+  return refinements
 }
 
 function loadMartialLoadout(value: unknown, legacyValue: unknown, fallback: MartialArtLoadout, ownedIds: readonly string[]): MartialArtLoadout {
@@ -1190,15 +2064,27 @@ function loadMartialLoadout(value: unknown, legacyValue: unknown, fallback: Mart
 
 export function loadGame(): GameState {
   const initial = createInitialGame()
+  let raw: string | null = null
   try {
-    const raw = localStorage.getItem(SAVE_KEY)
+    raw = localStorage.getItem(SAVE_KEY)
     if (!raw) return initial
     const saved: unknown = JSON.parse(raw)
-    if (!isPartialGame(saved)) return initial
+    if (!isPartialGame(saved)) {
+      preserveUnusableSave(raw)
+      return initial
+    }
     const savedVersion = nonNegativeInteger(saved.version, 0)
     const legacyPlayer = saved.player as (Partial<GameState['player']> & { level?: unknown; equippedWeapon?: unknown; equippedArts?: unknown; yuanbao?: unknown; silverTickets?: unknown }) | undefined
     const { equippedEquipment, equippedWeapon, ...playerValues } = legacyPlayer ?? {}
-    const lottery = loadLottery(saved.lottery, initial.lottery)
+    let lottery = loadLottery(saved.lottery, initial.lottery)
+    // Older saves stored the equipped weapon separately and did not include
+    // it in the collection. Preserve that valid legacy item before validating
+    // the new slot loadout against owned copies.
+    const legacyWeaponId = typeof equippedWeapon === 'string' ? equippedWeapon : undefined
+    const legacyWeapon = legacyWeaponId ? getEquipmentById(legacyWeaponId) : undefined
+    if (legacyWeapon?.categoryId === 'weapon' && !lottery.ownedEquipmentIds.includes(legacyWeapon.id)) {
+      lottery = { ...lottery, ownedEquipmentIds: [...lottery.ownedEquipmentIds, legacyWeapon.id] }
+    }
     const savedRealmLevel = typeof legacyPlayer?.realmLevel === 'number'
       ? legacyPlayer.realmLevel
       : typeof legacyPlayer?.level === 'number' ? legacyPlayer.level : initial.player.realmLevel
@@ -1213,24 +2099,38 @@ export function loadGame(): GameState {
       langyu: migrateLangyuBalance(playerValues.langyu ?? legacyPlayer?.yuanbao ?? legacyPlayer?.silverTickets, savedVersion, initial.player.langyu),
       forge: nonNegativeInteger(playerValues.forge, initial.player.forge),
       insight: nonNegativeInteger(playerValues.insight, initial.player.insight),
+      incense: nonNegativeInteger(playerValues.incense, initial.player.incense),
       fame: nonNegativeInteger(playerValues.fame, initial.player.fame),
+      pillInnerForceRateBonus: Math.max(0, finiteNumber(playerValues.pillInnerForceRateBonus, initial.player.pillInnerForceRateBonus)),
+      pillCombatBonuses: loadPillBonuses(playerValues.pillCombatBonuses, initial.player.pillCombatBonuses),
+      pillCombatRates: loadPillBonuses(playerValues.pillCombatRates, initial.player.pillCombatRates),
       equipmentEnhancements: loadEquipmentEnhancements(playerValues.equipmentEnhancements, initial.player.equipmentEnhancements),
+      equipmentRanks: loadEquipmentRanks(playerValues.equipmentRanks, initial.player.equipmentRanks),
+      equipmentRefinements: loadEquipmentRefinements(playerValues.equipmentRefinements, initial.player.equipmentRefinements),
       mastery: loadMastery(playerValues.mastery, initial.player.mastery),
+      martialRanks: loadMartialRanks(playerValues.martialRanks, initial.player.martialRanks),
+      items: loadInventoryItems(playerValues.items, initial.player.items),
       martialLoadout: loadMartialLoadout(playerValues.martialLoadout, legacyPlayer?.equippedArts, initial.player.martialLoadout, lottery.ownedMartialArtIds),
-      equippedEquipment: loadEquippedEquipment(equippedEquipment, equippedWeapon, initial.player.equippedEquipment),
+      equippedEquipment: loadEquippedEquipment(equippedEquipment, equippedWeapon, initial.player.equippedEquipment, lottery.ownedEquipmentIds),
     })
+    // Rebuild the aggregate explicitly instead of spreading the untrusted
+    // save object. This prevents stale runtime fields or arbitrary JSON keys
+    // from becoming part of the live game state after a load.
     return {
-      ...initial,
-      ...saved,
       version: CURRENT_GAME_VERSION,
       player,
       cultivation: loadCultivation(saved, initial),
       dailyCheckIn: loadDailyCheckIn(saved.dailyCheckIn, initial.dailyCheckIn),
+      materialBounties: loadMaterialBounties(saved.materialBounties, initial.materialBounties),
+      shop: loadShopState(saved.shop, initial.shop),
+      dungeons: loadDungeonState(saved.dungeons, initial.dungeons, normalizeRealmId(legacyPlayer?.realmId)),
+      temple: loadTempleState(saved.temple, initial.temple),
       journey: loadJourney(saved, initial),
       lottery,
       logs: loadLogs(saved.logs, initial.logs),
     }
   } catch {
+    preserveUnusableSave(raw)
     return initial
   }
 }

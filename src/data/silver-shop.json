@@ -1,0 +1,145 @@
+{
+  "products": [
+    {
+      "id": "cold-iron-supply",
+      "name": "寒铁补给",
+      "description": "铁匠铺新到的一批精炼寒铁，可用于强化装备。",
+      "lore": "炉火不灭，百炼方成锋芒。",
+      "dailyLimit": 3,
+      "basePrice": 560,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.18,
+      "rewardGrowthRate": 0.16,
+      "rewards": [
+        {
+          "type": "forge",
+          "amount": 12
+        }
+      ]
+    },
+    {
+      "id": "insight-manuscript",
+      "name": "悟武手札",
+      "description": "收录名家批注的残卷，可化作功法心得。",
+      "lore": "字字未必为真，能悟得一字已胜过千言。",
+      "dailyLimit": 3,
+      "basePrice": 680,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.18,
+      "rewardGrowthRate": 0.16,
+      "rewards": [
+        {
+          "type": "insight",
+          "amount": 7
+        }
+      ]
+    },
+    {
+      "id": "nourishing-qi-pill",
+      "name": "养气散",
+      "description": "温养经脉的药散，服下后可立刻补充内力。",
+      "lore": "一盏温水，一剂药散，气息便又绵长几分。",
+      "dailyLimit": 5,
+      "basePrice": 320,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.16,
+      "rewardGrowthRate": 0.18,
+      "rewards": [
+        {
+          "type": "innerForce",
+          "amount": 560
+        }
+      ]
+    },
+    {
+      "id": "master-supply-case",
+      "name": "习武匣",
+      "description": "商会为常客备下的养成补给，内含铸材与心得。",
+      "lore": "江湖路远，行囊里总该备些能派上用场的东西。",
+      "dailyLimit": 1,
+      "basePrice": 1260,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.2,
+      "rewardGrowthRate": 0.17,
+      "rewards": [
+        {
+          "type": "forge",
+          "amount": 10
+        },
+        {
+          "type": "insight",
+          "amount": 6
+        }
+      ]
+    },
+    {
+      "id": "equipment-essence-case",
+      "name": "精魄匣",
+      "description": "封存着装备精魄的铁匣，可用于装备升阶。",
+      "lore": "每一道精魄都来自一次淬火，积少成多便能再铸名器。",
+      "dailyLimit": 2,
+      "basePrice": 1480,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.2,
+      "rewardGrowthRate": 0.12,
+      "rewards": [
+        {
+          "type": "item",
+          "itemId": "equipment-essence",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "reforge-kit",
+      "name": "洗炼匣",
+      "description": "包含洗炼石与磨具，可重置一件装备的词条。",
+      "lore": "好铁也需多次打磨，方能找到最合适的锋口。",
+      "dailyLimit": 3,
+      "basePrice": 920,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.18,
+      "rewardGrowthRate": 0.14,
+      "rewards": [
+        {
+          "type": "item",
+          "itemId": "equipment-reforge-stone",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "gem-pouch",
+      "name": "镶嵌玉囊",
+      "description": "内含攻击、生命、防御、速度四类基础宝石各 2 枚，可镶嵌到有宝石孔的装备。",
+      "lore": "玉石有灵，落在合适的兵甲上才不算明珠蒙尘。",
+      "dailyLimit": 2,
+      "basePrice": 1120,
+      "growthEveryChapters": 3,
+      "priceGrowthRate": 0.2,
+      "rewardGrowthRate": 0.14,
+      "rewards": [
+        {
+          "type": "item",
+          "itemId": "gem-sand-attack",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "itemId": "gem-stone-heart",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "itemId": "gem-iron-slag",
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "itemId": "gem-light-trace",
+          "amount": 2
+        }
+      ]
+    }
+  ]
+}

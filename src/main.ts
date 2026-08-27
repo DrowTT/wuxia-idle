@@ -4,6 +4,9 @@ import {
   ElButton,
   ElCard,
   ElDialog,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
   ElMenu,
   ElMenuItem,
   ElOption,
@@ -19,6 +22,9 @@ import 'element-plus/es/components/badge/style/css'
 import 'element-plus/es/components/button/style/css'
 import 'element-plus/es/components/card/style/css'
 import 'element-plus/es/components/dialog/style/css'
+import 'element-plus/es/components/dropdown/style/css'
+import 'element-plus/es/components/dropdown-item/style/css'
+import 'element-plus/es/components/dropdown-menu/style/css'
 import 'element-plus/es/components/menu/style/css'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/option/style/css'
@@ -37,6 +43,9 @@ createApp(App)
   .use(ElButton)
   .use(ElCard)
   .use(ElDialog)
+  .use(ElDropdown)
+  .use(ElDropdownItem)
+  .use(ElDropdownMenu)
   .use(ElMenu)
   .use(ElMenuItem)
   .use(ElOption)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { Award, Coins, Gem, Hammer, Play, Sparkles, Swords, X } from '@lucide/vue'
+import { Award, Coins, Gem, Hammer, Play, Sparkles, Swords, Trophy, X } from '@lucide/vue'
 import type { BattleReward, CombatAction, CombatStats, CombatTarget, Encounter, PlayerState } from '../domain/types'
 
 const props = defineProps<{
@@ -191,8 +191,10 @@ function isComboAttacker(target: 'player' | string): boolean {
           <span v-if="reward.forge"><Hammer :size="15" /><b>+{{ reward.forge }}</b><small>铸材</small></span>
           <span v-if="reward.insight"><Sparkles :size="15" /><b>+{{ reward.insight }}</b><small>心得</small></span>
           <span v-if="reward.fame"><Award :size="15" /><b>+{{ reward.fame }}</b><small>江湖声名</small></span>
+          <span v-for="drop in reward.drops ?? []" :key="`${drop.kind}-${drop.itemId ?? drop.resource}-${drop.name}`" class="battle-reward-drop"><Sparkles :size="15" /><b>+{{ drop.quantity }}</b><small>{{ drop.name }}</small></span>
         </div>
         <p v-if="reward.eliteBonus"><Sparkles :size="13" />精英额外掉落</p>
+        <p v-if="reward.firstClear"><Trophy :size="13" />首次通关奖励已领取</p>
       </section>
       <div ref="combatLogElement" class="combat-log" @scroll="updateCombatLogFollowingState"><p v-for="(line, index) in encounter.logs" :key="`${line}-${index}`">{{ line }}</p></div>
       <el-button v-if="encounter.status !== 'fighting' && !autoBattle" class="full" type="primary" @click="emit('close')">收下战果</el-button>

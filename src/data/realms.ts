@@ -1,17 +1,35 @@
-import type { Realm } from '../domain/types'
+import rawContent from './realms.json'
+import { deepFreeze } from './freeze'
+import type { Realm, RealmId } from '../domain/types'
 
-export const REALMS: readonly Realm[] = [
-  { id: 'body-tempering', label: '炼体境', description: '锤炼皮肉筋骨，奠定武道根基。', tier: 1, color: '#B0B8C0', foreground: '#25313B' },
-  { id: 'meridian', label: '通脉境', description: '疏通经络，内息开始周行。', tier: 2, color: '#D6DCE3', foreground: '#26313B' },
-  { id: 'acquired', label: '后天境', description: '打熬筋骨，温养内息。', tier: 3, color: '#55AF6B', foreground: '#FFFFFF' },
-  { id: 'innate', label: '先天境', description: '贯通经脉，内息自生。', tier: 4, color: '#2F9FA3', foreground: '#FFFFFF' },
-  { id: 'aura', label: '罡气境', description: '内息凝罡，举手投足皆有劲力。', tier: 5, color: '#3B82D0', foreground: '#FFFFFF' },
-  { id: 'master', label: '宗师境', description: '气劲外放，自成一派。', tier: 6, color: '#5969C9', foreground: '#FFFFFF' },
-  { id: 'grandmaster', label: '大宗师境', description: '融会诸艺，登临绝顶。', tier: 7, color: '#8C58C9', foreground: '#FFFFFF' },
-  { id: 'returning', label: '归真境', description: '返璞归真，功法融入本能。', tier: 8, color: '#E07B42', foreground: '#FFFFFF' },
-  { id: 'martial-saint', label: '武圣境', description: '百艺归一，威势可镇一方。', tier: 9, color: '#D5A63C', foreground: '#2A210D' },
-  { id: 'martial-pinnacle', label: '武道极境', description: '穷尽武道变化，终见自身。', tier: 10, color: '#C84F59', foreground: '#FFFFFF' },
-]
+interface RealmContent { realms: readonly Realm[] }
+const REALM_IDS: readonly RealmId[] = ['body-tempering', 'meridian', 'acquired', 'innate', 'aura', 'master', 'grandmaster', 'returning', 'martial-saint', 'martial-pinnacle']
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function validateRealms(value: unknown): readonly Realm[] {
+  if (!isRecord(value) || !Array.isArray(value.realms) || value.realms.length !== 10) throw new Error('境界配置无效：必须恰好配置 10 个境界。')
+  const ids = new Set<string>()
+  value.realms.forEach((realm, index) => {
+    const label = `realms[${index}]`
+    if (!isRecord(realm) || typeof realm.id !== 'string' || !REALM_IDS.includes(realm.id as RealmId) || !realm.id.trim() || ids.has(realm.id) || typeof realm.label !== 'string' || !realm.label.trim() || typeof realm.description !== 'string' || !realm.description.trim()) throw new Error(`境界配置无效：${label}的基本信息不合法。`)
+    if (realm.tier !== index + 1 || !Number.isInteger(realm.tier)) throw new Error(`境界配置无效：${label}的 tier 必须从 1 连续排列。`)
+    if (typeof realm.color !== 'string' || !/^#[0-9a-f]{6}$/i.test(realm.color) || typeof realm.foreground !== 'string' || !/^#[0-9a-f]{6}$/i.test(realm.foreground)) throw new Error(`境界配置无效：${label}的颜色必须是六位十六进制值。`)
+    ids.add(realm.id)
+  })
+  return value.realms as readonly Realm[]
+}
+
+const realms = validateRealms(rawContent)
+export const REALMS: readonly Realm[] = deepFreeze(realms.map((realm) => ({ ...realm })))
+
+const REALMS_BY_ID = new Map<string, Realm>(REALMS.map((realm) => [realm.id, realm]))
+
+export function getRealmById(id: string): Realm | undefined {
+  return REALMS_BY_ID.get(id)
+}
 
 export const INNER_FORCE_PER_SECOND = 1.3
 export const MAX_CULTIVATION_OFFLINE_MS = 12 * 60 * 60 * 1000
